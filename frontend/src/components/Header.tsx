@@ -1,7 +1,10 @@
 'use client';
 
 import React from 'react';
-import { ShieldAlert, Network, Upload, FileText, ChevronDown, CheckCircle2, AlertTriangle, AlertOctagon } from 'lucide-react';
+import {
+  ShieldAlert, Network, Upload, FileText, ChevronDown,
+  Sparkles, Download, Search, CheckCircle2, AlertTriangle, AlertOctagon
+} from 'lucide-react';
 import { ContractSummaryItem } from '../types/contract';
 
 interface HeaderProps {
@@ -9,9 +12,12 @@ interface HeaderProps {
   score: number;
   sampleContracts: ContractSummaryItem[];
   selectedContractId: string;
+  searchQuery: string;
+  onSearchChange: (q: string) => void;
   onSelectContract: (id: string) => void;
   onOpenUpload: () => void;
   onOpenGraph: () => void;
+  onExportReport: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -19,88 +25,130 @@ export const Header: React.FC<HeaderProps> = ({
   score,
   sampleContracts,
   selectedContractId,
+  searchQuery,
+  onSearchChange,
   onSelectContract,
   onOpenUpload,
   onOpenGraph,
+  onExportReport,
 }) => {
-  const getScoreBadge = (sc: number) => {
-    if (sc >= 80) {
-      return (
-        <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-semibold">
-          <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-          <span>Điểm An Toàn: {sc}/100 (Tốt)</span>
-        </div>
-      );
-    } else if (sc >= 50) {
-      return (
-        <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-semibold">
-          <AlertTriangle className="w-4 h-4 text-amber-400" />
-          <span>Điểm An Toàn: {sc}/100 (Cảnh báo)</span>
-        </div>
-      );
-    } else {
-      return (
-        <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs font-semibold animate-pulse">
-          <AlertOctagon className="w-4 h-4 text-rose-400" />
-          <span>Điểm An Toàn: {sc}/100 (Rất Rủi Ro)</span>
-        </div>
-      );
+  const getScoreVisual = (sc: number) => {
+    let colorClass = 'text-emerald-400 stroke-emerald-500 bg-emerald-500/10 border-emerald-500/30';
+    let label = 'An Toàn';
+    let icon = <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />;
+
+    if (sc < 50) {
+      colorClass = 'text-rose-400 stroke-rose-500 bg-rose-500/10 border-rose-500/30 glow-rose';
+      label = 'Rất Rủi Ro';
+      icon = <AlertOctagon className="w-3.5 h-3.5 text-rose-400" />;
+    } else if (sc < 80) {
+      colorClass = 'text-amber-400 stroke-amber-500 bg-amber-500/10 border-amber-500/30';
+      label = 'Cảnh Báo';
+      icon = <AlertTriangle className="w-3.5 h-3.5 text-amber-400" />;
     }
+
+    return (
+      <div className={`flex items-center gap-2.5 px-3.5 py-1.5 rounded-full border ${colorClass} transition-all`}>
+        {icon}
+        <div className="flex items-baseline gap-1">
+          <span className="font-mono text-sm font-bold">{sc}</span>
+          <span className="text-[10px] text-slate-400">/100</span>
+        </div>
+        <span className="text-[11px] font-semibold pl-1 border-l border-white/10 hidden sm:inline">
+          {label}
+        </span>
+      </div>
+    );
   };
 
   return (
-    <header className="h-16 bg-legal-900 border-b border-legal-800 px-6 flex items-center justify-between sticky top-0 z-40">
-      {/* Brand & Title */}
+    <header className="h-16 glass-panel border-b border-white/[0.08] px-5 flex items-center justify-between sticky top-0 z-40">
+      {/* Brand & Contract Switcher */}
       <div className="flex items-center gap-6">
+        {/* Logo */}
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-cyan-400 flex items-center justify-center shadow-lg shadow-blue-500/20">
-            <ShieldAlert className="w-6 h-6 text-white" />
+          <div className="relative group cursor-pointer">
+            <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-400 rounded-xl blur opacity-75 group-hover:opacity-100 transition duration-300"></div>
+            <div className="relative w-10 h-10 rounded-xl bg-slate-950 border border-white/15 flex items-center justify-center">
+              <ShieldAlert className="w-5 h-5 text-cyan-400" />
+            </div>
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <span className="font-bold text-white text-lg tracking-tight">LegalAI</span>
-              <span className="text-[10px] px-2 py-0.5 rounded bg-blue-500/20 text-blue-400 border border-blue-500/30 font-mono">PRO</span>
+              <span className="font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-white via-slate-100 to-slate-400 text-base tracking-tight">
+                LegalAI
+              </span>
+              <span className="text-[9px] px-1.5 py-0.5 rounded-md bg-gradient-to-r from-blue-500/20 to-indigo-500/20 text-cyan-300 border border-cyan-500/30 font-mono font-bold uppercase tracking-wider">
+                Graph-RAG Pro
+              </span>
             </div>
-            <p className="text-[11px] text-slate-400 font-medium">Hệ thống Rà soát Hợp đồng & Graph-RAG</p>
+            <p className="text-[10px] text-slate-400 font-medium">Hệ Thống Rà Soát & Đối Chiếu Pháp Lý AI</p>
           </div>
         </div>
 
-        {/* Contract Selector */}
-        <div className="hidden lg:flex items-center gap-2 bg-legal-950/70 border border-legal-800 rounded-lg px-3 py-1.5 max-w-md">
-          <FileText className="w-4 h-4 text-blue-400 shrink-0" />
+        {/* Contract Selector Pill */}
+        <div className="hidden xl:flex items-center gap-2 bg-white/[0.03] hover:bg-white/[0.06] border border-white/[0.08] rounded-xl px-3 py-1.5 transition-all">
+          <FileText className="w-4 h-4 text-indigo-400 shrink-0" />
           <select
             value={selectedContractId}
             onChange={(e) => onSelectContract(e.target.value)}
-            className="bg-transparent text-sm text-slate-200 outline-none cursor-pointer truncate max-w-[280px]"
+            className="bg-transparent text-xs text-slate-200 font-medium outline-none cursor-pointer truncate max-w-[280px]"
           >
             {sampleContracts.map((c) => (
-              <option key={c.id} value={c.id} className="bg-legal-900 text-slate-200">
+              <option key={c.id} value={c.id} className="bg-slate-900 text-slate-200">
                 {c.title}
               </option>
             ))}
           </select>
-          <ChevronDown className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+          <ChevronDown className="w-3.5 h-3.5 text-slate-400 shrink-0" />
         </div>
       </div>
 
-      {/* Safety Score & Action Buttons */}
-      <div className="flex items-center gap-3">
-        {getScoreBadge(score)}
+      {/* Center Search Bar */}
+      <div className="hidden md:flex items-center gap-2 bg-white/[0.04] border border-white/[0.07] rounded-xl px-3.5 py-1.5 w-64 lg:w-80 focus-within:w-96 focus-within:border-cyan-500/50 focus-within:bg-white/[0.06] transition-all">
+        <Search className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+        <input
+          type="text"
+          placeholder="Tìm nhanh điều khoản, rủi ro, số điều..."
+          value={searchQuery}
+          onChange={(e) => onSearchChange(e.target.value)}
+          className="bg-transparent text-xs text-slate-200 placeholder-slate-500 outline-none w-full font-sans"
+        />
+      </div>
 
+      {/* Actions & Score */}
+      <div className="flex items-center gap-3">
+        {getScoreVisual(score)}
+
+        {/* Knowledge Graph Button */}
         <button
           onClick={onOpenGraph}
-          className="flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-indigo-600/20 hover:bg-indigo-600/30 border border-indigo-500/40 text-indigo-300 text-xs font-medium transition-all shadow-sm"
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/30 text-indigo-300 text-xs font-semibold transition-all hover:glow-purple"
         >
-          <Network className="w-4 h-4 text-indigo-400" />
-          <span>Knowledge Graph</span>
+          <Network className="w-3.5 h-3.5 text-indigo-400" />
+          <span className="hidden sm:inline">Knowledge Graph</span>
         </button>
 
+        {/* Export Report Button */}
+        <button
+          onClick={onExportReport}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-slate-300 hover:text-white text-xs font-medium transition-all"
+          title="Xuất báo cáo PDF/JSON"
+        >
+          <Download className="w-3.5 h-3.5 text-slate-400" />
+          <span className="hidden lg:inline">Xuất Báo Cáo</span>
+        </button>
+
+        {/* Upload Button */}
         <button
           onClick={onOpenUpload}
-          className="flex items-center gap-2 px-4 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold shadow-md shadow-blue-600/30 transition-all"
+          className="relative group overflow-hidden rounded-xl p-[1px] font-semibold text-xs transition duration-300"
         >
-          <Upload className="w-4 h-4" />
-          <span>Tải Hợp Đồng Mới</span>
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-500 via-indigo-500 to-cyan-400 rounded-xl group-hover:scale-105 transition-transform"></div>
+          <div className="relative px-3.5 py-1.5 bg-slate-950/90 rounded-[11px] flex items-center gap-1.5 text-white">
+            <Upload className="w-3.5 h-3.5 text-cyan-400" />
+            <span>Tải Hợp Đồng</span>
+          </div>
         </button>
       </div>
     </header>

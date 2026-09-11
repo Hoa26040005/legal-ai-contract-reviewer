@@ -9,7 +9,7 @@ import { KnowledgeGraphModal } from '../components/KnowledgeGraphModal';
 import { UploadModal } from '../components/UploadModal';
 import { fetchSampleContracts, fetchContractReport } from '../lib/api';
 import { ContractAnalysisReport, ContractSummaryItem, RiskLevel } from '../types/contract';
-import { Loader2, AlertCircle } from 'lucide-react';
+import { Loader2, AlertCircle, Sparkles, FileText, CheckCircle2 } from 'lucide-react';
 
 export default function Home() {
   const [samples, setSamples] = useState<ContractSummaryItem[]>([]);
@@ -17,9 +17,10 @@ export default function Home() {
   const [report, setReport] = useState<ContractAnalysisReport | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
-  // Filters & Interactivity states
+  // Filters & Search & Interactivity states
   const [selectedRiskFilter, setSelectedRiskFilter] = useState<RiskLevel | 'ALL'>('ALL');
   const [selectedClauseId, setSelectedClauseId] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState<string>('');
 
   // Modals
   const [isGraphOpen, setIsGraphOpen] = useState<boolean>(false);
@@ -93,55 +94,75 @@ export default function Home() {
     ]);
   };
 
+  // 5. Export Report
+  const handleExportReport = () => {
+    if (!report) return;
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(report, null, 2));
+    const downloadAnchor = document.createElement('a');
+    downloadAnchor.setAttribute("href", dataStr);
+    downloadAnchor.setAttribute("download", `LegalAI_Report_${report.contract_id}.json`);
+    document.body.appendChild(downloadAnchor);
+    downloadAnchor.click();
+    downloadAnchor.remove();
+  };
+
   if (loading && !report) {
     return (
-      <div className="min-h-screen bg-legal-950 flex flex-col items-center justify-center text-slate-300">
-        <Loader2 className="w-10 h-10 animate-spin text-blue-500 mb-3" />
-        <p className="text-sm font-semibold">Đang nạp dữ liệu rà soát hợp đồng AI...</p>
+      <div className="min-h-screen bg-[#060913] flex flex-col items-center justify-center text-slate-300">
+        <div className="relative mb-4">
+          <div className="w-16 h-16 rounded-2xl bg-blue-600/20 border border-blue-500/30 flex items-center justify-center">
+            <Loader2 className="w-8 h-8 animate-spin text-cyan-400" />
+          </div>
+        </div>
+        <p className="text-sm font-bold text-white">Đang tải và đồng bộ dữ liệu Graph-RAG...</p>
+        <p className="text-xs text-slate-500 mt-1">Chuẩn hóa cấu trúc điều khoản & căn cứ luật Việt Nam</p>
       </div>
     );
   }
 
   if (!report) {
     return (
-      <div className="min-h-screen bg-legal-950 flex flex-col items-center justify-center text-slate-400">
+      <div className="min-h-screen bg-[#060913] flex flex-col items-center justify-center text-slate-400">
         <AlertCircle className="w-10 h-10 text-rose-500 mb-3" />
-        <p className="text-sm font-semibold">Không thể tải báo cáo hợp đồng. Vui lòng thử lại.</p>
+        <p className="text-sm font-bold text-white">Không thể nạp báo cáo. Vui lòng thử lại.</p>
       </div>
     );
   }
 
   return (
-    <main className="h-screen flex flex-col bg-legal-950 overflow-hidden select-none">
+    <main className="h-screen flex flex-col bg-[#060913] overflow-hidden select-none">
       {/* 1. Global Navigation Header */}
       <Header
         currentTitle={report.contract_title}
         score={report.overall_score}
         sampleContracts={samples}
         selectedContractId={selectedContractId}
+        searchQuery={searchQuery}
+        onSearchChange={setSearchQuery}
         onSelectContract={handleSelectContract}
         onOpenUpload={() => setIsUploadOpen(true)}
         onOpenGraph={() => setIsGraphOpen(true)}
+        onExportReport={handleExportReport}
       />
 
-      {/* 2. Executive Summary Callout */}
-      <div className="px-6 py-2.5 bg-gradient-to-r from-blue-950/40 via-indigo-950/40 to-legal-950 border-b border-legal-800 flex items-center justify-between">
+      {/* 2. Executive Summary Callout Banner */}
+      <div className="px-6 py-2.5 bg-gradient-to-r from-blue-950/40 via-indigo-950/30 to-[#060913] border-b border-white/[0.06] flex items-center justify-between">
         <div className="flex items-center gap-3 overflow-hidden">
-          <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-blue-500/20 text-blue-300 border border-blue-500/30 shrink-0">
-            Tóm Tắt AI
+          <span className="text-[10px] font-extrabold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-cyan-500/15 text-cyan-300 border border-cyan-500/30 shrink-0 flex items-center gap-1">
+            <Sparkles className="w-3 h-3 text-cyan-400" /> Tóm Tắt AI
           </span>
-          <p className="text-xs text-slate-300 truncate font-medium">
+          <p className="text-xs text-slate-200 truncate font-medium">
             {report.summary}
           </p>
         </div>
-        <div className="hidden md:flex items-center gap-2 text-[11px] text-slate-400 shrink-0 ml-4 font-mono">
-          <span>Loại: {report.contract_type}</span>
+        <div className="hidden md:flex items-center gap-2.5 text-[11px] text-slate-400 shrink-0 ml-4 font-mono">
+          <span className="text-indigo-300 font-semibold">{report.contract_type}</span>
           <span>•</span>
-          <span>Tổng {report.total_clauses} Điều khoản</span>
+          <span>{report.total_clauses} Điều khoản</span>
         </div>
       </div>
 
-      {/* 3. Risk Filter Summary Cards Bar */}
+      {/* 3. Risk Filter KPI Summary Bar */}
       <RiskSummaryCards
         totalClauses={report.total_clauses}
         criticalCount={report.critical_count}
@@ -152,17 +173,18 @@ export default function Home() {
         onSelectFilter={setSelectedRiskFilter}
       />
 
-      {/* 4. Main Split Screen Workspace */}
+      {/* 4. Split-Screen Precision Workspace */}
       <div className="flex-1 flex flex-col lg:flex-row overflow-hidden relative">
-        {/* Left Side: PDF Document Viewer with risk bounding box overlays */}
+        {/* Left: Interactive PDF Document Viewer with risk bounding box highlights */}
         <PDFViewer
           clauses={report.clauses}
           risks={report.risks}
           selectedClauseId={selectedClauseId}
+          searchQuery={searchQuery}
           onSelectClause={handleSelectClause}
         />
 
-        {/* Right Side: Risk Assessment Panel & Redline Recommendations */}
+        {/* Right: Risk Assessment Panel with Tabs (Risks, Redline Diff, AI Copilot) */}
         <RiskPanel
           risks={report.risks}
           selectedRiskFilter={selectedRiskFilter}
