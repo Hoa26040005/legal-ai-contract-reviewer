@@ -4,7 +4,7 @@ import React from 'react';
 import {
   ShieldAlert, Network, Upload, FileText, ChevronDown,
   Sparkles, Download, Search, CheckCircle2, AlertTriangle, AlertOctagon,
-  FileCheck, GitCompare
+  FileCheck, GitCompare, FileSignature
 } from 'lucide-react';
 import { ContractSummaryItem } from '../types/contract';
 
@@ -19,6 +19,7 @@ interface HeaderProps {
   onOpenUpload: () => void;
   onOpenGraph: () => void;
   onOpenDiff: () => void;
+  onOpenAnnex: () => void;
   onExportReport: () => void;
   onExportDocx: () => void;
 }
@@ -34,6 +35,7 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenUpload,
   onOpenGraph,
   onOpenDiff,
+  onOpenAnnex,
   onExportReport,
   onExportDocx,
 }) => {
@@ -138,6 +140,16 @@ export const Header: React.FC<HeaderProps> = ({
         >
           <GitCompare className="w-3.5 h-3.5 text-cyan-400" />
           <span className="hidden sm:inline">So Sánh Diff</span>
+        </button>
+
+        {/* Contract Amendment Annex Generator Button */}
+        <button
+          onClick={onOpenAnnex}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/35 text-emerald-300 text-xs font-semibold transition-all hover:glow-green shadow-sm"
+          title="Tự động tạo Phụ Lục Sửa Đổi, Bổ Sung Hợp Đồng (.docx) chuẩn Điều 403 BLDS 2015"
+        >
+          <FileSignature className="w-3.5 h-3.5 text-emerald-400" />
+          <span className="hidden md:inline">Tạo Phụ Lục</span>
         </button>
 
         {/* Word Docx Track Changes Button */}

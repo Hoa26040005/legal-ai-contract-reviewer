@@ -142,9 +142,27 @@ Trong quá trình đàm phán hợp đồng (ví dụ: Bản dự thảo V1 đ�
 
 ---
 
-## 8. XỬ LÝ CÁC TRƯỜNG HỢP NGOẠI LỆ (EDGE CASES)
+## 8. QUY CHUẨN SOẠN THẢO PHỤ LỤC HỢP ĐỒNG SỬA ĐỔI, BỔ SUNG (ĐIỀU 403 BLDS 2015 & NĐ 30/2020/NĐ-CP)
+
+Khi các bên phát hiện điều khoản vi phạm điều cấm hoặc bất lợi sau khi ký hợp đồng gốc:
+1. **Thể thức văn bản hành chính**:
+   - Quốc hiệu: **CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM** (In hoa, đậm, 12pt).
+   - Tiêu ngữ: **Độc lập - Tự do - Hạnh phúc** (In thường, đậm, gạch chân liền nét, 13pt).
+   - Tên văn bản: **PHỤ LỤC HỢP ĐỒNG SỐ ...** kèm số hợp đồng gốc và ngày ký.
+   - Căn lề chuẩn: Trên 20mm, Dưới 20mm, Trái 30mm, Phải 15mm.
+2. **Cấu trúc 4 Điều khoản Pháp lý**:
+   - **Điều 1: Sửa đổi, thay thế điều khoản**: Ghi rõ nội dung cũ trước sửa đổi và nội dung mới thay thế kèm căn cứ pháp lý tương ứng.
+   - **Điều 2: Hủy bỏ, bãi bỏ điều khoản trái luật**: Bãi bỏ các thỏa thuận vi phạm điều cấm (giữ bằng đại học gốc, đặt cọc giữ chỗ, phạt vi phạm vượt trần 8%, cấm nghỉ việc trái luật).
+   - **Điều 3: Bổ sung cam kết bảo vệ**: Thỏa thuận bảo vệ dữ liệu cá nhân theo Nghị định 13/2023/NĐ-CP, trần bồi thường thiệt hại thực tế.
+   - **Điều 4: Hiệu lực thi hành**: Khẳng định phụ lục là bộ phận không thể tách rời của hợp đồng gốc; lập thành 02 bản gốc.
+3. **Bảng chữ ký 2 cột**: ĐẠI DIỆN BÊN A & ĐẠI DIỆN BÊN B có khoảng cách ký tên đóng dấu trang trọng.
+
+---
+
+## 9. XỬ LÝ CÁC TRƯỜNG HỢP NGOẠI LỆ (EDGE CASES)
 
 - **Ảnh chụp bị lóa sáng / Mất góc**: Cảnh báo người dùng về phần văn bản bị che khuất và kích hoạt bộ lọc bù nét tương phản.
 - **Hợp đồng không đánh số Điều**: Tự động đánh số theo phân đoạn logic (`Phần 1`, `Phần 2`,...) dựa trên ngắt trang.
 - **Hợp đồng Song ngữ (Anh - Việt)**: Ưu tiên rà soát trên văn bản tiếng Việt; trường hợp có mâu thuẫn giữa 2 ngôn ngữ, cảnh báo nguy cơ theo quy định giải thích hợp đồng tại Điều 404 BLDS 2015.
+
 

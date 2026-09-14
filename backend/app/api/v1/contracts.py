@@ -13,6 +13,7 @@ from app.engine.risk_analyzer import LegalRiskAnalyzer
 from app.engine.sample_contracts import get_sample_contracts_summary, get_sample_contract_analysis
 from app.engine.docx_generator import ContractDocxGenerator
 from app.engine.comparator import ContractComparator
+from app.engine.annex_generator import ContractAnnexGenerator
 
 router = APIRouter(prefix="/contracts", tags=["Contracts"])
 
@@ -61,6 +62,44 @@ async def export_contract_redline_docx(contract_id: str):
     
     clean_title = "".join(c for c in report.contract_title if c.isalnum() or c in (" ", "_", "-")).rstrip()[:30]
     filename = f"LegalAI_Redline_{clean_title}.docx"
+
+    return StreamingResponse(
+        docx_stream,
+        media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        headers={"Content-Disposition": f'attachment; filename="{filename}"'}
+    )
+
+@router.get("/{contract_id}/annex/preview")
+async def preview_contract_annex(contract_id: str):
+    """
+    Xem trước dữ liệu cấu trúc Phụ lục sửa đổi bổ sung hợp đồng (Điều 403 BLDS 2015).
+    """
+    report = await get_contract_report(contract_id)
+    return ContractAnnexGenerator.generate_annex_data(report)
+
+@router.get("/{contract_id}/export/annex")
+async def export_contract_annex_docx(
+    contract_id: str,
+    party_a: str = "BÊN GIAO VIỆC / BÊN A",
+    party_b: str = "BÊN THỰC HIỆN / BÊN B",
+    annex_no: str = "01",
+    contract_no: str = "HĐ-2026/01"
+):
+    """
+    Xuất file Word (.docx) PHỤ LỤC HỢP ĐỒNG SỬA ĐỔI, BỔ SUNG chuẩn văn bản hành chính Việt Nam (NĐ 30/2020/NĐ-CP).
+    Có sẵn khung ký tên đóng dấu 2 bên để in ra ký ngay.
+    """
+    report = await get_contract_report(contract_id)
+    docx_stream = ContractAnnexGenerator.generate_annex_docx(
+        report=report,
+        party_a_name=party_a,
+        party_b_name=party_b,
+        annex_number=annex_no,
+        contract_number=contract_no
+    )
+
+    clean_title = "".join(c for c in report.contract_title if c.isalnum() or c in (" ", "_", "-")).rstrip()[:30]
+    filename = f"LegalAI_PhuLucSuaDoi_{clean_title}.docx"
 
     return StreamingResponse(
         docx_stream,

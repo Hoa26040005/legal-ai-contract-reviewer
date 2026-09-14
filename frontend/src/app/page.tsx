@@ -8,6 +8,7 @@ import { RiskPanel } from '../components/RiskPanel';
 import { KnowledgeGraphModal } from '../components/KnowledgeGraphModal';
 import { UploadModal } from '../components/UploadModal';
 import { VersionDiffModal } from '../components/VersionDiffModal';
+import { ContractAnnexModal } from '../components/ContractAnnexModal';
 import { fetchSampleContracts, fetchContractReport, downloadContractDocx } from '../lib/api';
 import { ContractAnalysisReport, ContractSummaryItem, RiskLevel } from '../types/contract';
 import { Loader2, AlertCircle, Sparkles, FileText, CheckCircle2 } from 'lucide-react';
@@ -27,6 +28,7 @@ export default function Home() {
   const [isGraphOpen, setIsGraphOpen] = useState<boolean>(false);
   const [isUploadOpen, setIsUploadOpen] = useState<boolean>(false);
   const [isDiffOpen, setIsDiffOpen] = useState<boolean>(false);
+  const [isAnnexOpen, setIsAnnexOpen] = useState<boolean>(false);
 
   // 1. Initial Load: Fetch sample list and first contract
   useEffect(() => {
@@ -151,6 +153,7 @@ export default function Home() {
         onOpenUpload={() => setIsUploadOpen(true)}
         onOpenGraph={() => setIsGraphOpen(true)}
         onOpenDiff={() => setIsDiffOpen(true)}
+        onOpenAnnex={() => setIsAnnexOpen(true)}
         onExportReport={handleExportReport}
         onExportDocx={handleExportDocx}
       />
@@ -219,6 +222,12 @@ export default function Home() {
       <VersionDiffModal
         isOpen={isDiffOpen}
         onClose={() => setIsDiffOpen(false)}
+      />
+
+      <ContractAnnexModal
+        isOpen={isAnnexOpen}
+        onClose={() => setIsAnnexOpen(false)}
+        report={report}
       />
     </main>
   );

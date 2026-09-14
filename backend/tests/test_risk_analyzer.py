@@ -1,4 +1,3 @@
-import pytest
 from app.models.schemas import Clause, BoundingBox, RiskLevel
 from app.engine.risk_analyzer import LegalRiskAnalyzer
 

@@ -95,3 +95,48 @@ export async function compareTwoContracts(file1: File, file2: File): Promise<any
   return await res.json();
 }
 
+export async function fetchAnnexPreview(contractId: string): Promise<any> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/contracts/${contractId}/annex/preview`, { cache: 'no-store' });
+    if (!res.ok) throw new Error('API Error');
+    return await res.json();
+  } catch (err) {
+    console.warn('Backend chưa bật, sinh dữ liệu preview phụ lục tạm thời.');
+    return null;
+  }
+}
+
+export async function downloadContractAnnex(
+  contractId: string,
+  title: string,
+  partyA: string = 'BÊN GIAO VIỆC / BÊN A',
+  partyB: string = 'BÊN THỰC HIỆN / BÊN B',
+  annexNo: string = '01',
+  contractNo: string = 'HĐ-2026/01'
+): Promise<void> {
+  try {
+    const params = new URLSearchParams({
+      party_a: partyA,
+      party_b: partyB,
+      annex_no: annexNo,
+      contract_no: contractNo,
+    });
+    const res = await fetch(`${API_BASE_URL}/contracts/${contractId}/export/annex?${params.toString()}`);
+    if (!res.ok) throw new Error('Không thể tải file Phụ lục Word từ máy chủ');
+
+    const blob = await res.blob();
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `LegalAI_PhuLuc_${title.slice(0, 20)}.docx`;
+    document.body.appendChild(a);
+    a.click();
+    window.URL.revokeObjectURL(url);
+    a.remove();
+  } catch (err) {
+    console.warn('Lỗi tải file Word phụ lục:', err);
+    alert('Tính năng tải trực tiếp .docx yêu cầu Backend FastAPI đang chạy (port 8000).');
+  }
+}
+
+
