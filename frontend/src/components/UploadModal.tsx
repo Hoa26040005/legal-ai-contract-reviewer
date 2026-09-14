@@ -1,8 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
-import { X, UploadCloud, FileText, Loader2, AlertCircle } from 'lucide-react';
-import { uploadContractPdf } from '../lib/api';
+import { X, UploadCloud, FileText, Loader2, AlertCircle, Camera, Image as ImageIcon } from 'lucide-react';
+import { uploadContractFile } from '../lib/api';
 import { ContractAnalysisReport } from '../types/contract';
 
 interface UploadModalProps {
@@ -10,6 +10,8 @@ interface UploadModalProps {
   onClose: () => void;
   onUploadSuccess: (report: ContractAnalysisReport) => void;
 }
+
+const ACCEPTED_TYPES = ['.pdf', '.jpg', '.jpeg', '.png', '.webp'];
 
 export const UploadModal: React.FC<UploadModalProps> = ({
   isOpen,
@@ -22,28 +24,26 @@ export const UploadModal: React.FC<UploadModalProps> = ({
 
   if (!isOpen) return null;
 
+  const validateFile = (selected: File) => {
+    const isSupported = ACCEPTED_TYPES.some((ext) => selected.name.toLowerCase().endsWith(ext));
+    if (isSupported) {
+      setFile(selected);
+      setErrorMessage(null);
+    } else {
+      setErrorMessage('Hệ thống hỗ trợ tệp PDF hoặc ảnh chụp hợp đồng (.jpg, .jpeg, .png, .webp).');
+    }
+  };
+
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      const selected = e.dataTransfer.files[0];
-      if (selected.name.toLowerCase().endsWith('.pdf')) {
-        setFile(selected);
-        setErrorMessage(null);
-      } else {
-        setErrorMessage('Vui lòng chỉ tải lên tệp định dạng .PDF');
-      }
+      validateFile(e.dataTransfer.files[0]);
     }
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      const selected = e.target.files[0];
-      if (selected.name.toLowerCase().endsWith('.pdf')) {
-        setFile(selected);
-        setErrorMessage(null);
-      } else {
-        setErrorMessage('Vui lòng chỉ tải lên tệp định dạng .PDF');
-      }
+      validateFile(e.target.files[0]);
     }
   };
 
@@ -53,7 +53,7 @@ export const UploadModal: React.FC<UploadModalProps> = ({
     setErrorMessage(null);
 
     try {
-      const report = await uploadContractPdf(file);
+      const report = await uploadContractFile(file);
       setIsUploading(false);
       onUploadSuccess(report);
       onClose();
@@ -63,23 +63,25 @@ export const UploadModal: React.FC<UploadModalProps> = ({
     }
   };
 
+  const isImageFile = file && !file.name.toLowerCase().endsWith('.pdf');
+
   return (
-    <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-      <div className="bg-legal-900 border border-legal-700 w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-150">
+    <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+      <div className="bg-[#0a0f1d] border border-white/10 w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-150">
         {/* Modal Header */}
-        <div className="p-5 border-b border-legal-800 flex items-center justify-between">
-          <div className="flex items-center gap-2.5">
-            <div className="p-2 rounded-lg bg-blue-500/20 text-blue-400 border border-blue-500/30">
+        <div className="p-5 border-b border-white/[0.08] flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="p-2.5 rounded-xl bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
               <UploadCloud className="w-5 h-5" />
             </div>
             <div>
               <h3 className="text-sm font-bold text-white">Tải Lên Hợp Đồng Cần Rà Soát</h3>
-              <p className="text-xs text-slate-400">Tự động OCR, Bẻ nhỏ điều khoản & Phân tích rủi ro</p>
+              <p className="text-xs text-slate-400">Hỗ trợ file PDF và Ảnh Chụp Điện Thoại / Bản Scan</p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg hover:bg-legal-800 text-slate-400 hover:text-white"
+            className="p-1.5 rounded-lg hover:bg-white/[0.08] text-slate-400 hover:text-white"
           >
             <X className="w-5 h-5" />
           </button>
@@ -87,44 +89,63 @@ export const UploadModal: React.FC<UploadModalProps> = ({
 
         {/* Modal Body */}
         <div className="p-6">
-          {/* Drag and drop zone */}
+          {/* Dropzone */}
           <div
             onDragOver={(e) => e.preventDefault()}
             onDrop={handleDrop}
-            className={`border-2 border-dashed rounded-xl p-8 text-center transition-all cursor-pointer ${
+            className={`border-2 border-dashed rounded-2xl p-8 text-center transition-all cursor-pointer ${
               file
-                ? 'border-blue-500 bg-blue-500/10'
-                : 'border-legal-700 hover:border-blue-500/60 bg-legal-950/40 hover:bg-legal-950/80'
+                ? 'border-cyan-500 bg-cyan-500/10'
+                : 'border-white/15 hover:border-cyan-500/60 bg-white/[0.02] hover:bg-white/[0.04]'
             }`}
             onClick={() => document.getElementById('contract-file-input')?.click()}
           >
             <input
               id="contract-file-input"
               type="file"
-              accept=".pdf"
+              accept=".pdf,.jpg,.jpeg,.png,.webp"
               className="hidden"
               onChange={handleFileChange}
             />
 
             {file ? (
               <div className="flex flex-col items-center">
-                <FileText className="w-10 h-10 text-blue-400 mb-2" />
-                <p className="text-sm font-semibold text-white">{file.name}</p>
-                <p className="text-xs text-slate-400 mt-1">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
+                {isImageFile ? (
+                  <ImageIcon className="w-12 h-12 text-cyan-400 mb-2" />
+                ) : (
+                  <FileText className="w-12 h-12 text-cyan-400 mb-2" />
+                )}
+                <p className="text-sm font-bold text-white">{file.name}</p>
+                <div className="flex items-center gap-2 mt-1 text-xs text-slate-400">
+                  <span>{(file.size / 1024 / 1024).toFixed(2)} MB</span>
+                  <span>•</span>
+                  <span className="text-cyan-300 font-semibold font-mono">
+                    {isImageFile ? 'OCR Ảnh Chụp (Tự động khử mờ)' : 'Văn Bản PDF'}
+                  </span>
+                </div>
               </div>
             ) : (
               <div className="flex flex-col items-center">
-                <UploadCloud className="w-10 h-10 text-slate-400 mb-3" />
-                <p className="text-sm font-medium text-slate-200">
-                  Kéo thả file PDF hợp đồng vào đây, hoặc <span className="text-blue-400 underline">chọn từ máy tính</span>
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="p-3 rounded-2xl bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
+                    <FileText className="w-6 h-6" />
+                  </div>
+                  <div className="p-3 rounded-2xl bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
+                    <Camera className="w-6 h-6" />
+                  </div>
+                </div>
+                <p className="text-sm font-semibold text-slate-200">
+                  Kéo thả file PDF hoặc <span className="text-cyan-400 underline">ảnh chụp từ điện thoại</span> vào đây
                 </p>
-                <p className="text-xs text-slate-500 mt-1">Hỗ trợ định dạng PDF (Text và Scan OCR)</p>
+                <p className="text-xs text-slate-500 mt-1.5">
+                  Định dạng hỗ trợ: PDF, JPG, JPEG, PNG, WEBP (Tự động deskew & tăng tương phản)
+                </p>
               </div>
             )}
           </div>
 
           {errorMessage && (
-            <div className="mt-4 p-3 rounded-lg bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs flex items-center gap-2">
+            <div className="mt-4 p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs flex items-center gap-2">
               <AlertCircle className="w-4 h-4 shrink-0" />
               <span>{errorMessage}</span>
             </div>
@@ -135,19 +156,19 @@ export const UploadModal: React.FC<UploadModalProps> = ({
             <button
               onClick={onClose}
               disabled={isUploading}
-              className="px-4 py-2 rounded-lg text-xs font-semibold text-slate-300 hover:bg-legal-800 transition-colors"
+              className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:bg-white/[0.06] transition-colors"
             >
               Hủy bỏ
             </button>
             <button
               onClick={handleStartAnalysis}
               disabled={!file || isUploading}
-              className="flex items-center gap-2 px-5 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 disabled:opacity-50 disabled:cursor-not-allowed text-white text-xs font-semibold shadow-lg shadow-blue-500/20 transition-all"
+              className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-cyan-600 hover:bg-cyan-500 disabled:opacity-50 disabled:cursor-not-allowed text-white text-xs font-bold shadow-lg shadow-cyan-500/20 transition-all"
             >
               {isUploading ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin" />
-                  <span>Đang xử lý AI & OCR...</span>
+                  <span>Đang xử lý OCR & Thẩm định Luật...</span>
                 </>
               ) : (
                 <span>Bắt Đầu Rà Soát Rủi Ro</span>

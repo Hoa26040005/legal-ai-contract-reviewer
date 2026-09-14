@@ -7,7 +7,7 @@ import { PDFViewer } from '../components/PDFViewer';
 import { RiskPanel } from '../components/RiskPanel';
 import { KnowledgeGraphModal } from '../components/KnowledgeGraphModal';
 import { UploadModal } from '../components/UploadModal';
-import { fetchSampleContracts, fetchContractReport } from '../lib/api';
+import { fetchSampleContracts, fetchContractReport, downloadContractDocx } from '../lib/api';
 import { ContractAnalysisReport, ContractSummaryItem, RiskLevel } from '../types/contract';
 import { Loader2, AlertCircle, Sparkles, FileText, CheckCircle2 } from 'lucide-react';
 
@@ -106,6 +106,12 @@ export default function Home() {
     downloadAnchor.remove();
   };
 
+  // 6. Export Word Track Changes (.docx)
+  const handleExportDocx = () => {
+    if (!report) return;
+    downloadContractDocx(report.contract_id, report.contract_title);
+  };
+
   if (loading && !report) {
     return (
       <div className="min-h-screen bg-[#060913] flex flex-col items-center justify-center text-slate-300">
@@ -143,6 +149,7 @@ export default function Home() {
         onOpenUpload={() => setIsUploadOpen(true)}
         onOpenGraph={() => setIsGraphOpen(true)}
         onExportReport={handleExportReport}
+        onExportDocx={handleExportDocx}
       />
 
       {/* 2. Executive Summary Callout Banner */}
