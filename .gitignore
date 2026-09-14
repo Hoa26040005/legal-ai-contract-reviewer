@@ -21,6 +21,7 @@ out/
 build/
 dist/
 *.egg-info/
+*.tsbuildinfo
 
 # Logs & Runtime
 *.log
