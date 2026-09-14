@@ -9,6 +9,7 @@ import { KnowledgeGraphModal } from '../components/KnowledgeGraphModal';
 import { UploadModal } from '../components/UploadModal';
 import { VersionDiffModal } from '../components/VersionDiffModal';
 import { ContractAnnexModal } from '../components/ContractAnnexModal';
+import { LitigationPredictionModal } from '../components/LitigationPredictionModal';
 import { fetchSampleContracts, fetchContractReport, downloadContractDocx } from '../lib/api';
 import { ContractAnalysisReport, ContractSummaryItem, RiskLevel } from '../types/contract';
 import { Loader2, AlertCircle, Sparkles, FileText, CheckCircle2 } from 'lucide-react';
@@ -29,6 +30,7 @@ export default function Home() {
   const [isUploadOpen, setIsUploadOpen] = useState<boolean>(false);
   const [isDiffOpen, setIsDiffOpen] = useState<boolean>(false);
   const [isAnnexOpen, setIsAnnexOpen] = useState<boolean>(false);
+  const [isLitigationOpen, setIsLitigationOpen] = useState<boolean>(false);
 
   // 1. Initial Load: Fetch sample list and first contract
   useEffect(() => {
@@ -154,6 +156,7 @@ export default function Home() {
         onOpenGraph={() => setIsGraphOpen(true)}
         onOpenDiff={() => setIsDiffOpen(true)}
         onOpenAnnex={() => setIsAnnexOpen(true)}
+        onOpenLitigation={() => setIsLitigationOpen(true)}
         onExportReport={handleExportReport}
         onExportDocx={handleExportDocx}
       />
@@ -227,6 +230,12 @@ export default function Home() {
       <ContractAnnexModal
         isOpen={isAnnexOpen}
         onClose={() => setIsAnnexOpen(false)}
+        report={report}
+      />
+
+      <LitigationPredictionModal
+        isOpen={isLitigationOpen}
+        onClose={() => setIsLitigationOpen(false)}
         report={report}
       />
     </main>

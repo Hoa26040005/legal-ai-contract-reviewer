@@ -5,7 +5,7 @@ from fastapi import APIRouter, UploadFile, File, HTTPException
 from fastapi.responses import StreamingResponse
 from app.models.schemas import (
     ContractSummaryItem, ContractAnalysisReport, KnowledgeGraphData,
-    ContractComparisonReport
+    ContractComparisonReport, PrecedentCase, LitigationPredictionReport
 )
 from app.engine.parser import DocumentParser
 from app.engine.chunker import VietnameseLegalChunker
@@ -14,6 +14,7 @@ from app.engine.sample_contracts import get_sample_contracts_summary, get_sample
 from app.engine.docx_generator import ContractDocxGenerator
 from app.engine.comparator import ContractComparator
 from app.engine.annex_generator import ContractAnnexGenerator
+from app.engine.precedent_engine import PrecedentLitigationEngine
 
 router = APIRouter(prefix="/contracts", tags=["Contracts"])
 
@@ -187,4 +188,20 @@ async def compare_two_contracts(
     title_v2 = (file_v2.filename or "Bản V2").rsplit(".", 1)[0]
 
     return ContractComparator.compare_contracts(title_v1, clauses_v1, title_v2, clauses_v2)
+
+@router.get("/precedents/library", response_model=List[PrecedentCase])
+async def list_court_precedents():
+    """
+    Tra cứu thư viện Án lệ chính thức của Hội đồng Thẩm phán TANDTC (Nghị quyết 04/2019/NQ-HĐTP).
+    """
+    return PrecedentLitigationEngine.get_precedents_library()
+
+@router.get("/{contract_id}/litigation-prediction", response_model=LitigationPredictionReport)
+async def predict_contract_litigation_risk(contract_id: str):
+    """
+    Dự đoán tỷ lệ thua kiện / tuyên vô hiệu điều khoản và đối chiếu Án lệ TANDTC cho hợp đồng.
+    """
+    report = await get_contract_report(contract_id)
+    return PrecedentLitigationEngine.predict_contract_litigation_risk(report)
+
 

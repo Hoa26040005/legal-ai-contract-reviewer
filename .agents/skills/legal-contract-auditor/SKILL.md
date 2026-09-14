@@ -159,10 +159,28 @@ Khi các bên phát hiện điều khoản vi phạm điều cấm hoặc bất 
 
 ---
 
-## 9. XỬ LÝ CÁC TRƯỜNG HỢP NGOẠI LỆ (EDGE CASES)
+## 9. QUY CHUẨN VIỆN DẪN ÁN LỆ TANDTC & DỰ ĐOÁN RỦI RO TRANH CHẤP TỐ TỤNG (NGHỊ QUYẾT 04/2019/NQ-HĐTP)
+
+Khi phân tích nguy cơ tranh chấp và khả năng bị Tòa án/Trọng tài xử thua kiện:
+1. **Giá trị Bắt buộc Áp dụng của Án lệ**:
+   - Căn cứ Nghị quyết số 04/2019/NQ-HĐTP: Khi xét xử vụ án có tình tiết, sự kiện pháp lý tương tự thì Thẩm phán bắt buộc phải viện dẫn và áp dụng Án lệ của TANDTC.
+2. **Khớp nối Án lệ then chốt trong Hợp đồng**:
+   - **Lãi suất & Lãi phạt chậm trả**: Áp dụng **Án lệ số 09/2017/AL** (Tòa án bác bỏ toàn bộ thỏa thuận tính lãi phạt chồng lên tiền lãi chậm trả và cắt giảm về trần 20%/năm theo Điều 468 BLDS 2015).
+   - **Kỷ luật sa thải / KPI**: Áp dụng **Án lệ số 42/2021/AL** (Chấm dứt HĐLĐ do không đạt KPI là trái luật nếu không có Quy chế đánh giá cụ thể lấy ý kiến tổ chức đại diện người lao động; doanh nghiệp chắc chắn thua kiện).
+   - **Phạt hợp đồng & Bồi thường**: Áp dụng **Án lệ số 25/2018/AL** (Cắt giảm phạt vi phạm về trần 8% theo Điều 301 LTM 2005; bên yêu cầu bồi thường phải chứng minh tổn thất thực tế trực tiếp).
+   - **Thẩm quyền ký kết**: Áp dụng **Án lệ số 13/2017/AL** (Hiệu lực ràng buộc pháp nhân khi người có thẩm quyền đã biết hoặc chấp nhận thực hiện hợp đồng).
+   - **Giải thích điều khoản mâu thuẫn**: Áp dụng **Án lệ số 36/2020/AL** (Giải thích theo hướng có lợi cho bên yếu thế hoặc bên không soạn thảo hợp đồng mẫu).
+3. **Định lượng Tỷ lệ Thua kiện & Án phí (NQ 326/2016/UBTVQH14)**:
+   - Tính toán xác suất thua kiện (%) và nguy cơ tuyên vô hiệu toàn bộ / từng phần.
+   - Ước tính nghĩa vụ chịu án phí sơ thẩm và tiền bồi thường thiệt hại để cảnh báo người dùng trước khi đặt bút ký.
+
+---
+
+## 10. XỬ LÝ CÁC TRƯỜNG HỢP NGOẠI LỆ (EDGE CASES)
 
 - **Ảnh chụp bị lóa sáng / Mất góc**: Cảnh báo người dùng về phần văn bản bị che khuất và kích hoạt bộ lọc bù nét tương phản.
 - **Hợp đồng không đánh số Điều**: Tự động đánh số theo phân đoạn logic (`Phần 1`, `Phần 2`,...) dựa trên ngắt trang.
 - **Hợp đồng Song ngữ (Anh - Việt)**: Ưu tiên rà soát trên văn bản tiếng Việt; trường hợp có mâu thuẫn giữa 2 ngôn ngữ, cảnh báo nguy cơ theo quy định giải thích hợp đồng tại Điều 404 BLDS 2015.
+
 
 

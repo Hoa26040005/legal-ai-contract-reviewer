@@ -139,4 +139,16 @@ export async function downloadContractAnnex(
   }
 }
 
+export async function fetchLitigationPrediction(contractId: string): Promise<any> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/contracts/${contractId}/litigation-prediction`, { cache: 'no-store' });
+    if (!res.ok) throw new Error('API Error');
+    return await res.json();
+  } catch (err) {
+    console.warn('Backend chưa bật, sinh dữ liệu dự đoán tố tụng giả định.', err);
+    return null;
+  }
+}
+
+
 

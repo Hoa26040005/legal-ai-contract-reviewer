@@ -4,7 +4,7 @@ import React from 'react';
 import {
   ShieldAlert, Network, Upload, FileText, ChevronDown,
   Sparkles, Download, Search, CheckCircle2, AlertTriangle, AlertOctagon,
-  FileCheck, GitCompare, FileSignature
+  FileCheck, GitCompare, FileSignature, Gavel
 } from 'lucide-react';
 import { ContractSummaryItem } from '../types/contract';
 
@@ -20,6 +20,7 @@ interface HeaderProps {
   onOpenGraph: () => void;
   onOpenDiff: () => void;
   onOpenAnnex: () => void;
+  onOpenLitigation: () => void;
   onExportReport: () => void;
   onExportDocx: () => void;
 }
@@ -36,6 +37,7 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenGraph,
   onOpenDiff,
   onOpenAnnex,
+  onOpenLitigation,
   onExportReport,
   onExportDocx,
 }) => {
@@ -150,6 +152,16 @@ export const Header: React.FC<HeaderProps> = ({
         >
           <FileSignature className="w-3.5 h-3.5 text-emerald-400" />
           <span className="hidden md:inline">Tạo Phụ Lục</span>
+        </button>
+
+        {/* Supreme Court Precedent & Litigation Loss Predictor Button */}
+        <button
+          onClick={onOpenLitigation}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-purple-500/15 hover:bg-purple-500/25 border border-purple-500/35 text-purple-300 text-xs font-semibold transition-all hover:glow-purple shadow-sm"
+          title="Dự báo tỷ lệ thua kiện và đối chiếu Án lệ của Hội đồng Thẩm phán TANDTC"
+        >
+          <Gavel className="w-3.5 h-3.5 text-purple-400" />
+          <span className="hidden lg:inline">Dự Báo Án Lệ</span>
         </button>
 
         {/* Word Docx Track Changes Button */}

@@ -102,3 +102,35 @@ class ContractComparisonReport(BaseModel):
     resolved_risks_count: int
     diff_items: List[ClauseDiffItem]
 
+class PrecedentCase(BaseModel):
+    case_code: str          # Ví dụ: "Án lệ số 09/2017/AL"
+    case_title: str         # Tiêu đề án lệ
+    court: str              # Hội đồng Thẩm phán TANDTC
+    adopted_date: str       # Ngày thông qua
+    summary_situation: str  # Khái quát tình huống án lệ
+    ruling: str             # Giải pháp pháp lý / Phán quyết của Tòa án
+    applicable_topic: str   # Lĩnh vực áp dụng (Lãi suất, Kỷ luật, Bồi thường...)
+
+class ClauseLitigationRisk(BaseModel):
+    clause_number: str
+    clause_title: str
+    loss_probability: int   # Tỷ lệ thua kiện / bị tuyên vô hiệu (0-100%)
+    invalidation_risk: str  # "Toàn bộ" | "Một phần" | "Không"
+    relevant_precedent: Optional[PrecedentCase] = None
+    dispute_scenario: str   # Tình huống tranh chấp giả định nếu ra Tòa
+    court_ruling_forecast: str # Dự báo phán quyết của Thẩm phán
+    estimated_court_fee: str   # Ước tính án phí sơ thẩm (Nghị quyết 326/2016)
+    recommendation: str     # Lời khuyên chiến lược tranh tụng
+
+class LitigationPredictionReport(BaseModel):
+    contract_id: str
+    contract_title: str
+    overall_litigation_risk: int # Điểm rủi ro tố tụng tổng thể (0 = Rất an toàn, 100 = Chắc chắn thua kiện)
+    risk_assessment: str         # "CỰC KỲ NGUY HIỂM" | "RỦI RO CAO" | "TRUNG BÌNH" | "AN TOÀN"
+    summary: str
+    total_disputed_clauses: int
+    high_risk_clauses_count: int
+    estimated_total_loss: str
+    clauses_risks: List[ClauseLitigationRisk]
+
+

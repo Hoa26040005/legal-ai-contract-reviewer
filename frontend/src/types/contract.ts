@@ -100,3 +100,38 @@ export interface ContractComparisonReport {
   diff_items: ClauseDiffItem[];
 }
 
+export interface PrecedentCase {
+  case_code: string;
+  case_title: string;
+  court: string;
+  adopted_date: string;
+  summary_situation: string;
+  ruling: string;
+  applicable_topic: string;
+}
+
+export interface ClauseLitigationRisk {
+  clause_number: string;
+  clause_title: string;
+  loss_probability: number;
+  invalidation_risk: string;
+  relevant_precedent?: PrecedentCase | null;
+  dispute_scenario: string;
+  court_ruling_forecast: string;
+  estimated_court_fee: string;
+  recommendation: string;
+}
+
+export interface LitigationPredictionReport {
+  contract_id: string;
+  contract_title: string;
+  overall_litigation_risk: number;
+  risk_assessment: string;
+  summary: string;
+  total_disputed_clauses: number;
+  high_risk_clauses_count: number;
+  estimated_total_loss: string;
+  clauses_risks: ClauseLitigationRisk[];
+}
+
+
