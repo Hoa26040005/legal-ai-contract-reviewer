@@ -320,5 +320,47 @@
     "risk_level": "HIGH",
     "statute_source": "Nghị định số 13/2023/NĐ-CP",
     "created_at": "2026-01-01T00:00:00"
+  },
+  {
+    "code": "LUTGIAOD_D10",
+    "law": "Điều 10, Luật Giao dịch điện tử 2023",
+    "topic": "Giá trị pháp lý của thông điệp dữ liệu thay thế văn bản giấy",
+    "rule": "Thông điệp dữ liệu có giá trị như văn bản nếu thông tin chứa trong thông điệp dữ liệu đó có thể truy cập và sử dụng được để tham chiếu khi cần thiết. Không phủ nhận giá trị pháp lý chỉ vì hợp đồng được thể hiện dưới dạng điện tử.",
+    "category": "Công nghệ & Dữ liệu",
+    "keywords": [
+      "giá trị pháp lý của thông điệp dữ liệu thay thế văn bản giấy",
+      "giá trị pháp lý của thông điệp dữ liệu thay thế văn bản giấy"
+    ],
+    "risk_level": "HIGH",
+    "statute_source": "Luật Giao dịch điện tử 2023 (LGDDT_auto_ingested.txt)",
+    "created_at": "2026-09-14T12:59:40.564000"
+  },
+  {
+    "code": "LUTGIAOD_D22",
+    "law": "Điều 22, Luật Giao dịch điện tử 2023",
+    "topic": "Chữ ký điện tử chuyên dùng và Chữ ký số an toàn",
+    "rule": "Chữ ký số là chữ ký điện tử an toàn đáp ứng các điều kiện: được tạo ra trong thời gian chứng thư chữ ký số có hiệu lực; gắn duy nhất với người ký và dữ liệu ký không bị sửa đổi.",
+    "category": "Công nghệ & Dữ liệu",
+    "keywords": [
+      "chữ ký điện tử chuyên dùng và chữ ký số an toàn",
+      "chữ ký điện tử chuyên dùng và chữ ký số an toàn"
+    ],
+    "risk_level": "HIGH",
+    "statute_source": "Luật Giao dịch điện tử 2023 (LGDDT_auto_ingested.txt)",
+    "created_at": "2026-09-14T12:59:40.564000"
+  },
+  {
+    "code": "LUTGIAOD_D34",
+    "law": "Điều 34, Luật Giao dịch điện tử 2023",
+    "topic": "Giao kết và thực hiện hợp đồng điện tử",
+    "rule": "Giao kết hợp đồng điện tử là việc sử dụng thông điệp dữ liệu để tiến hành một phần hoặc toàn bộ quy trình giao kết hợp đồng. Hợp đồng điện tử được giao kết theo nguyên tắc tự nguyện, bình đẳng và tuân thủ các quy định của Bộ luật Dân sự.",
+    "category": "Công nghệ & Dữ liệu",
+    "keywords": [
+      "giao kết và thực hiện hợp đồng điện tử",
+      "giao kết và thực hiện hợp đồng điện tử"
+    ],
+    "risk_level": "HIGH",
+    "statute_source": "Luật Giao dịch điện tử 2023 (LGDDT_auto_ingested.txt)",
+    "created_at": "2026-09-14T12:59:40.564000"
   }
 ]

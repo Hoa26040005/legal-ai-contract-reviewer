@@ -397,7 +397,7 @@ class LegalLibraryManager:
         )
 
     @classmethod
-    def ingest_statute_text(cls, filename: str, text: str, statute_title: str, category: str) -> StatuteUploadResponse:
+    def ingest_statute_text(cls, filename: str, text: str, statute_title: str, category: str, custom_prefix: Optional[str] = None) -> StatuteUploadResponse:
         """
         Phân tích văn bản quy phạm pháp luật toàn văn, bóc tách các Điều/Khoản
         và tự động tạo các bản ghi quy tắc pháp lý vào thư viện.
@@ -417,7 +417,7 @@ class LegalLibraryManager:
         now_iso = datetime.now().isoformat()
         current_laws = {l.code: l for l in cls.get_all_laws()}
 
-        clean_statute_code = re.sub(r'[^a-zA-Z0-9]', '', statute_title)[:8].upper() or "LUAT"
+        clean_statute_code = custom_prefix or (re.sub(r'[^a-zA-Z0-9]', '', statute_title)[:8].upper() or "LUAT")
 
         for match in matches:
             full_header = match.group(1).strip()

@@ -191,3 +191,25 @@ class StatuteUploadResponse(BaseModel):
     articles_extracted: int
     category: str
     message: str
+
+class NationalStatuteItem(BaseModel):
+    id: str
+    title: str
+    official_number: str
+    effective_date: str
+    category: str
+    description: str
+    articles_count: int
+    is_ingested: bool = False
+
+class AutoIngestRequest(BaseModel):
+    statute_id: Optional[str] = None
+    search_query: Optional[str] = None
+    category: Optional[str] = None
+
+class AutoIngestResponse(BaseModel):
+    statute_title: str
+    articles_ingested: int
+    category: str
+    message: str
+    ingested_codes: List[str]

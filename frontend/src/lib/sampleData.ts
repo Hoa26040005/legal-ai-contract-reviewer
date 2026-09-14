@@ -177,13 +177,13 @@ export const SAMPLE_REPORTS: Record<string, ContractAnalysisReport> = {
         clause_id: "clause_5",
         clause_number: "Điều 5",
         risk_level: "HIGH",
-        risk_title="Thỏa thuận Không Cạnh tranh (NCA) 03 năm không đền bù, vi phạm quyền tự do việc làm",
-        risk_category="Thỏa thuận Không Cạnh Tranh & NDA",
-        description="Cấm người lao động làm việc trong toàn bộ ngành CNTT trong 03 năm mà không có khoản trợ cấp tài chính bù đắp vi phạm quyền tự do làm việc của công dân theo Hiến pháp 2013 và Điều 5 BLLD 2019.",
+        risk_title: "Thỏa thuận Không Cạnh tranh (NCA) 03 năm không đền bù, vi phạm quyền tự do việc làm",
+        risk_category: "Thỏa thuận Không Cạnh Tranh & NDA",
+        description: "Cấm người lao động làm việc trong toàn bộ ngành CNTT trong 03 năm mà không có khoản trợ cấp tài chính bù đắp vi phạm quyền tự do làm việc của công dân theo Hiến pháp 2013 và Điều 5 BLLD 2019.",
         legal_basis: "Điều 21.2 Bộ luật Lao động 2019 & Điều 35 Hiến pháp 2013",
         original_text: "Sau khi chấm dứt hợp đồng lao động vì bất kỳ lý do gì, Người lao động cam kết cấm làm việc cho bất kỳ công ty nào trong ngành công nghệ thông tin hoặc đối thủ cạnh tranh trong thời hạn 03 năm kể từ ngày nghỉ việc.",
         suggested_text: "Người lao động cam kết trong vòng 12 (mười hai) tháng kể từ ngày chấm dứt HĐLĐ không làm việc cho các đối thủ cạnh tranh trực tiếp có cùng dải sản phẩm AI với Công ty. Trong thời gian 12 tháng này, Công ty có trách nhiệm chi trả cho Người lao động khoản trợ cấp không cạnh tranh hàng tháng bằng 50% mức lương bình quân 06 tháng gần nhất.",
-        rationale="Giới hạn thời gian cấm cạnh tranh xuống 12 tháng và bổ sung khoản bù đắp tài chính hợp lệ cho người lao động.",
+        rationale: "Giới hạn thời gian cấm cạnh tranh xuống 12 tháng và bổ sung khoản bù đắp tài chính hợp lệ cho người lao động.",
         bounding_boxes: [{ page: 3, x0: 0.1, y0: 0.22, x1: 0.9, y1: 0.38 }]
       }
     ],

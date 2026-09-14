@@ -198,3 +198,28 @@ export interface StatuteUploadResponse {
   category: string;
   message: string;
 }
+
+export interface NationalStatuteItem {
+  id: string;
+  title: string;
+  official_number: string;
+  effective_date: string;
+  category: string;
+  description: string;
+  articles_count: number;
+  is_ingested: boolean;
+}
+
+export interface AutoIngestRequest {
+  statute_id?: string;
+  search_query?: string;
+  category?: string;
+}
+
+export interface AutoIngestResponse {
+  statute_title: string;
+  articles_ingested: number;
+  category: string;
+  message: string;
+  ingested_codes: string[];
+}

@@ -2,7 +2,8 @@ from fastapi import APIRouter, HTTPException, Query, UploadFile, File, Form
 from typing import List, Optional
 from app.models.schemas import (
     LegalRuleItem, LegalRuleCreate, LegalRuleUpdate,
-    LegalLibraryStats, StatuteUploadResponse
+    LegalLibraryStats, StatuteUploadResponse,
+    NationalStatuteItem, AutoIngestRequest, AutoIngestResponse
 )
 from app.engine.legal_library_manager import LegalLibraryManager
 
@@ -117,3 +118,25 @@ async def upload_statute_document(
     )
 
     return response
+
+@router.get("/auto-ingest/catalog", response_model=List[NationalStatuteItem])
+async def get_national_statutes_catalog():
+    """
+    Lấy danh mục các văn bản luật quốc gia mới nhất trong kho dữ liệu,
+    kèm trạng thái đã nạp / sẵn sàng nạp tự động 1-click.
+    """
+    from app.engine.auto_ingest_engine import AutoIngestEngine
+    return AutoIngestEngine.get_national_catalog()
+
+@router.post("/auto-ingest/fetch", response_model=AutoIngestResponse)
+async def auto_fetch_and_ingest_statute(req: AutoIngestRequest):
+    """
+    Tự động tìm kiếm, thu thập nội dung toàn văn và bóc tách các điều khoản
+    nạp thẳng vào Thư Viện Luật & RAG Engine.
+    """
+    from app.engine.auto_ingest_engine import AutoIngestEngine
+    try:
+        return AutoIngestEngine.auto_ingest(req)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Lỗi khi tự động nạp văn bản: {str(e)}")
+

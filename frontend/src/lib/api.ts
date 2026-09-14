@@ -401,3 +401,102 @@ export async function uploadStatuteDocument(
 
   return await res.json();
 }
+
+export async function fetchNationalCatalog(): Promise<import('../types/contract').NationalStatuteItem[]> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/laws/auto-ingest/catalog`, { cache: 'no-store' });
+    if (!res.ok) throw new Error('API Error');
+    return await res.json();
+  } catch (err) {
+    console.warn('Backend chưa bật, dùng catalog mẫu.');
+    return [
+      {
+        id: "statute_land_2024",
+        title: "Luật Đất đai 2024",
+        official_number: "31/2024/QH15",
+        effective_date: "01/08/2024",
+        category: "Đất đai & BĐS",
+        description: "Đạo luật then chốt điều chỉnh toàn bộ quyền sử dụng đất, điều kiện chuyển nhượng, cấp sổ đỏ và đăng ký biến động đất đai.",
+        articles_count: 3,
+        is_ingested: true
+      },
+      {
+        id: "statute_housing_2023",
+        title: "Luật Nhà ở 2023",
+        official_number: "27/2023/QH15",
+        effective_date: "01/08/2024",
+        category: "Đất đai & BĐS",
+        description: "Quy định điều kiện pháp lý giao dịch nhà ở thương mại, mua bán nhà ở hình thành trong tương lai và quản lý căn hộ chung cư.",
+        articles_count: 2,
+        is_ingested: true
+      },
+      {
+        id: "statute_real_estate_2023",
+        title: "Luật Kinh doanh Bất động sản 2023",
+        official_number: "29/2023/QH15",
+        effective_date: "01/08/2024",
+        category: "Đất đai & BĐS",
+        description: "Siết chặt mức trần tiền đặt cọc nhà ở hình thành trong tương lai tối đa 5% và mẫu hợp đồng kinh doanh BĐS bắt buộc.",
+        articles_count: 2,
+        is_ingested: false
+      },
+      {
+        id: "statute_e_transaction_2023",
+        title: "Luật Giao dịch điện tử 2023",
+        official_number: "20/2023/QH15",
+        effective_date: "01/07/2024",
+        category: "Công nghệ & Dữ liệu",
+        description: "Xác lập giá trị pháp lý tương đương bản gốc của thông điệp dữ liệu, hợp đồng điện tử và chữ ký số an toàn.",
+        articles_count: 3,
+        is_ingested: false
+      },
+      {
+        id: "statute_labor_decree_12",
+        title: "Nghị định 12/2022/NĐ-CP",
+        official_number: "12/2022/NĐ-CP",
+        effective_date: "17/01/2022",
+        category: "Lao động",
+        description: "Khung chế tài xử phạt vi phạm hành chính trong lĩnh vực lao động, bảo hiểm xã hội, đưa người lao động đi làm việc ở nước ngoài.",
+        articles_count: 2,
+        is_ingested: false
+      },
+      {
+        id: "statute_data_protection_13",
+        title: "Nghị định 13/2023/NĐ-CP",
+        official_number: "13/2023/NĐ-CP",
+        effective_date: "01/07/2023",
+        category: "Công nghệ & Dữ liệu",
+        description: "Nghị định đầu tiên của Việt Nam về Bảo vệ Dữ liệu Cá nhân (PDPD), áp dụng cho mọi doanh nghiệp xử lý dữ liệu nhân viên và khách hàng.",
+        articles_count: 2,
+        is_ingested: true
+      },
+      {
+        id: "statute_ip_2022",
+        title: "Luật Sở hữu trí tuệ 2022",
+        official_number: "07/2022/QH15",
+        effective_date: "01/01/2023",
+        category: "Sở hữu trí tuệ",
+        description: "Bảo hộ bản quyền phần mềm, mã nguồn, thuật toán AI và cơ chế giải quyết tranh chấp quyền sở hữu công nghiệp.",
+        articles_count: 2,
+        is_ingested: true
+      }
+    ];
+  }
+}
+
+export async function autoIngestStatute(
+  req: import('../types/contract').AutoIngestRequest
+): Promise<import('../types/contract').AutoIngestResponse> {
+  const res = await fetch(`${API_BASE_URL}/laws/auto-ingest/fetch`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(req)
+  });
+
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({}));
+    throw new Error(errData.detail || 'Lỗi khi tự động nạp văn bản luật');
+  }
+
+  return await res.json();
+}
