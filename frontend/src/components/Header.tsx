@@ -4,7 +4,7 @@ import React from 'react';
 import {
   ShieldAlert, Network, Upload, FileText, ChevronDown,
   Sparkles, Download, Search, CheckCircle2, AlertTriangle, AlertOctagon,
-  FileCheck, GitCompare, FileSignature, Gavel
+  FileCheck, GitCompare, FileSignature, Gavel, FolderArchive
 } from 'lucide-react';
 import { ContractSummaryItem } from '../types/contract';
 
@@ -21,6 +21,7 @@ interface HeaderProps {
   onOpenDiff: () => void;
   onOpenAnnex: () => void;
   onOpenLitigation: () => void;
+  onOpenArchive: () => void;
   onExportReport: () => void;
   onExportDocx: () => void;
 }
@@ -38,6 +39,7 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenDiff,
   onOpenAnnex,
   onOpenLitigation,
+  onOpenArchive,
   onExportReport,
   onExportDocx,
 }) => {
@@ -181,6 +183,16 @@ export const Header: React.FC<HeaderProps> = ({
         >
           <Network className="w-3.5 h-3.5 text-indigo-400" />
           <span className="hidden sm:inline">Graph</span>
+        </button>
+
+        {/* Contract Archive / Document Repository Button */}
+        <button
+          onClick={onOpenArchive}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/35 text-amber-300 text-xs font-semibold transition-all hover:glow-amber shadow-sm"
+          title="Mở Tủ Hồ Sơ Hợp Đồng & Quản Lý Kho Tài Liệu"
+        >
+          <FolderArchive className="w-3.5 h-3.5 text-amber-400" />
+          <span className="hidden sm:inline">Tủ Hồ Sơ</span>
         </button>
 
         {/* Upload Button */}

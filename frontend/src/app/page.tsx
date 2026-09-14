@@ -10,6 +10,7 @@ import { UploadModal } from '../components/UploadModal';
 import { VersionDiffModal } from '../components/VersionDiffModal';
 import { ContractAnnexModal } from '../components/ContractAnnexModal';
 import { LitigationPredictionModal } from '../components/LitigationPredictionModal';
+import { ContractArchiveModal } from '../components/ContractArchiveModal';
 import { fetchSampleContracts, fetchContractReport, downloadContractDocx } from '../lib/api';
 import { ContractAnalysisReport, ContractSummaryItem, RiskLevel } from '../types/contract';
 import { Loader2, AlertCircle, Sparkles, FileText, CheckCircle2 } from 'lucide-react';
@@ -31,6 +32,7 @@ export default function Home() {
   const [isDiffOpen, setIsDiffOpen] = useState<boolean>(false);
   const [isAnnexOpen, setIsAnnexOpen] = useState<boolean>(false);
   const [isLitigationOpen, setIsLitigationOpen] = useState<boolean>(false);
+  const [isArchiveOpen, setIsArchiveOpen] = useState<boolean>(false);
 
   // 1. Initial Load: Fetch sample list and first contract
   useEffect(() => {
@@ -157,6 +159,7 @@ export default function Home() {
         onOpenDiff={() => setIsDiffOpen(true)}
         onOpenAnnex={() => setIsAnnexOpen(true)}
         onOpenLitigation={() => setIsLitigationOpen(true)}
+        onOpenArchive={() => setIsArchiveOpen(true)}
         onExportReport={handleExportReport}
         onExportDocx={handleExportDocx}
       />
@@ -237,6 +240,12 @@ export default function Home() {
         isOpen={isLitigationOpen}
         onClose={() => setIsLitigationOpen(false)}
         report={report}
+      />
+
+      <ContractArchiveModal
+        isOpen={isArchiveOpen}
+        onClose={() => setIsArchiveOpen(false)}
+        onSelectContract={handleSelectContract}
       />
     </main>
   );

@@ -134,4 +134,22 @@ export interface LitigationPredictionReport {
   clauses_risks: ClauseLitigationRisk[];
 }
 
+export interface ArchiveContractItem {
+  contract_id: string;
+  title: string;
+  contract_type: string;
+  category: string;
+  overall_score: number;
+  status_label: 'AN TOÀN' | 'ĐANG ĐÀM PHÁN' | 'CẦN SỬA ĐỔI';
+  created_at: string;
+  page_count: number;
+  total_clauses: number;
+  critical_count: number;
+  file_size_kb: number;
+  original_filename: string;
+  has_docx: boolean;
+  has_annex: boolean;
+}
+
+
 

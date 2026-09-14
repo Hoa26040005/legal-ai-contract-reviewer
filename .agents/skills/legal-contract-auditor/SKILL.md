@@ -176,11 +176,32 @@ Khi phân tích nguy cơ tranh chấp và khả năng bị Tòa án/Trọng tài
 
 ---
 
-## 10. XỬ LÝ CÁC TRƯỜNG HỢP NGOẠI LỆ (EDGE CASES)
+## 10. QUY CHUẨN LƯU TRỮ VÀ QUẢN LÝ KHO HỒ SƠ HỢP ĐỒNG (DOCUMENT REPOSITORY)
+
+Mọi hợp đồng sau khi xử lý phải được quản lý tập trung theo bộ hồ sơ (Contract Bundle):
+1. **Thành phần Bộ Hồ Sơ**:
+   - Tệp văn bản gốc (PDF hoặc ảnh chụp scan qua OCR).
+   - Tệp Word Track Changes Redline (.docx) chứa gạch đỏ xóa bỏ và chữ xanh sửa đổi.
+   - Tệp Phụ Lục sửa đổi, bổ sung (.docx) chuẩn thể thức hành chính Nhà nước.
+   - Báo cáo phân tích rủi ro & Đồ thị tri thức (Knowledge Graph).
+2. **Phân loại Thư mục Phòng ban**:
+   - `Lao động & Nhân sự`: Hợp đồng lao động, thử việc, cam kết đào tạo nghề.
+   - `Mua bán & Thương mại`: Hợp đồng cung ứng thiết bị, mua bán hàng hóa xuất nhập khẩu.
+   - `Dịch vụ CNTT`: Hợp đồng phát triển phần mềm, thuê bao Cloud, dịch vụ tích hợp API.
+   - `Bảo mật NDA`: Thỏa thuận bảo mật thông tin và không tiết lộ bí mật kinh doanh.
+3. **Quản lý Vòng đời & Trạng thái**:
+   - `AN TOÀN` (Điểm $\ge 75$): Sẵn sàng ký kết hoặc đã được duyệt pháp lý.
+   - `ĐANG ĐÀM PHÁN` (Điểm $40 - 74$): Đang chờ đối tác phản hồi phương án sửa đổi.
+   - `CẦN SỬA ĐỔI` (Điểm $< 40$): Chứa điều khoản vi phạm điều cấm nghiêm trọng, cấm ký kết khi chưa bãi bỏ.
+
+---
+
+## 11. XỬ LÝ CÁC TRƯỜNG HỢP NGOẠI LỆ (EDGE CASES)
 
 - **Ảnh chụp bị lóa sáng / Mất góc**: Cảnh báo người dùng về phần văn bản bị che khuất và kích hoạt bộ lọc bù nét tương phản.
 - **Hợp đồng không đánh số Điều**: Tự động đánh số theo phân đoạn logic (`Phần 1`, `Phần 2`,...) dựa trên ngắt trang.
 - **Hợp đồng Song ngữ (Anh - Việt)**: Ưu tiên rà soát trên văn bản tiếng Việt; trường hợp có mâu thuẫn giữa 2 ngôn ngữ, cảnh báo nguy cơ theo quy định giải thích hợp đồng tại Điều 404 BLDS 2015.
+
 
 
 

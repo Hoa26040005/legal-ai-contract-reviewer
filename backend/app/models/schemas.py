@@ -133,4 +133,21 @@ class LitigationPredictionReport(BaseModel):
     estimated_total_loss: str
     clauses_risks: List[ClauseLitigationRisk]
 
+class ArchiveContractItem(BaseModel):
+    contract_id: str
+    title: str
+    contract_type: str
+    category: str        # 'Lao động & Nhân sự' | 'Mua bán & Thương mại' | 'Dịch vụ CNTT' | 'Bảo mật NDA'
+    overall_score: int
+    status_label: str    # 'AN TOÀN' | 'ĐANG ĐÀM PHÁN' | 'CẦN SỬA ĐỔI'
+    created_at: str
+    page_count: int
+    total_clauses: int
+    critical_count: int
+    file_size_kb: float
+    original_filename: str
+    has_docx: bool = True
+    has_annex: bool = True
+
+
 

@@ -5,7 +5,8 @@ from fastapi import APIRouter, UploadFile, File, HTTPException
 from fastapi.responses import StreamingResponse
 from app.models.schemas import (
     ContractSummaryItem, ContractAnalysisReport, KnowledgeGraphData,
-    ContractComparisonReport, PrecedentCase, LitigationPredictionReport
+    ContractComparisonReport, PrecedentCase, LitigationPredictionReport,
+    ArchiveContractItem
 )
 from app.engine.parser import DocumentParser
 from app.engine.chunker import VietnameseLegalChunker
@@ -15,6 +16,7 @@ from app.engine.docx_generator import ContractDocxGenerator
 from app.engine.comparator import ContractComparator
 from app.engine.annex_generator import ContractAnnexGenerator
 from app.engine.precedent_engine import PrecedentLitigationEngine
+from app.engine.storage_manager import ContractStorageManager
 
 router = APIRouter(prefix="/contracts", tags=["Contracts"])
 
@@ -155,6 +157,7 @@ async def upload_contract_file(file: UploadFile = File(...)):
         )
         
         CONTRACTS_DB[contract_id] = report
+        ContractStorageManager.save_to_archive(report, filename, content_bytes)
         return report
 
     except Exception as e:
@@ -203,5 +206,23 @@ async def predict_contract_litigation_risk(contract_id: str):
     """
     report = await get_contract_report(contract_id)
     return PrecedentLitigationEngine.predict_contract_litigation_risk(report)
+
+@router.get("/archive/list", response_model=List[ArchiveContractItem])
+async def list_archived_contracts(category: str = "Tất cả"):
+    """
+    Lấy danh sách toàn bộ tài liệu và hồ sơ hợp đồng trong Tủ Hồ Sơ.
+    """
+    return ContractStorageManager.get_archive_list(category=category)
+
+@router.delete("/archive/{contract_id}")
+async def delete_archived_contract(contract_id: str):
+    """
+    Xóa tài liệu khỏi Tủ Hồ Sơ.
+    """
+    success = ContractStorageManager.delete_from_archive(contract_id)
+    if not success:
+        raise HTTPException(status_code=404, detail="Không tìm thấy hồ sơ trong kho lưu trữ.")
+    return {"message": "Đã xóa hồ sơ thành công", "contract_id": contract_id}
+
 
 
