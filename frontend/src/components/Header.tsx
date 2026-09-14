@@ -4,7 +4,7 @@ import React from 'react';
 import {
   ShieldAlert, Network, Upload, FileText, ChevronDown,
   Sparkles, Download, Search, CheckCircle2, AlertTriangle, AlertOctagon,
-  FileCheck, GitCompare, FileSignature, Gavel, FolderArchive
+  FileCheck, GitCompare, FileSignature, Gavel, FolderArchive, BookOpen
 } from 'lucide-react';
 import { ContractSummaryItem } from '../types/contract';
 
@@ -22,6 +22,7 @@ interface HeaderProps {
   onOpenAnnex: () => void;
   onOpenLitigation: () => void;
   onOpenArchive: () => void;
+  onOpenLegalLibrary: () => void;
   onExportReport: () => void;
   onExportDocx: () => void;
 }
@@ -40,6 +41,7 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenAnnex,
   onOpenLitigation,
   onOpenArchive,
+  onOpenLegalLibrary,
   onExportReport,
   onExportDocx,
 }) => {
@@ -193,6 +195,16 @@ export const Header: React.FC<HeaderProps> = ({
         >
           <FolderArchive className="w-3.5 h-3.5 text-amber-400" />
           <span className="hidden sm:inline">Tủ Hồ Sơ</span>
+        </button>
+
+        {/* Legal Library & Dynamic Statute Ingestion Button */}
+        <button
+          onClick={onOpenLegalLibrary}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-cyan-500/15 hover:bg-cyan-500/25 border border-cyan-500/35 text-cyan-300 text-xs font-semibold transition-all hover:glow-cyan shadow-sm"
+          title="Quản trị Thư Viện Điều Luật & Nạp Văn Bản Quy Phạm Pháp Luật (PDF/DOCX)"
+        >
+          <BookOpen className="w-3.5 h-3.5 text-cyan-400" />
+          <span className="hidden sm:inline">Thư Viện Luật</span>
         </button>
 
         {/* Upload Button */}

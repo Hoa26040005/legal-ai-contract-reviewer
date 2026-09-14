@@ -196,12 +196,31 @@ Mọi hợp đồng sau khi xử lý phải được quản lý tập trung theo
 
 ---
 
-## 11. XỬ LÝ CÁC TRƯỜNG HỢP NGOẠI LỆ (EDGE CASES)
+---
+
+## 11. QUY CHUẨN QUẢN TRỊ THƯ VIỆN QUY PHẠM PHÁP LUẬT & NẠP TRI THỨC ĐỘNG (DYNAMIC LEGAL LIBRARY)
+
+1. **Nguyên tắc No-Code Legal Rule Ops**:
+   - Hệ thống cho phép chuyên viên pháp chế trực tiếp quản lý (Thêm, Sửa, Xóa, Tra cứu) các điều luật và quy phạm thông qua giao diện Web mà không cần can thiệp mã nguồn.
+   - Mọi điều luật mới thêm hoặc cập nhật sẽ được `LegalRiskAnalyzer` áp dụng tức thì vào việc soi xét các hợp đồng tiếp theo.
+2. **Cấu trúc dữ liệu Một Điều luật Chuẩn (`LegalRuleItem`)**:
+   - `code`: Mã định danh quy tắc duy nhất (VD: `BLLD2019_D17_1`, `LDD2024_D45`, `LNO2023_D160`).
+   - `law`: Tên điều khoản và văn bản quy phạm (VD: *Điều 45, Luật Đất đai 2024*).
+   - `topic`: Tiêu đề chủ đề vi phạm hoặc nguyên tắc pháp lý cốt lõi.
+   - `rule`: Tóm tắt nội dung quy phạm, điều cấm hoặc nghĩa vụ luật định.
+   - `category`: Lĩnh vực phân loại (*Lao động, Thương mại, Dân sự, Đất đai & BĐS, Sở hữu trí tuệ, Công nghệ & Dữ liệu*).
+   - `keywords`: Danh sách cụm từ khóa nhận diện ngữ nghĩa (khuyến nghị cụm từ $\ge 2$ từ hoặc $\ge 8$ ký tự để tránh false positive).
+   - `risk_level`: Mức độ rủi ro tương ứng (*CRITICAL*, *HIGH*, *MEDIUM*).
+   - `statute_source`: Nguồn văn bản luật ban hành (Số hiệu luật/Nghị định/Thông tư).
+3. **Quy chuẩn Bóc tách Toàn văn Văn bản Luật (Statute Document Ingestion)**:
+   - Hỗ trợ nạp trực tiếp các tệp `.pdf`, `.docx`, `.txt` văn bản quy phạm pháp luật toàn văn.
+   - Bộ máy NLP bóc tách tự động theo cấu trúc `Điều [Số]. [Tiêu đề]\n[Nội dung]`.
+   - Tự động sinh mã quy tắc, nhận diện từ khóa và liên kết vào hệ thống RAG Hybrid Vector + Knowledge Graph.
+
+---
+
+## 12. XỬ LÝ CÁC TRƯỜNG HỢP NGOẠI LỆ (EDGE CASES)
 
 - **Ảnh chụp bị lóa sáng / Mất góc**: Cảnh báo người dùng về phần văn bản bị che khuất và kích hoạt bộ lọc bù nét tương phản.
 - **Hợp đồng không đánh số Điều**: Tự động đánh số theo phân đoạn logic (`Phần 1`, `Phần 2`,...) dựa trên ngắt trang.
 - **Hợp đồng Song ngữ (Anh - Việt)**: Ưu tiên rà soát trên văn bản tiếng Việt; trường hợp có mâu thuẫn giữa 2 ngôn ngữ, cảnh báo nguy cơ theo quy định giải thích hợp đồng tại Điều 404 BLDS 2015.
-
-
-
-

@@ -151,5 +151,50 @@ export interface ArchiveContractItem {
   has_annex: boolean;
 }
 
+export interface LegalRuleItem {
+  code: string;
+  law: string;
+  topic: string;
+  rule: string;
+  category: string;
+  keywords: string[];
+  risk_level: 'CRITICAL' | 'HIGH' | 'MEDIUM';
+  statute_source?: string;
+  created_at?: string;
+}
 
+export interface LegalRuleCreate {
+  code: string;
+  law: string;
+  topic: string;
+  rule: string;
+  category: string;
+  keywords: string[];
+  risk_level: 'CRITICAL' | 'HIGH' | 'MEDIUM';
+  statute_source?: string;
+}
 
+export interface LegalRuleUpdate {
+  law?: string;
+  topic?: string;
+  rule?: string;
+  category?: string;
+  keywords?: string[];
+  risk_level?: 'CRITICAL' | 'HIGH' | 'MEDIUM';
+}
+
+export interface LegalLibraryStats {
+  total_rules: number;
+  total_categories: number;
+  total_statutes: number;
+  categories: { category: string; count: number }[];
+  rag_active: boolean;
+}
+
+export interface StatuteUploadResponse {
+  statute_title: string;
+  filename: string;
+  articles_extracted: number;
+  category: string;
+  message: string;
+}

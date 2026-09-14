@@ -238,6 +238,166 @@ export async function deleteArchiveContract(contractId: string): Promise<boolean
   }
 }
 
+// ==========================================
+// THƯ VIỆN LUẬT & NẠP VĂN BẢN QUY PHẠM PHÁP LUẬT
+// ==========================================
 
+export async function fetchLaws(category?: string, query?: string): Promise<import('../types/contract').LegalRuleItem[]> {
+  try {
+    const params = new URLSearchParams();
+    if (category && category !== 'Tất cả') params.append('category', category);
+    if (query) params.append('query', query);
 
+    const res = await fetch(`${API_BASE_URL}/laws?${params.toString()}`, { cache: 'no-store' });
+    if (!res.ok) throw new Error('API Error');
+    return await res.json();
+  } catch (err) {
+    console.warn('Backend chưa bật, dùng dữ liệu quy tắc mẫu.');
+    return [
+      {
+        code: "BLLD2019_D17_1",
+        law: "Điều 17.1, Bộ luật Lao động 2019",
+        topic: "Cấm giữ bản chính giấy tờ tùy thân, văn bằng, chứng chỉ",
+        rule: "Người sử dụng lao động tuyệt đối không được giữ bản chính giấy tờ tuỳ thân, văn bằng, chứng chỉ của người lao động khi giao kết, thực hiện hợp đồng lao động.",
+        category: "Lao động",
+        keywords: ["giữ bằng gốc", "giữ bản chính", "nộp bằng đại học gốc", "giữ cccd gốc", "giữ giấy tờ"],
+        risk_level: "CRITICAL",
+        statute_source: "Bộ luật Lao động số 45/2019/QH14"
+      },
+      {
+        code: "LTM2005_D301",
+        law: "Điều 301, Luật Thương mại 2005",
+        topic: "Trần mức phạt vi phạm nghĩa vụ thương mại tối đa 8%",
+        rule: "Mức phạt đối với vi phạm nghĩa vụ hợp đồng do các bên thoả thuận, nhưng không quá 8% giá trị phần nghĩa vụ hợp đồng bị vi phạm (trừ trường hợp kết quả giám định sai).",
+        category: "Thương mại",
+        keywords: ["phạt 10%", "phạt 15%", "phạt 20%", "phạt 30%", "phạt 50%", "tổng giá trị hợp đồng"],
+        risk_level: "CRITICAL",
+        statute_source: "Luật Thương mại số 36/2005/QH11"
+      },
+      {
+        code: "BLDS2015_D468",
+        law: "Điều 468 & Điều 357, Bộ luật Dân sự 2015",
+        topic: "Trần lãi suất vay và lãi phạt chậm trả tối đa 20%/năm",
+        rule: "Lãi suất theo thỏa thuận không được vượt quá 20%/năm. Các quy định tính lãi chậm trả 0.1% - 0.5%/ngày (tương đương 36.5% - 182.5%/năm) vượt quá mức trần này và phần vượt mức bị vô hiệu.",
+        category: "Dân sự",
+        keywords: ["0.1% mỗi ngày", "0.2% mỗi ngày", "0.5% mỗi ngày", "lãi phạt 30%/năm", "lãi suất chậm trả"],
+        risk_level: "CRITICAL",
+        statute_source: "Bộ luật Dân sự số 91/2015/QH13"
+      },
+      {
+        code: "LDD2024_D45",
+        law: "Điều 45, Luật Đất đai 2024",
+        topic: "Điều kiện thực hiện quyền chuyển nhượng, cho thuê quyền sử dụng đất",
+        rule: "Chuyển nhượng quyền sử dụng đất bắt buộc phải có Giấy chứng nhận quyền sử dụng đất (Sổ đỏ), đất không có tranh chấp, quyền sử dụng đất không bị kê biên, trong thời hạn sử dụng đất và phải đăng ký tại cơ quan đăng ký đất đai.",
+        category: "Đất đai & BĐS",
+        keywords: ["chưa có sổ đỏ", "đang tranh chấp đất", "giấy tờ tay", "đang bị kê biên"],
+        risk_level: "CRITICAL",
+        statute_source: "Luật Đất đai số 31/2024/QH15"
+      },
+      {
+        code: "LNO2023_D160",
+        law: "Điều 160, Luật Nhà ở 2023",
+        topic: "Điều kiện của nhà ở tham gia giao dịch mua bán, cho thuê",
+        rule: "Giao dịch mua bán nhà ở thương mại hình thành trong tương lai bắt buộc phải có bảo lãnh của ngân hàng thương mại và biên bản nghiệm thu hoàn thành xây dựng phần móng.",
+        category: "Đất đai & BĐS",
+        keywords: ["nhà ở tương lai", "chưa xong móng", "không có bảo lãnh ngân hàng", "mua bán dự án chưa nghiệm thu"],
+        risk_level: "CRITICAL",
+        statute_source: "Luật Nhà ở số 27/2023/QH15"
+      },
+      {
+        code: "ND13_2023_NDCP",
+        law: "Điều 9, 11, 17, Nghị định 13/2023/NĐ-CP",
+        topic: "Bảo vệ Dữ liệu Cá nhân người lao động & khách hàng",
+        rule: "Việc xử lý dữ liệu cá nhân (kể cả thông tin nhân viên, khách hàng) bắt buộc phải có sự chấp thuận minh thị của chủ thể dữ liệu và tuân thủ các biện pháp bảo vệ kỹ thuật.",
+        category: "Công nghệ & Dữ liệu",
+        keywords: ["dữ liệu cá nhân", "thông tin nhân viên", "thông tin khách hàng", "nghị định 13"],
+        risk_level: "HIGH",
+        statute_source: "Nghị định số 13/2023/NĐ-CP"
+      }
+    ];
+  }
+}
 
+export async function fetchLawStats(): Promise<import('../types/contract').LegalLibraryStats> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/laws/stats`, { cache: 'no-store' });
+    if (!res.ok) throw new Error('API Error');
+    return await res.json();
+  } catch (err) {
+    return {
+      total_rules: 20,
+      total_categories: 6,
+      total_statutes: 5,
+      categories: [
+        { category: 'Lao động', count: 9 },
+        { category: 'Thương mại', count: 4 },
+        { category: 'Dân sự', count: 3 },
+        { category: 'Đất đai & BĐS', count: 2 },
+        { category: 'Sở hữu trí tuệ', count: 1 },
+        { category: 'Công nghệ & Dữ liệu', count: 1 }
+      ],
+      rag_active: true
+    };
+  }
+}
+
+export async function createLaw(rule: import('../types/contract').LegalRuleCreate): Promise<import('../types/contract').LegalRuleItem> {
+  const res = await fetch(`${API_BASE_URL}/laws`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(rule)
+  });
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({}));
+    throw new Error(errData.detail || 'Không thể tạo điều luật mới');
+  }
+  return await res.json();
+}
+
+export async function updateLaw(code: string, updates: import('../types/contract').LegalRuleUpdate): Promise<import('../types/contract').LegalRuleItem> {
+  const res = await fetch(`${API_BASE_URL}/laws/${code}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(updates)
+  });
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({}));
+    throw new Error(errData.detail || 'Không thể cập nhật điều luật');
+  }
+  return await res.json();
+}
+
+export async function deleteLaw(code: string): Promise<boolean> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/laws/${code}`, {
+      method: 'DELETE'
+    });
+    return res.ok;
+  } catch (err) {
+    console.warn('Lỗi xóa điều luật:', err);
+    return false;
+  }
+}
+
+export async function uploadStatuteDocument(
+  file: File,
+  statuteTitle: string,
+  category: string
+): Promise<import('../types/contract').StatuteUploadResponse> {
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('statute_title', statuteTitle);
+  formData.append('category', category);
+
+  const res = await fetch(`${API_BASE_URL}/laws/upload-statute`, {
+    method: 'POST',
+    body: formData
+  });
+
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({}));
+    throw new Error(errData.detail || 'Lỗi khi nạp văn bản luật');
+  }
+
+  return await res.json();
+}

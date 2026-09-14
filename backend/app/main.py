@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
 from app.api.v1.contracts import router as contracts_router
+from app.api.v1.laws import router as laws_router
 
 app = FastAPI(
     title=settings.APP_NAME,
@@ -20,6 +21,7 @@ app.add_middleware(
 
 # Đăng ký API v1 Routers
 app.include_router(contracts_router, prefix="/api/v1")
+app.include_router(laws_router, prefix="/api/v1")
 
 @app.get("/")
 async def root():

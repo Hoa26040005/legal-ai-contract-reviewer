@@ -149,5 +149,45 @@ class ArchiveContractItem(BaseModel):
     has_docx: bool = True
     has_annex: bool = True
 
+class LegalRuleItem(BaseModel):
+    code: str
+    law: str
+    topic: str
+    rule: str
+    category: str        # 'Lao động' | 'Thương mại' | 'Dân sự' | 'Đất đai & BĐS' | 'Sở hữu trí tuệ' | 'Công nghệ & Dữ liệu'
+    keywords: List[str]
+    risk_level: str = "HIGH" # 'CRITICAL' | 'HIGH' | 'MEDIUM'
+    statute_source: Optional[str] = None
+    created_at: Optional[str] = None
 
+class LegalRuleCreate(BaseModel):
+    code: str
+    law: str
+    topic: str
+    rule: str
+    category: str
+    keywords: List[str]
+    risk_level: str = "HIGH"
+    statute_source: Optional[str] = None
 
+class LegalRuleUpdate(BaseModel):
+    law: Optional[str] = None
+    topic: Optional[str] = None
+    rule: Optional[str] = None
+    category: Optional[str] = None
+    keywords: Optional[List[str]] = None
+    risk_level: Optional[str] = None
+
+class LegalLibraryStats(BaseModel):
+    total_rules: int
+    total_categories: int
+    total_statutes: int
+    categories: List[Dict[str, Any]]
+    rag_active: bool = True
+
+class StatuteUploadResponse(BaseModel):
+    statute_title: str
+    filename: str
+    articles_extracted: int
+    category: str
+    message: str

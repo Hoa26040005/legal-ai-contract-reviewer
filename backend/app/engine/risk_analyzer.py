@@ -475,12 +475,42 @@ class LegalRiskAnalyzer:
                 risk_title="Thẩm quyền Tòa án áp đặt một chiều, bất lợi về mặt địa lý",
                 risk_category="Tranh chấp & Tài phán",
                 description="Quy định giải quyết tranh chấp tại Tòa án theo địa điểm của bên soạn thảo hợp đồng gây tốn kém chi phí đi lại, luật sư và nguồn lực tố tụng nếu có tranh chấp.",
-                legal_basis="Điều 39 & 40, Bộ luật Tố tụng Dân sự 2015 & Luật Trọng tài thương mại 2010",
                 original_text=clause.content,
                 suggested_text="Mọi tranh chấp phát sinh từ Hợp đồng này trước hết sẽ được giải quyết bằng thương lượng, hòa giải trong thời hạn 30 ngày. Nếu không hòa giải được, tranh chấp sẽ được giải quyết tại Trung tâm Trọng tài Quốc tế Việt Nam (VIAC) theo Quy tắc tố tụng trọng tài của Trung tâm này.",
                 rationale="Trọng tài thương mại VIAC đảm bảo tính trung lập, bảo mật bí mật kinh doanh và phán quyết có hiệu lực chung thẩm nhanh chóng.",
                 bounding_boxes=clause.bounding_boxes
             ))
+
+        # C9. Tích hợp nạp & quét quy tắc động từ Thư viện Luật (LegalLibraryManager)
+        try:
+            from app.engine.legal_library_manager import LegalLibraryManager
+            dynamic_rules = LegalLibraryManager.get_active_rules()
+            existing_bases = {r.legal_basis for r in items}
+            for rule_item in dynamic_rules:
+                law_name = rule_item.get("law", "")
+                if law_name in existing_bases:
+                    continue
+                kws = [kw.lower().strip() for kw in rule_item.get("keywords", []) if len(kw.strip().split()) >= 2 or len(kw.strip()) >= 8]
+                if any(kw in content for kw in kws):
+                    lvl_str = rule_item.get("risk_level", "HIGH")
+                    risk_lvl = RiskLevel.CRITICAL if lvl_str == "CRITICAL" else (RiskLevel.HIGH if lvl_str == "HIGH" else RiskLevel.MEDIUM)
+                    items.append(RiskItem(
+                        id=f"risk_{clause.id}_{rule_item.get('code')}",
+                        clause_id=clause.id,
+                        clause_number=clause.clause_number,
+                        risk_level=risk_lvl,
+                        risk_title=f"{rule_item.get('topic')} ({law_name})",
+                        risk_category=rule_item.get("category", "Quy phạm Pháp luật"),
+                        description=f"{rule_item.get('rule')} (Nguồn văn bản: {rule_item.get('statute_source', 'Thư viện luật')}).",
+                        legal_basis=law_name,
+                        original_text=clause.content,
+                        suggested_text=f"[Khuyến nghị điều chỉnh theo {law_name}]: Đề nghị sửa đổi để phù hợp với quy phạm pháp luật tại {law_name} ({rule_item.get('rule')}).",
+                        rationale=f"Tuân thủ nghiêm ngặt quy định tại {law_name}, phòng ngừa rủi ro bị tuyên vô hiệu.",
+                        bounding_boxes=clause.bounding_boxes
+                    ))
+                    existing_bases.add(law_name)
+        except Exception:
+            pass
 
         return items
 
