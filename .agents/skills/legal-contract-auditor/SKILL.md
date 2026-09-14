@@ -126,8 +126,25 @@ Tệp Word xuất ra phục vụ đàm phán hợp đồng bắt buộc phải c
 
 ---
 
-## 7. XỬ LÝ CÁC TRƯỜNG HỢP NGOẠI LỆ (EDGE CASES)
+## 7. QUY CHUẨN ĐỐI CHIẾU PHIÊN BẢN (SIDE-BY-SIDE DIFF & NEGOTIATION DELTA)
+
+Trong quá trình đàm phán hợp đồng (ví dụ: Bản dự thảo V1 đối tác gửi vs Bản điều chỉnh V2 của doanh nghiệp):
+1. **Chuẩn hóa số Điều khoản (`_normalize_num`)**: Loại bỏ dấu chấm thừa, khoảng trắng và chuẩn hóa chữ hoa để ghép cặp chính xác giữa hai phiên bản (`Điều 1.` $\Leftrightarrow$ `Điều 1`).
+2. **Đo lường Chỉ số Đàm phán (Negotiation Score Delta)**:
+   - Tính toán $\Delta Score = Score_{V2} - Score_{V1}$.
+   - Đếm số lượng rủi ro nghiêm trọng đã được hóa giải (`resolved_risks_count`).
+3. **Phân loại Trạng thái Điều khoản (`DiffStatus`)**:
+   - `MODIFIED`: Điều khoản được viết lại để loại bỏ bẫy pháp lý.
+   - `ADDED`: Bổ sung điều khoản bảo vệ mới (bảo mật NDA, bồi thường, thanh toán).
+   - `REMOVED`: Loại bỏ các điều khoản phi lý, trái luật.
+   - `UNCHANGED`: Giữ nguyên nội dung gốc.
+4. **Hiển thị Song song (Dual-Pane Visualizer)**: Cột trái Bản V1 (nền đỏ nhạt phần bất lợi), Cột phải Bản V2 (nền xanh lá phần bảo vệ), kèm thanh huy hiệu minh định rủi ro đã hóa giải và căn cứ pháp luật áp dụng.
+
+---
+
+## 8. XỬ LÝ CÁC TRƯỜNG HỢP NGOẠI LỆ (EDGE CASES)
 
 - **Ảnh chụp bị lóa sáng / Mất góc**: Cảnh báo người dùng về phần văn bản bị che khuất và kích hoạt bộ lọc bù nét tương phản.
 - **Hợp đồng không đánh số Điều**: Tự động đánh số theo phân đoạn logic (`Phần 1`, `Phần 2`,...) dựa trên ngắt trang.
 - **Hợp đồng Song ngữ (Anh - Việt)**: Ưu tiên rà soát trên văn bản tiếng Việt; trường hợp có mâu thuẫn giữa 2 ngôn ngữ, cảnh báo nguy cơ theo quy định giải thích hợp đồng tại Điều 404 BLDS 2015.
+

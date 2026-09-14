@@ -324,3 +324,61 @@ export const SAMPLE_REPORTS: Record<string, ContractAnalysisReport> = {
     ]
   }
 };
+
+export const SAMPLE_COMPARISON = {
+  title_v1: "HĐ Lao Động V1 (Dự thảo đối tác gửi - Chứa nhiều bẫy)",
+  title_v2: "HĐ Lao Động V2 (Bản sau khi đàm phán pháp lý thành công)",
+  score_v1: 22,
+  score_v2: 88,
+  score_delta: 66,
+  summary: "KẾT QUẢ ĐÀM PHÁN XUẤT SẮC: Bản V2 an toàn hơn vượt bậc (+66 điểm). Điểm an toàn tăng từ 22/100 lên 88/100. Đã loại bỏ thành công 4 hành vi vi phạm điều cấm của Bộ luật Lao động 2019 (Giữ bằng gốc, Đặt cọc tiền, Phạt tiền cắt lương, Trốn đóng BHXH).",
+  resolved_risks_count: 5,
+  diff_items: [
+    {
+      clause_number: "Điều 1",
+      title: "Hồ sơ nhân sự & Bằng cấp",
+      status: "MODIFIED" as const,
+      text_v1: "Người lao động phải nộp bản gốc bằng tốt nghiệp đại học và giấy tờ tùy thân gốc để Công ty lưu giữ trong suốt thời hạn hợp đồng.",
+      text_v2: "Người lao động xuất trình bản chính văn bằng để Công ty đối chiếu và nộp 01 bản sao có chứng thực. Công ty không lưu giữ bất kỳ bản chính giấy tờ tùy thân nào của Người lao động theo Điều 17.1 BLLD 2019.",
+      resolved_risk: "Đàm phán thành công: Loại bỏ hành vi giữ bằng đại học gốc trái luật (Điều 17.1 BLLD 2019)",
+      legal_impact: "Bảo vệ tài sản và quyền nhân thân của người lao động; tránh cho doanh nghiệp bị phạt 20 - 25 triệu VNĐ."
+    },
+    {
+      clause_number: "Điều 2",
+      title: "Thời gian Thử việc & Tiền Ký quỹ",
+      status: "MODIFIED" as const,
+      text_v1: "Thời gian thử việc là 04 tháng (120 ngày). Người lao động phải nộp tiền đặt cọc ký quỹ là 20.000.000 VNĐ vào ngày đầu nhận việc.",
+      text_v2: "Thời gian thử việc là 60 (sáu mươi) ngày theo đúng Điều 25 BLLD 2019. Lương thử việc bằng 85% mức lương chính thức. Hủy bỏ hoàn toàn yêu cầu đặt cọc tiền ký quỹ.",
+      resolved_risk: "Đàm phán thành công: Xóa bỏ yêu cầu nộp cọc 20 triệu (Điều 17.2) và hạ thời gian thử việc về đúng mức trần 60 ngày (Điều 25)",
+      legal_impact: "Xóa bỏ rủi ro bị xử phạt vi phạm hành chính và đòi lại 20 triệu tiền ký quỹ."
+    },
+    {
+      clause_number: "Điều 3",
+      title: "Chế độ Bảo hiểm Xã hội",
+      status: "MODIFIED" as const,
+      text_v1: "Công ty không tham gia BHXH bắt buộc cho Người lao động mà cộng thêm 500.000 VNĐ/tháng để Người lao động tự lo.",
+      text_v2: "Công ty và Người lao động cùng đóng đầy đủ Bảo hiểm xã hội, Bảo hiểm y tế, Bảo hiểm thất nghiệp bắt buộc theo đúng tỷ lệ trích nộp do Luật BHXH quy định.",
+      resolved_risk: "Đàm phán thành công: Bắt buộc tham gia BHXH theo Điều 168 BLLD 2019",
+      legal_impact: "Bảo đảm đầy đủ quyền lợi thai sản, ốm đau, tai nạn lao động và lương hưu cho người lao động."
+    },
+    {
+      clause_number: "Điều 4",
+      title: "Kỷ luật Lao động & Chế tài Phạt tiền",
+      status: "MODIFIED" as const,
+      text_v1: "Nếu đi làm trễ quá 15 phút hoặc không đạt KPI tuần, Công ty sẽ phạt tiền 500.000 VNĐ trừ trực tiếp vào lương.",
+      text_v2: "Mọi hành vi vi phạm kỷ luật được xử lý theo đúng 4 hình thức luật định (Khiển trách, Kéo dài nâng lương, Cách chức, Sa thải theo Điều 124 BLLD 2019). Không áp dụng chế tài phạt tiền hoặc cắt lương.",
+      resolved_risk: "Đàm phán thành công: Xóa bỏ chế tài phạt tiền và trừ lương (Điều 127 BLLD 2019)",
+      legal_impact: "Bảo toàn thu nhập chính đáng của người lao động, loại bỏ hành vi bị pháp luật nghiêm cấm."
+    },
+    {
+      clause_number: "Điều 5",
+      title: "Cam kết Không Cạnh tranh (NCA)",
+      status: "MODIFIED" as const,
+      text_v1: "Sau khi nghỉ việc, Người lao động cấm làm việc cho bất kỳ công ty nào trong ngành CNTT trong thời hạn 03 năm kể từ ngày nghỉ việc.",
+      text_v2: "Người lao động cam kết trong vòng 12 tháng không làm việc cho các đối thủ cạnh tranh trực tiếp. Công ty chi trả khoản trợ cấp không cạnh tranh hàng tháng tương đương 50% mức lương bình quân theo quy định.",
+      resolved_risk: "Đàm phán thành công: Giảm thời hạn cấm cạnh tranh xuống 12 tháng và bổ sung khoản bù đắp tài chính 50% lương",
+      legal_impact: "Hài hòa lợi ích: Bảo vệ bí mật công nghệ cho công ty và đảm bảo sinh kế cho người lao động."
+    }
+  ]
+};
+

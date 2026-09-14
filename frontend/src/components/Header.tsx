@@ -4,7 +4,7 @@ import React from 'react';
 import {
   ShieldAlert, Network, Upload, FileText, ChevronDown,
   Sparkles, Download, Search, CheckCircle2, AlertTriangle, AlertOctagon,
-  FileCheck
+  FileCheck, GitCompare
 } from 'lucide-react';
 import { ContractSummaryItem } from '../types/contract';
 
@@ -18,6 +18,7 @@ interface HeaderProps {
   onSelectContract: (id: string) => void;
   onOpenUpload: () => void;
   onOpenGraph: () => void;
+  onOpenDiff: () => void;
   onExportReport: () => void;
   onExportDocx: () => void;
 }
@@ -32,6 +33,7 @@ export const Header: React.FC<HeaderProps> = ({
   onSelectContract,
   onOpenUpload,
   onOpenGraph,
+  onOpenDiff,
   onExportReport,
   onExportDocx,
 }) => {
@@ -127,6 +129,16 @@ export const Header: React.FC<HeaderProps> = ({
       {/* Actions & Score */}
       <div className="flex items-center gap-2.5">
         {getScoreVisual(score)}
+
+        {/* Side-by-Side Version Diff Button */}
+        <button
+          onClick={onOpenDiff}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-cyan-500/15 hover:bg-cyan-500/25 border border-cyan-500/35 text-cyan-300 text-xs font-semibold transition-all hover:glow-cyan shadow-sm"
+          title="Đối chiếu 2 bản hợp đồng song song (Bản V1 vs Bản V2)"
+        >
+          <GitCompare className="w-3.5 h-3.5 text-cyan-400" />
+          <span className="hidden sm:inline">So Sánh Diff</span>
+        </button>
 
         {/* Word Docx Track Changes Button */}
         <button

@@ -76,3 +76,27 @@ export interface ContractSummaryItem {
   score: number;
   status: 'ready' | 'analyzing' | 'error';
 }
+
+export type DiffStatus = 'MODIFIED' | 'ADDED' | 'REMOVED' | 'UNCHANGED';
+
+export interface ClauseDiffItem {
+  clause_number: string;
+  title: string;
+  status: DiffStatus;
+  text_v1?: string | null;
+  text_v2?: string | null;
+  resolved_risk?: string | null;
+  legal_impact?: string | null;
+}
+
+export interface ContractComparisonReport {
+  title_v1: string;
+  title_v2: string;
+  score_v1: number;
+  score_v2: number;
+  score_delta: number;
+  summary: string;
+  resolved_risks_count: number;
+  diff_items: ClauseDiffItem[];
+}
+

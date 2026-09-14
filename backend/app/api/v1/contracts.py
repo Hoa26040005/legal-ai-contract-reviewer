@@ -4,13 +4,15 @@ from typing import List, Dict
 from fastapi import APIRouter, UploadFile, File, HTTPException
 from fastapi.responses import StreamingResponse
 from app.models.schemas import (
-    ContractSummaryItem, ContractAnalysisReport, KnowledgeGraphData
+    ContractSummaryItem, ContractAnalysisReport, KnowledgeGraphData,
+    ContractComparisonReport
 )
 from app.engine.parser import DocumentParser
 from app.engine.chunker import VietnameseLegalChunker
 from app.engine.risk_analyzer import LegalRiskAnalyzer
 from app.engine.sample_contracts import get_sample_contracts_summary, get_sample_contract_analysis
 from app.engine.docx_generator import ContractDocxGenerator
+from app.engine.comparator import ContractComparator
 
 router = APIRouter(prefix="/contracts", tags=["Contracts"])
 
@@ -117,3 +119,33 @@ async def upload_contract_file(file: UploadFile = File(...)):
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Lỗi trong quá trình xử lý tệp: {str(e)}")
+
+@router.get("/compare/sample", response_model=ContractComparisonReport)
+async def get_sample_contract_comparison():
+    """
+    Lấy dữ liệu so sánh mẫu giữa 2 phiên bản hợp đồng (V1 dự thảo rủi ro cao vs V2 sau đàm phán).
+    """
+    return ContractComparator.get_sample_comparison()
+
+@router.post("/compare", response_model=ContractComparisonReport)
+async def compare_two_contracts(
+    file_v1: UploadFile = File(...),
+    file_v2: UploadFile = File(...)
+):
+    """
+    So sánh đối soát trực tiếp giữa 2 file hợp đồng (V1 và V2).
+    """
+    bytes_v1 = await file_v1.read()
+    bytes_v2 = await file_v2.read()
+
+    pages_v1 = DocumentParser.extract_layout_from_bytes(bytes_v1, filename=file_v1.filename or "v1.pdf")
+    pages_v2 = DocumentParser.extract_layout_from_bytes(bytes_v2, filename=file_v2.filename or "v2.pdf")
+
+    clauses_v1 = VietnameseLegalChunker.chunk_document_layout(pages_v1)
+    clauses_v2 = VietnameseLegalChunker.chunk_document_layout(pages_v2)
+
+    title_v1 = (file_v1.filename or "Bản V1").rsplit(".", 1)[0]
+    title_v2 = (file_v2.filename or "Bản V2").rsplit(".", 1)[0]
+
+    return ContractComparator.compare_contracts(title_v1, clauses_v1, title_v2, clauses_v2)
+

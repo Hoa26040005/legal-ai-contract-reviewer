@@ -76,3 +76,29 @@ class ContractSummaryItem(BaseModel):
     created_at: str
     score: int
     status: str # 'ready', 'analyzing', 'error'
+
+class DiffStatus(str, Enum):
+    MODIFIED = "MODIFIED"   # Điều khoản đã được sửa đổi
+    ADDED = "ADDED"         # Điều khoản mới được bổ sung
+    REMOVED = "REMOVED"     # Điều khoản đã bị hủy bỏ
+    UNCHANGED = "UNCHANGED" # Giữ nguyên
+
+class ClauseDiffItem(BaseModel):
+    clause_number: str
+    title: str
+    status: DiffStatus
+    text_v1: Optional[str] = None
+    text_v2: Optional[str] = None
+    resolved_risk: Optional[str] = None
+    legal_impact: Optional[str] = None
+
+class ContractComparisonReport(BaseModel):
+    title_v1: str
+    title_v2: str
+    score_v1: int
+    score_v2: int
+    score_delta: int
+    summary: str
+    resolved_risks_count: int
+    diff_items: List[ClauseDiffItem]
+

@@ -7,6 +7,7 @@ import { PDFViewer } from '../components/PDFViewer';
 import { RiskPanel } from '../components/RiskPanel';
 import { KnowledgeGraphModal } from '../components/KnowledgeGraphModal';
 import { UploadModal } from '../components/UploadModal';
+import { VersionDiffModal } from '../components/VersionDiffModal';
 import { fetchSampleContracts, fetchContractReport, downloadContractDocx } from '../lib/api';
 import { ContractAnalysisReport, ContractSummaryItem, RiskLevel } from '../types/contract';
 import { Loader2, AlertCircle, Sparkles, FileText, CheckCircle2 } from 'lucide-react';
@@ -25,6 +26,7 @@ export default function Home() {
   // Modals
   const [isGraphOpen, setIsGraphOpen] = useState<boolean>(false);
   const [isUploadOpen, setIsUploadOpen] = useState<boolean>(false);
+  const [isDiffOpen, setIsDiffOpen] = useState<boolean>(false);
 
   // 1. Initial Load: Fetch sample list and first contract
   useEffect(() => {
@@ -148,6 +150,7 @@ export default function Home() {
         onSelectContract={handleSelectContract}
         onOpenUpload={() => setIsUploadOpen(true)}
         onOpenGraph={() => setIsGraphOpen(true)}
+        onOpenDiff={() => setIsDiffOpen(true)}
         onExportReport={handleExportReport}
         onExportDocx={handleExportDocx}
       />
@@ -211,6 +214,11 @@ export default function Home() {
         isOpen={isUploadOpen}
         onClose={() => setIsUploadOpen(false)}
         onUploadSuccess={handleUploadSuccess}
+      />
+
+      <VersionDiffModal
+        isOpen={isDiffOpen}
+        onClose={() => setIsDiffOpen(false)}
       />
     </main>
   );

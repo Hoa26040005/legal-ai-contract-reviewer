@@ -60,8 +60,38 @@ export async function downloadContractDocx(contractId: string, title: string): P
     window.URL.revokeObjectURL(url);
     a.remove();
   } catch (err) {
-    // Fallback: Generate structured HTML/Word format on client if backend not running
     console.warn('Backend export docx chưa khả dụng, sinh file văn bản dự phòng.', err);
     alert('Tính năng tải trực tiếp .docx yêu cầu Backend FastAPI đang chạy (port 8000). Hệ thống sẽ xuất file báo cáo JSON chi tiết thay thế!');
   }
 }
+
+export async function fetchSampleComparison(): Promise<any> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/contracts/compare/sample`, { cache: 'no-store' });
+    if (!res.ok) throw new Error('API Error');
+    return await res.json();
+  } catch (err) {
+    console.warn('Backend chưa bật, sử dụng dữ liệu so sánh mẫu offline.', err);
+    const { SAMPLE_COMPARISON } = await import('./sampleData');
+    return SAMPLE_COMPARISON;
+  }
+}
+
+export async function compareTwoContracts(file1: File, file2: File): Promise<any> {
+  const formData = new FormData();
+  formData.append('file_v1', file1);
+  formData.append('file_v2', file2);
+
+  const res = await fetch(`${API_BASE_URL}/contracts/compare`, {
+    method: 'POST',
+    body: formData,
+  });
+
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(errorData.detail || 'Lỗi so sánh 2 tệp hợp đồng');
+  }
+
+  return await res.json();
+}
+
