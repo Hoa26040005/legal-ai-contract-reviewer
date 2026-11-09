@@ -391,8 +391,11 @@ export const LitigationPredictionModal: React.FC<LitigationPredictionModalProps>
                       </p>
                     </div>
 
-                    <div className="p-3 rounded-xl bg-purple-950/30 border border-purple-500/20 text-xs">
-                      <span className="font-bold text-purple-300 block mb-1">⚖ Phán quyết bắt buộc áp dụng của TANDTC:</span>
+                    <div className="p-3 rounded-xl bg-amber-950/25 border border-amber-500/25 text-xs">
+                      <span className="font-bold text-amber-300 flex items-center gap-1.5 mb-1">
+                        <Scale className="w-3.5 h-3.5 text-amber-400" />
+                        <span>Phán quyết bắt buộc áp dụng của TANDTC:</span>
+                      </span>
                       <p className="text-slate-200 leading-relaxed text-[11px]">
                         {selectedClause.relevant_precedent.ruling}
                       </p>

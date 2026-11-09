@@ -59,7 +59,11 @@ export const UploadModal: React.FC<UploadModalProps> = ({
       onClose();
     } catch (err: any) {
       setIsUploading(false);
-      setErrorMessage(err.message || 'Lỗi khi gửi tệp lên máy chủ xử lý AI.');
+      const isConnectionError = err.message === 'Failed to fetch' || err.name === 'TypeError';
+      const msg = isConnectionError
+        ? 'Không thể kết nối đến máy chủ Backend (FastAPI port 8000). Vui lòng đảm bảo Backend đang chạy.'
+        : (err.message || 'Lỗi khi gửi tệp lên máy chủ xử lý AI.');
+      setErrorMessage(msg);
     }
   };
 

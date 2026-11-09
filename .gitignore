@@ -43,3 +43,7 @@ yarn-error.log*
 .vscode/
 .idea/
 Thumbs.db
+
+# Runtime Database & Uploaded Contracts
+backend/data/*.db
+backend/data/uploads/

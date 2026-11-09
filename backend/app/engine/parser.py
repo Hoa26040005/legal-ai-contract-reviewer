@@ -14,16 +14,43 @@ class DocumentParser:
     """
     
     @staticmethod
+    def validate_file_signature(file_bytes: bytes, filename: str = "") -> None:
+        """
+        Kiểm tra chữ ký tệp (Magic Bytes) để chống giả mạo phần mở rộng (Extension Spoofing).
+        """
+        if not file_bytes:
+            raise ValueError("Tệp tải lên rỗng không có nội dung.")
+        lower = filename.lower()
+        if lower.endswith(".pdf"):
+            if not file_bytes.lstrip().startswith(b"%PDF-"):
+                raise ValueError("Tệp không phải định dạng PDF hợp lệ (sai chữ ký Magic Bytes).")
+        elif lower.endswith(".png"):
+            if not file_bytes.startswith(b"\x89PNG\r\n\x1a\n"):
+                raise ValueError("Tệp không phải định dạng ảnh PNG hợp lệ.")
+        elif lower.endswith((".jpg", ".jpeg")):
+            if not file_bytes.startswith(b"\xff\xd8\xff"):
+                raise ValueError("Tệp không phải định dạng ảnh JPEG hợp lệ.")
+        elif lower.endswith(".webp"):
+            if not (file_bytes.startswith(b"RIFF") and file_bytes[8:12] == b"WEBP"):
+                raise ValueError("Tệp không phải định dạng ảnh WEBP hợp lệ.")
+
+    @staticmethod
     def extract_layout_from_bytes(file_bytes: bytes, filename: str = "") -> List[Dict[str, Any]]:
         """
         Trích xuất toàn bộ text cùng tọa độ bounding boxes theo từng trang (hỗ trợ cả PDF và Ảnh).
         """
+        DocumentParser.validate_file_signature(file_bytes, filename=filename)
         is_image = any(filename.lower().endswith(ext) for ext in [".jpg", ".jpeg", ".png", ".webp", ".bmp", ".tiff"])
 
-        if is_image:
-            return DocumentParser._process_image_file(file_bytes)
-        else:
-            return DocumentParser._process_pdf_file(file_bytes)
+        try:
+            if is_image:
+                return DocumentParser._process_image_file(file_bytes)
+            else:
+                return DocumentParser._process_pdf_file(file_bytes)
+        except ValueError:
+            raise
+        except Exception:
+            raise ValueError("Tệp tài liệu bị hỏng hoặc không thể giải mã cấu trúc trang.")
 
     @staticmethod
     def _process_pdf_file(pdf_bytes: bytes) -> List[Dict[str, Any]]:

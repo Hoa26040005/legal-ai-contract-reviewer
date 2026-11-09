@@ -3,14 +3,20 @@
     "code": "BLLD2019_D17_1",
     "law": "Điều 17.1, Bộ luật Lao động 2019",
     "topic": "Cấm giữ bản chính giấy tờ tùy thân, văn bằng, chứng chỉ",
-    "rule": "Người sử dụng lao động tuyệt đối không được giữ bản chính giấy tờ tuỳ thân, văn bằng, chứng chỉ của người lao động khi giao kết, thực hiện hợp đồng lao động.",
+    "rule": "Người sử dụng lao động tuyệt đối không được giữ bản chính giấy tờ tuỳ thân, văn bằng, chứng chỉ của người lao động khi giao kết, thực hiện hợp đồng lao động. Vi phạm bị phạt từ 20 đến 25 triệu đồng theo Nghị định 12/2022/NĐ-CP.",
     "category": "Lao động",
     "keywords": [
       "giữ bằng gốc",
       "giữ bản chính",
       "nộp bằng đại học gốc",
       "giữ cccd gốc",
-      "giữ giấy tờ"
+      "giữ giấy tờ",
+      "bằng đại học gốc",
+      "giữ bằng tốt nghiệp",
+      "nộp bản gốc",
+      "giữ cccd",
+      "giữ cmnd",
+      "giữ chứng minh"
     ],
     "risk_level": "CRITICAL",
     "statute_source": "Bộ luật Lao động số 45/2019/QH14",
@@ -20,14 +26,17 @@
     "code": "BLLD2019_D17_2",
     "law": "Điều 17.2, Bộ luật Lao động 2019",
     "topic": "Cấm yêu cầu người lao động đặt cọc, thế chấp tiền hoặc tài sản",
-    "rule": "Nghiêm cấm yêu cầu người lao động phải thực hiện biện pháp bảo đảm bằng tiền hoặc tài sản khác cho việc thực hiện hợp đồng lao động (cấm bắt đóng tiền cọc, ký quỹ).",
+    "rule": "Nghiêm cấm yêu cầu người lao động phải thực hiện biện pháp bảo đảm bằng tiền hoặc tài sản khác cho việc thực hiện hợp đồng lao động (cấm bắt đóng tiền cọc, ký quỹ, giữ lại tiền lương).",
     "category": "Lao động",
     "keywords": [
       "đặt cọc tiền",
       "ký quỹ",
       "giữ tiền lương làm cọc",
       "thế chấp tài sản",
-      "tiền bảo lãnh"
+      "tiền bảo lãnh",
+      "đóng tiền cọc",
+      "nộp tiền cọc",
+      "giữ tiền lương"
     ],
     "risk_level": "CRITICAL",
     "statute_source": "Bộ luật Lao động số 45/2019/QH14",
@@ -36,15 +45,24 @@
   {
     "code": "BLLD2019_D25",
     "law": "Điều 25, Bộ luật Lao động 2019",
-    "topic": "Thời gian thử việc tối đa theo trình độ chuyên môn",
-    "rule": "Thời gian thử việc không quá: 180 ngày đối với quản lý doanh nghiệp; 60 ngày đối với chức danh trình độ cao đẳng trở lên; 30 ngày đối với trung cấp, công nhân kỹ thuật; 06 ngày làm việc đối với việc khác. Không thử việc quá 01 lần.",
+    "topic": "Thời gian thử việc tối đa theo trình độ chuyên môn (Cấm thử việc quá 60 ngày)",
+    "rule": "Thời gian thử việc tối đa: 180 ngày đối với Người quản lý doanh nghiệp; 60 ngày đối với chức danh trình độ cao đẳng trở lên; 30 ngày đối với trung cấp, công nhân kỹ thuật; 06 ngày làm việc đối với việc khác. Luật KHÔNG CÓ MỨC 90 NGÀY! Chỉ được thử việc 01 lần duy nhất, cấm gia hạn.",
     "category": "Lao động",
     "keywords": [
+      "thử việc 90 ngày",
+      "quá 90 ngày",
+      "thời gian thử việc là 90 ngày",
+      "90 ngày thử việc",
       "thử việc 3 tháng",
+      "thử việc 03 tháng",
       "thử việc 4 tháng",
-      "thử việc 6 tháng",
+      "thử việc 04 tháng",
+      "thử việc 120 ngày",
+      "quá 60 ngày",
       "gia hạn thử việc",
-      "thử việc 120 ngày"
+      "thử việc 6 tháng",
+      "thử việc lại",
+      "thử việc lần 2"
     ],
     "risk_level": "HIGH",
     "statute_source": "Bộ luật Lao động số 45/2019/QH14",
@@ -60,7 +78,8 @@
       "lương thử việc 50%",
       "lương thử việc 60%",
       "lương thử việc 70%",
-      "dưới 85%"
+      "dưới 85%",
+      "lương thử việc 80%"
     ],
     "risk_level": "HIGH",
     "statute_source": "Bộ luật Lao động số 45/2019/QH14",
@@ -70,14 +89,16 @@
     "code": "BLLD2019_D127",
     "law": "Điều 127, Bộ luật Lao động 2019",
     "topic": "Cấm phạt tiền, trừ lương thay việc xử lý kỷ luật lao động",
-    "rule": "Nghiêm cấm hành vi dùng hình thức phạt tiền, cắt lương thay việc xử lý kỷ luật lao động. Mọi quy định phạt tiền khi đi trễ, không đạt KPI trong HĐLĐ đều vô hiệu.",
+    "rule": "Nghiêm cấm hành vi dùng hình thức phạt tiền, cắt lương thay việc xử lý kỷ luật lao động. Mọi quy định phạt tiền khi đi trễ, không đạt KPI trong HĐLĐ đều vô hiệu và bị xử phạt nặng.",
     "category": "Lao động",
     "keywords": [
       "phạt tiền khi vi phạm",
       "cắt lương",
       "trừ tiền lương",
       "phạt 500k",
-      "phạt tiền mặt"
+      "phạt tiền mặt",
+      "phạt tiền đi trễ",
+      "phạt kpi"
     ],
     "risk_level": "CRITICAL",
     "statute_source": "Bộ luật Lao động số 45/2019/QH14",
@@ -87,13 +108,14 @@
     "code": "BLLD2019_D168",
     "law": "Điều 168, Bộ luật Lao động 2019 & Luật BHXH 2014",
     "topic": "Nghĩa vụ tham gia BHXH, BHYT, BHTN bắt buộc",
-    "rule": "Người sử dụng lao động và người lao động phải tham gia bảo hiểm xã hội bắt buộc, bảo hiểm y tế, bảo hiểm thất nghiệp. Mọi thỏa thuận trốn nghĩa vụ đều vô hiệu.",
+    "rule": "Người sử dụng lao động và người lao động phải tham gia bảo hiểm xã hội bắt buộc, bảo hiểm y tế, bảo hiểm thất nghiệp. Mọi thỏa thuận trốn đóng hoặc chi trả tiền mặt thay đóng bảo hiểm đều vô hiệu.",
     "category": "Lao động",
     "keywords": [
       "không tham gia bhxh",
       "tự đóng bảo hiểm",
       "chi trả tiền mặt thay bhxh",
-      "miễn đóng bhxh"
+      "miễn đóng bhxh",
+      "tự chịu bảo hiểm"
     ],
     "risk_level": "CRITICAL",
     "statute_source": "Bộ luật Lao động số 45/2019/QH14",
@@ -103,13 +125,14 @@
     "code": "BLLD2019_D107",
     "law": "Điều 107 & Điều 98, Bộ luật Lao động 2019",
     "topic": "Giới hạn thời giờ làm thêm (OT) và tiền lương làm thêm giờ",
-    "rule": "Thời giờ làm thêm không quá 50% số giờ làm việc bình thường/ngày, không quá 40 giờ/tháng và không quá 200 giờ/năm. Lương OT: ngày thường >=150%, ngày nghỉ hàng tuần >=200%, lễ tết >=300%.",
+    "rule": "Thời giờ làm thêm không quá 50% số giờ làm việc bình thường/ngày, không quá 40 giờ/tháng và không quá 200 giờ/năm. Tiền lương làm thêm giờ: ngày thường >=150%, ngày nghỉ hàng tuần >=200%, lễ tết >=300%.",
     "category": "Lao động",
     "keywords": [
       "làm thêm giờ không tính lương",
       "ot bắt buộc",
       "không trả lương ot",
-      "vượt 40 giờ"
+      "vượt 40 giờ",
+      "làm thêm không tính tiền"
     ],
     "risk_level": "HIGH",
     "statute_source": "Bộ luật Lao động số 45/2019/QH14",
@@ -119,13 +142,14 @@
     "code": "BLLD2019_D35",
     "law": "Điều 35, Bộ luật Lao động 2019",
     "topic": "Quyền đơn phương chấm dứt HĐLĐ của người lao động",
-    "rule": "Người lao động có quyền đơn phương chấm dứt hợp đồng lao động mà không cần lý do, chỉ cần báo trước đủ thời hạn luật định (45 ngày, 30 ngày hoặc 3 ngày làm việc).",
+    "rule": "Người lao động có quyền đơn phương chấm dứt hợp đồng lao động mà không cần lý do, chỉ cần báo trước đủ thời hạn luật định (ít nhất 45 ngày với HĐ không xác định thời hạn; 30 ngày với HĐ từ 12-36 tháng; 03 ngày với HĐ dưới 12 tháng). Thỏa thuận cấm nghỉ việc hoặc phạt tiền khi nghỉ việc là trái luật.",
     "category": "Lao động",
     "keywords": [
       "cấm nghỉ việc",
       "phạt nghỉ việc",
       "phải bồi thường khi nghỉ việc",
-      "cam kết làm việc 5 năm"
+      "cam kết làm việc 5 năm",
+      "không được nghỉ việc"
     ],
     "risk_level": "HIGH",
     "statute_source": "Bộ luật Lao động số 45/2019/QH14",
@@ -135,12 +159,30 @@
     "code": "BLLD2019_D21_NDA",
     "law": "Điều 21.2, Bộ luật Lao động 2019",
     "topic": "Thỏa thuận Không cạnh tranh (NCA) & Bảo mật (NDA)",
-    "rule": "Thỏa thuận cấm làm việc cho đối thủ cạnh tranh sau khi nghỉ việc phải có phạm vi địa lý và thời gian hợp lý (tối đa 1-2 năm) và có đền bù tài chính tương xứng.",
+    "rule": "Thỏa thuận cấm làm việc cho đối thủ cạnh tranh (Non-compete) phải có giới hạn thời gian hợp lý (tối đa 12-24 tháng) và Người sử dụng lao động phải có khoản trợ cấp tài chính bù đắp cho người lao động trong thời gian bị hạn chế.",
     "category": "Lao động",
     "keywords": [
       "cấm làm việc cho đối thủ 5 năm",
       "cấm làm ngành cntt",
-      "non-compete không đền bù"
+      "non-compete không đền bù",
+      "cấm làm việc cho bất kỳ công ty",
+      "cấm làm việc trong 3 năm"
+    ],
+    "risk_level": "HIGH",
+    "statute_source": "Bộ luật Lao động số 45/2019/QH14",
+    "created_at": "2026-01-01T00:00:00"
+  },
+  {
+    "code": "BLLD2019_D62",
+    "law": "Điều 62, Bộ luật Lao động 2019",
+    "topic": "Bồi hoàn chi phí đào tạo nghề theo chứng từ thực tế",
+    "rule": "Chi phí đào tạo chỉ bao gồm các khoản chi có chứng từ hợp lệ về chi phí thực tế trả cho người dạy, tài liệu, chi phí đi lại, ăn ở, tiền lương trong thời gian học. Cấm phạt bồi thường gấp nhiều lần hoặc bắt bồi thường chi phí tuyển dụng, quản lý.",
+    "category": "Lao động",
+    "keywords": [
+      "bồi thường gấp 3 lần chi phí đào tạo",
+      "bồi thường gấp 5 lần",
+      "phạt đào tạo",
+      "bồi thường chi phí tuyển dụng"
     ],
     "risk_level": "HIGH",
     "statute_source": "Bộ luật Lao động số 45/2019/QH14",
@@ -150,7 +192,7 @@
     "code": "LTM2005_D301",
     "law": "Điều 301, Luật Thương mại 2005",
     "topic": "Trần mức phạt vi phạm nghĩa vụ thương mại tối đa 8%",
-    "rule": "Mức phạt đối với vi phạm nghĩa vụ hợp đồng do các bên thoả thuận, nhưng không quá 8% giá trị phần nghĩa vụ hợp đồng bị vi phạm (trừ trường hợp kết quả giám định sai).",
+    "rule": "Mức phạt đối với vi phạm nghĩa vụ hợp đồng do các bên thoả thuận, nhưng không quá 8% giá trị phần nghĩa vụ hợp đồng bị vi phạm (trừ trường hợp kết quả giám định sai). Thỏa thuận phạt 10%, 15%, 20%, 50% là vô hiệu đối với phần vượt mức.",
     "category": "Thương mại",
     "keywords": [
       "phạt 10%",
@@ -158,7 +200,9 @@
       "phạt 20%",
       "phạt 30%",
       "phạt 50%",
-      "tổng giá trị hợp đồng"
+      "tổng giá trị hợp đồng",
+      "phạt vi phạm 12%",
+      "phạt 25%"
     ],
     "risk_level": "CRITICAL",
     "statute_source": "Luật Thương mại số 36/2005/QH11",
@@ -168,12 +212,13 @@
     "code": "LTM2005_D307",
     "law": "Điều 307, Luật Thương mại 2005",
     "topic": "Quan hệ giữa Phạt vi phạm và Bồi thường thiệt hại",
-    "rule": "Trường hợp không có thoả thuận phạt vi phạm thì chỉ được yêu cầu bồi thường thiệt hại. Nếu có thỏa thuận thì có quyền áp dụng cả hai.",
+    "rule": "Trường hợp các bên không có thoả thuận phạt vi phạm thì bên bị vi phạm chỉ có quyền yêu cầu bồi thường thiệt hại. Nếu có thỏa thuận phạt vi phạm thì có quyền áp dụng cả phạt vi phạm và bồi thường thiệt hại.",
     "category": "Thương mại",
     "keywords": [
       "vừa phạt vừa bồi thường",
-      "chỉ áp dụng",
-      "không có thỏa thuận phạt"
+      "chỉ áp dụng phạt",
+      "không có thỏa thuận phạt",
+      "đồng thời phạt và bồi thường"
     ],
     "risk_level": "HIGH",
     "statute_source": "Luật Thương mại số 36/2005/QH11",
@@ -182,14 +227,15 @@
   {
     "code": "LTM2005_D294_295",
     "law": "Điều 294 & 295, Luật Thương mại 2005",
-    "topic": "Miễn trách nhiệm Bất khả kháng và thủ tục thông báo",
-    "rule": "Miễn trách nhiệm khi có sự kiện bất khả kháng. Bên viện dẫn phải thông báo ngay bằng văn bản cho bên kia và áp dụng các biện pháp hạn chế thiệt hại.",
+    "topic": "Miễn trách nhiệm Bất khả kháng và thủ tục thông báo bắt buộc",
+    "rule": "Bên vi phạm hợp đồng được miễn trách nhiệm khi xảy ra sự kiện bất khả kháng. Bên viện dẫn phải thông báo ngay bằng văn bản cho bên kia và áp dụng các biện pháp ngăn ngừa, giảm thiểu tổn thất.",
     "category": "Thương mại",
     "keywords": [
       "bất khả kháng",
       "thiên tai dịch bệnh",
       "thông báo văn bản",
-      "miễn trừ trách nhiệm"
+      "miễn trừ trách nhiệm",
+      "sự kiện bất khả kháng"
     ],
     "risk_level": "MEDIUM",
     "statute_source": "Luật Thương mại số 36/2005/QH11",
@@ -199,15 +245,32 @@
     "code": "LTM2005_D318",
     "law": "Điều 318, Luật Thương mại 2005",
     "topic": "Thời hạn khiếu nại bắt buộc trong thương mại",
-    "rule": "Thời hạn khiếu nại tối thiểu: 03 tháng kể từ ngày giao hàng đối với khiếu nại về số lượng, chất lượng; 06 tháng đối với khiếu nại khác. Không được ép thời hạn dưới 48 giờ.",
+    "rule": "Thời hạn khiếu nại tối thiểu: 03 tháng kể từ ngày giao hàng đối với khiếu nại về số lượng; 06 tháng đối với khiếu nại về chất lượng; 09 tháng đối với nghĩa vụ khác. Điều khoản cài cắm thời hạn khiếu nại chỉ 24h - 48h là tước quyền kiểm tra và vi phạm luật.",
     "category": "Thương mại",
     "keywords": [
       "khiếu nại 24 giờ",
       "khiếu nại 48 giờ",
       "khiếu nại 3 ngày",
-      "sau 48h hết quyền"
+      "sau 48h hết quyền",
+      "khiếu nại trong vòng 24h"
     ],
     "risk_level": "HIGH",
+    "statute_source": "Luật Thương mại số 36/2005/QH11",
+    "created_at": "2026-01-01T00:00:00"
+  },
+  {
+    "code": "LTM2005_D319",
+    "law": "Điều 319, Luật Thương mại 2005",
+    "topic": "Thời hiệu khởi kiện tranh chấp thương mại (02 năm)",
+    "rule": "Thời hiệu khởi kiện áp dụng đối với các tranh chấp thương mại là 02 năm kể từ thời điểm quyền và lợi ích hợp pháp bị xâm phạm.",
+    "category": "Thương mại",
+    "keywords": [
+      "thời hiệu khởi kiện 02 năm",
+      "hết quyền khởi kiện",
+      "thời hiệu khởi kiện 1 năm",
+      "thời hiệu khởi kiện"
+    ],
+    "risk_level": "MEDIUM",
     "statute_source": "Luật Thương mại số 36/2005/QH11",
     "created_at": "2026-01-01T00:00:00"
   },
@@ -222,7 +285,9 @@
       "0.2% mỗi ngày",
       "0.5% mỗi ngày",
       "lãi phạt 30%/năm",
-      "lãi suất chậm trả"
+      "lãi suất chậm trả",
+      "0.05% mỗi ngày",
+      "lãi chậm trả 2%/tháng"
     ],
     "risk_level": "CRITICAL",
     "statute_source": "Bộ luật Dân sự số 91/2015/QH13",
@@ -237,7 +302,8 @@
     "keywords": [
       "miễn trừ hoàn toàn trách nhiệm",
       "không chịu trách nhiệm trong mọi tình huống",
-      "hợp đồng mẫu"
+      "hợp đồng mẫu",
+      "miễn trừ mọi trách nhiệm"
     ],
     "risk_level": "HIGH",
     "statute_source": "Bộ luật Dân sự số 91/2015/QH13",
@@ -245,16 +311,50 @@
   },
   {
     "code": "BLDS2015_D360",
-    "law": "Điều 360 & Điều 302 LTM 2005",
-    "topic": "Bồi thường thiệt hại trực tiếp và Giới hạn trần trách nhiệm",
-    "rule": "Bồi thường toàn bộ thiệt hại thực tế, trực tiếp. Bắt một bên gánh toàn bộ thiệt hại gián tiếp, mất cơ hội kinh doanh mà không có mức trần trách nhiệm (Liability Cap) là rủi ro tài chính nghiêm trọng.",
+    "law": "Điều 360, Bộ luật Dân sự 2015 & Điều 302 LTM 2005",
+    "topic": "Bồi thường thiệt hại trực tiếp và Giới hạn trần trách nhiệm (Liability Cap)",
+    "rule": "Bên có nghĩa vụ chỉ phải bồi thường toàn bộ thiệt hại thực tế, trực tiếp. Quy định bắt bồi thường thiệt hại gián tiếp, mất cơ hội kinh doanh mà không có trần trách nhiệm (Liability Cap) tạo rủi ro tài chính vô hạn.",
     "category": "Dân sự",
     "keywords": [
       "thiệt hại gián tiếp",
       "mất cơ hội kinh doanh",
-      "bồi thường toàn bộ không giới hạn"
+      "bồi thường toàn bộ không giới hạn",
+      "tổn thất doanh thu",
+      "thiệt hại phát sinh gián tiếp"
     ],
     "risk_level": "HIGH",
+    "statute_source": "Bộ luật Dân sự số 91/2015/QH13",
+    "created_at": "2026-01-01T00:00:00"
+  },
+  {
+    "code": "BLDS2015_D428",
+    "law": "Điều 428, Bộ luật Dân sự 2015",
+    "topic": "Đơn phương chấm dứt hợp đồng và nghĩa vụ thông báo trước",
+    "rule": "Bên đơn phương chấm dứt thực hiện hợp đồng phải thông báo ngay cho bên kia biết; nếu không thông báo mà gây thiệt hại thì phải bồi thường. Thỏa thuận cho phép chấm dứt ngay lập tức không báo trước là trái luật.",
+    "category": "Dân sự",
+    "keywords": [
+      "đơn phương chấm dứt ngay lập tức",
+      "không cần thông báo trước",
+      "hủy bỏ hợp đồng bất kỳ lúc nào",
+      "chấm dứt hiệu lực ngay"
+    ],
+    "risk_level": "HIGH",
+    "statute_source": "Bộ luật Dân sự số 91/2015/QH13",
+    "created_at": "2026-01-01T00:00:00"
+  },
+  {
+    "code": "BLDS2015_D328",
+    "law": "Điều 328, Bộ luật Dân sự 2015",
+    "topic": "Quy định về Đặt cọc và Xử lý tài sản phạt cọc",
+    "rule": "Đặt cọc là biện pháp bảo đảm giao kết hoặc thực hiện hợp đồng. Nếu bên nhận đặt cọc từ chối thực hiện thì phải trả lại tiền đặt cọc và một khoản tiền tương đương giá trị tài sản đặt cọc (trừ trường hợp có thỏa thuận khác nhưng không được trái đạo đức xã hội).",
+    "category": "Dân sự",
+    "keywords": [
+      "tiền đặt cọc",
+      "phạt cọc gấp 10 lần",
+      "mất toàn bộ tiền cọc",
+      "đặt cọc không hoàn lại"
+    ],
+    "risk_level": "MEDIUM",
     "statute_source": "Bộ luật Dân sự số 91/2015/QH13",
     "created_at": "2026-01-01T00:00:00"
   },
@@ -262,13 +362,14 @@
     "code": "LDD2024_D45",
     "law": "Điều 45, Luật Đất đai 2024",
     "topic": "Điều kiện thực hiện quyền chuyển nhượng, cho thuê quyền sử dụng đất",
-    "rule": "Chuyển nhượng quyền sử dụng đất bắt buộc phải có Giấy chứng nhận quyền sử dụng đất (Sổ đỏ), đất không có tranh chấp, quyền sử dụng đất không bị kê biên, trong thời hạn sử dụng đất và phải đăng ký tại cơ quan đăng ký đất đai.",
+    "rule": "Chuyển nhượng quyền sử dụng đất bắt buộc phải có Giấy chứng nhận quyền sử dụng đất (Sổ đỏ), đất không có tranh chấp, quyền sử dụng đất không bị kê biên và trong thời hạn sử dụng đất.",
     "category": "Đất đai & BĐS",
     "keywords": [
       "chưa có sổ đỏ",
       "đang tranh chấp đất",
       "giấy tờ tay",
-      "đang bị kê biên"
+      "đang bị kê biên",
+      "chưa được cấp giấy chứng nhận"
     ],
     "risk_level": "CRITICAL",
     "statute_source": "Luật Đất đai số 31/2024/QH15",
@@ -284,22 +385,40 @@
       "nhà ở tương lai",
       "chưa xong móng",
       "không có bảo lãnh ngân hàng",
-      "mua bán dự án chưa nghiệm thu"
+      "mua bán dự án chưa nghiệm thu",
+      "chưa hoàn thành móng"
     ],
     "risk_level": "CRITICAL",
     "statute_source": "Luật Nhà ở số 27/2023/QH15",
     "created_at": "2026-01-01T00:00:00"
   },
   {
+    "code": "LKDBDS2023_D23",
+    "law": "Điều 23.5, Luật Kinh doanh Bất động sản 2023",
+    "topic": "Trần đặt cọc mua bán nhà ở hình thành trong tương lai tối đa 5%",
+    "rule": "Chủ đầu tư dự án bất động sản chỉ được thu tiền đặt cọc không quá 5% giá bán, cho thuê mua nhà ở, công trình xây dựng hình thành trong tương lai khi đã đủ điều kiện.",
+    "category": "Đất đai & BĐS",
+    "keywords": [
+      "đặt cọc 10% nhà ở",
+      "đặt cọc 20% dự án",
+      "đặt cọc 30% căn hộ",
+      "đặt cọc vượt 5%"
+    ],
+    "risk_level": "CRITICAL",
+    "statute_source": "Luật Kinh doanh Bất động sản số 29/2023/QH15",
+    "created_at": "2026-01-01T00:00:00"
+  },
+  {
     "code": "LSHTT_D20",
     "law": "Điều 20 & 45, Luật Sở hữu trí tuệ (sửa đổi 2022)",
     "topic": "Chuyển giao quyền tác giả đối với phần mềm, sáng chế",
-    "rule": "Quyền tác giả và tài sản trí tuệ đối với phần mềm, thuật toán chỉ chuyển giao khi có thỏa thuận văn bản và bên nhận chuyển giao hoàn tất 100% nghĩa vụ thanh toán.",
+    "rule": "Quyền tác giả và tài sản trí tuệ đối với phần mềm, thuật toán chỉ chính thức chuyển giao khi có thỏa thuận văn bản và bên nhận chuyển giao đã hoàn tất 100% nghĩa vụ thanh toán.",
     "category": "Sở hữu trí tuệ",
     "keywords": [
       "mã nguồn thuộc bên a",
       "thuật toán sở hữu vô điều kiện",
-      "bản quyền phần mềm"
+      "bản quyền phần mềm",
+      "chuyển giao toàn bộ quyền tác giả"
     ],
     "risk_level": "HIGH",
     "statute_source": "Luật Sở hữu trí tuệ số 07/2022/QH15",
@@ -308,59 +427,98 @@
   {
     "code": "ND13_2023_NDCP",
     "law": "Điều 9, 11, 17, Nghị định 13/2023/NĐ-CP",
-    "topic": "Bảo vệ Dữ liệu Cá nhân người lao động & khách hàng",
-    "rule": "Việc xử lý dữ liệu cá nhân (kể cả thông tin nhân viên, khách hàng) bắt buộc phải có sự chấp thuận minh thị của chủ thể dữ liệu và tuân thủ các biện pháp bảo vệ kỹ thuật.",
+    "topic": "Bảo vệ Dữ liệu Cá nhân người lao động & khách hàng (PDPD)",
+    "rule": "Việc xử lý dữ liệu cá nhân (kể cả thông tin nhân viên, khách hàng) bắt buộc phải có sự chấp thuận minh thị của chủ thể dữ liệu và áp dụng các biện pháp bảo mật kỹ thuật thích hợp.",
     "category": "Công nghệ & Dữ liệu",
     "keywords": [
       "dữ liệu cá nhân",
       "thông tin nhân viên",
       "thông tin khách hàng",
-      "nghị định 13"
+      "nghị định 13",
+      "cơ sở dữ liệu người dùng"
     ],
     "risk_level": "HIGH",
     "statute_source": "Nghị định số 13/2023/NĐ-CP",
     "created_at": "2026-01-01T00:00:00"
   },
   {
-    "code": "LUTGIAOD_D10",
-    "law": "Điều 10, Luật Giao dịch điện tử 2023",
-    "topic": "Giá trị pháp lý của thông điệp dữ liệu thay thế văn bản giấy",
-    "rule": "Thông điệp dữ liệu có giá trị như văn bản nếu thông tin chứa trong thông điệp dữ liệu đó có thể truy cập và sử dụng được để tham chiếu khi cần thiết. Không phủ nhận giá trị pháp lý chỉ vì hợp đồng được thể hiện dưới dạng điện tử.",
+    "code": "LUTGIAOD_D10_22",
+    "law": "Điều 10, 22, 34, Luật Giao dịch điện tử 2023",
+    "topic": "Giá trị pháp lý thông điệp dữ liệu & Chữ ký số",
+    "rule": "Thông điệp dữ liệu có giá trị pháp lý như văn bản gốc nếu bảo đảm tính toàn vẹn và có thể truy cập được. Hợp đồng điện tử ký bằng chữ ký số an toàn có giá trị ràng buộc tương đương văn bản ký tay đóng dấu.",
     "category": "Công nghệ & Dữ liệu",
     "keywords": [
-      "giá trị pháp lý của thông điệp dữ liệu thay thế văn bản giấy",
-      "giá trị pháp lý của thông điệp dữ liệu thay thế văn bản giấy"
+      "chữ ký số",
+      "hợp đồng điện tử",
+      "chữ ký scan",
+      "chữ ký hình ảnh",
+      "thông điệp dữ liệu"
     ],
-    "risk_level": "HIGH",
-    "statute_source": "Luật Giao dịch điện tử 2023 (LGDDT_auto_ingested.txt)",
-    "created_at": "2026-09-14T12:59:40.564000"
+    "risk_level": "MEDIUM",
+    "statute_source": "Luật Giao dịch điện tử số 20/2023/QH15",
+    "created_at": "2026-01-01T00:00:00"
   },
   {
-    "code": "LUTGIAOD_D22",
-    "law": "Điều 22, Luật Giao dịch điện tử 2023",
-    "topic": "Chữ ký điện tử chuyên dùng và Chữ ký số an toàn",
-    "rule": "Chữ ký số là chữ ký điện tử an toàn đáp ứng các điều kiện: được tạo ra trong thời gian chứng thư chữ ký số có hiệu lực; gắn duy nhất với người ký và dữ liệu ký không bị sửa đổi.",
-    "category": "Công nghệ & Dữ liệu",
+    "code": "BLTTDS_D39_LTTTM",
+    "law": "Điều 39 BLTTDS 2015 & Luật Trọng tài thương mại 2010",
+    "topic": "Thẩm quyền giải quyết tranh chấp công bằng & Thỏa thuận Trọng tài",
+    "rule": "Ưu tiên giải quyết tại Trọng tài thương mại (VIAC) hoặc Tòa án nơi bị đơn cư trú. Thỏa thuận áp đặt Tòa án địa phương một chiều theo ý chí của bên soạn thảo hợp đồng là điều khoản bất lợi.",
+    "category": "Tranh chấp & Tài phán",
     "keywords": [
-      "chữ ký điện tử chuyên dùng và chữ ký số an toàn",
-      "chữ ký điện tử chuyên dùng và chữ ký số an toàn"
+      "tòa án nơi bên a",
+      "tòa án nơi người sử dụng lao động",
+      "thẩm quyền duy nhất",
+      "trụ sở của bên a"
     ],
-    "risk_level": "HIGH",
-    "statute_source": "Luật Giao dịch điện tử 2023 (LGDDT_auto_ingested.txt)",
-    "created_at": "2026-09-14T12:59:40.564000"
+    "risk_level": "MEDIUM",
+    "statute_source": "Bộ luật Tố tụng Dân sự 2015 & Luật TTTM 2010",
+    "created_at": "2026-01-01T00:00:00"
   },
   {
-    "code": "LUTGIAOD_D34",
-    "law": "Điều 34, Luật Giao dịch điện tử 2023",
-    "topic": "Giao kết và thực hiện hợp đồng điện tử",
-    "rule": "Giao kết hợp đồng điện tử là việc sử dụng thông điệp dữ liệu để tiến hành một phần hoặc toàn bộ quy trình giao kết hợp đồng. Hợp đồng điện tử được giao kết theo nguyên tắc tự nguyện, bình đẳng và tuân thủ các quy định của Bộ luật Dân sự.",
-    "category": "Công nghệ & Dữ liệu",
+    "code": "ANLE_09_2016",
+    "law": "Án lệ số 09/2016/AL của Hội đồng Thẩm phán TANDTC",
+    "topic": "Không tính lãi chồng lãi & Cấm trùng lặp chế tài phạt vi phạm với lãi chậm trả",
+    "rule": "Không được tính lãi trên số tiền lãi chậm trả (không tính lãi kép) và không được áp dụng trùng lặp đồng thời chế tài phạt vi phạm hợp đồng và lãi phạt chậm trả trên cùng một hành vi chậm thanh toán.",
+    "category": "Án lệ TANDTC",
     "keywords": [
-      "giao kết và thực hiện hợp đồng điện tử",
-      "giao kết và thực hiện hợp đồng điện tử"
+      "lãi kép",
+      "lãi trên tiền lãi",
+      "vừa phạt chậm trả vừa tính lãi",
+      "chồng chéo chế tài"
     ],
     "risk_level": "HIGH",
-    "statute_source": "Luật Giao dịch điện tử 2023 (LGDDT_auto_ingested.txt)",
-    "created_at": "2026-09-14T12:59:40.564000"
+    "statute_source": "Án lệ số 09/2016/AL của Hội đồng Thẩm phán TANDTC",
+    "created_at": "2026-01-01T00:00:00"
+  },
+  {
+    "code": "BLLD2019_D97_4",
+    "law": "Điều 97.4, Bộ luật Lao động 2019",
+    "topic": "Chậm trả lương từ 14 ngày phải trả thêm tiền lãi",
+    "rule": "Trường hợp vì lý do bất khả kháng mà chậm trả lương từ 14 ngày trở lên thì Người sử dụng lao động phải đền bù cho Người lao động một khoản tiền ít nhất bằng số tiền lãi của số tiền trả chậm theo lãi suất huy động tiền gửi kỳ hạn 01 tháng của Ngân hàng thương mại.",
+    "category": "Lao động",
+    "keywords": [
+      "chậm trả lương",
+      "hoãn trả lương",
+      "chậm lương không tính lãi",
+      "chậm thanh toán lương"
+    ],
+    "risk_level": "HIGH",
+    "statute_source": "Bộ luật Lao động số 45/2019/QH14",
+    "created_at": "2026-01-01T00:00:00"
+  },
+  {
+    "code": "ANLE_20_2018",
+    "law": "Án lệ số 20/2018/AL của Hội đồng Thẩm phán TANDTC",
+    "topic": "Mặc nhiên xác lập Hợp đồng lao động khi hết thời gian thử việc",
+    "rule": "Khi hết thời gian thử việc mà người lao động vẫn tiếp tục làm việc và người sử dụng lao động không có thông báo chấm dứt thì mặc nhiên quan hệ lao động giữa hai bên đã chuyển hóa thành Hợp đồng lao động chính thức.",
+    "category": "Án lệ TANDTC",
+    "keywords": [
+      "tiếp tục thử việc cho đến khi có thông báo",
+      "kết thúc thử việc chưa được coi là nhân viên chính thức",
+      "hết thử việc nếu chưa ký hđ"
+    ],
+    "risk_level": "HIGH",
+    "statute_source": "Án lệ số 20/2018/AL của Hội đồng Thẩm phán TANDTC",
+    "created_at": "2026-01-01T00:00:00"
   }
 ]

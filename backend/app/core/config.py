@@ -6,6 +6,10 @@ class Settings(BaseSettings):
     ENVIRONMENT: str = "development"
     DEBUG: bool = True
     PORT: int = 8000
+    ALLOWED_ORIGINS: str = os.getenv(
+        "ALLOWED_ORIGINS",
+        "http://localhost:3000,http://127.0.0.1:3000,http://localhost:8000"
+    )
     
     # LLM Settings
     LLM_PROVIDER: str = os.getenv("LLM_PROVIDER", "openai")

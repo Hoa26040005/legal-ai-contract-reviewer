@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
+from app.core.database import init_db
 from app.api.v1.contracts import router as contracts_router
 from app.api.v1.laws import router as laws_router
 
@@ -10,12 +11,22 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# Cấu hình CORS cho phép Frontend truy cập
+@app.on_event("startup")
+def on_startup():
+    init_db()
+
+# Cấu hình CORS an toàn theo danh sách Origin được phép
+ALLOWED_ORIGINS = [
+    origin.strip()
+    for origin in settings.ALLOWED_ORIGINS.split(",")
+    if origin.strip()
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=ALLOWED_ORIGINS,
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["*"],
 )
 

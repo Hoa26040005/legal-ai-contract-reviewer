@@ -79,7 +79,20 @@ async def upload_statute_document(
     tự động bóc tách từng Điều khoản và nạp vào thư viện tri thức phục vụ soi hợp đồng.
     """
     content_bytes = await file.read()
+    max_statute_size = 25 * 1024 * 1024
+    if len(content_bytes) > max_statute_size:
+        raise HTTPException(
+            status_code=413,
+            detail="Dung lượng tệp văn bản quy phạm pháp luật vượt quá giới hạn cho phép (25MB)."
+        )
+    if len(content_bytes) == 0:
+        raise HTTPException(status_code=400, detail="Tệp văn bản luật tải lên rỗng.")
     filename = file.filename or "statute_doc.txt"
+    if not filename.lower().endswith((".txt", ".docx", ".pdf")):
+        raise HTTPException(
+            status_code=400,
+            detail="Chỉ hỗ trợ tệp văn bản luật định dạng .txt, .docx hoặc .pdf."
+        )
 
     # Giải mã văn bản
     text = ""

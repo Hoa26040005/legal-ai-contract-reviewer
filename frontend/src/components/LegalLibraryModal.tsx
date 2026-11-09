@@ -9,12 +9,12 @@ import {
 import { 
   LegalRuleItem, LegalRuleCreate, LegalRuleUpdate, 
   LegalLibraryStats, StatuteUploadResponse, NationalStatuteItem 
-} from '@/types/contract';
+} from '../types/contract';
 import { 
   fetchLaws, fetchLawStats, createLaw, 
   updateLaw, deleteLaw, uploadStatuteDocument,
   fetchNationalCatalog, autoIngestStatute
-} from '@/lib/api';
+} from '../lib/api';
 
 interface LegalLibraryModalProps {
   isOpen: boolean;

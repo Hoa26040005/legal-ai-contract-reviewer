@@ -1,4 +1,4 @@
-from typing import List, Dict, Optional
+from typing import List, Dict, Optional, Any
 from datetime import datetime
 from app.models.schemas import ArchiveContractItem, ContractAnalysisReport
 
@@ -79,8 +79,48 @@ class ContractStorageManager:
     }
 
     @classmethod
-    def get_archive_list(cls, category: Optional[str] = None) -> List[ArchiveContractItem]:
-        """Lấy danh sách tất cả tài liệu trong Tủ Hồ Sơ"""
+    def get_archive_list(cls, category: Optional[str] = None, db: Optional[Any] = None) -> List[ArchiveContractItem]:
+        """Lấy danh sách tất cả tài liệu trong Tủ Hồ Sơ (kết hợp Database bền vững + Samples)"""
+        if db:
+            try:
+                from app.models.db_models import ContractModel, ClauseModel
+                db_contracts = db.query(ContractModel).order_by(ContractModel.created_at.desc()).all()
+                for c in db_contracts:
+                    if c.id in cls.ARCHIVE_REGISTRY:
+                        continue
+                    ctype = c.contract_type.lower()
+                    if "lao động" in ctype or "labor" in ctype:
+                        cat = "Lao động & Nhân sự"
+                    elif "mua bán" in ctype or "thương mại" in ctype or "sale" in ctype:
+                        cat = "Mua bán & Thương mại"
+                    elif "nda" in ctype or "bảo mật" in ctype:
+                        cat = "Bảo mật NDA"
+                    else:
+                        cat = "Dịch vụ CNTT"
+
+                    status = "AN TOÀN" if c.overall_score >= 75 else ("ĐANG ĐÀM PHÁN" if c.overall_score >= 40 else "CẦN SỬA ĐỔI")
+                    max_p = db.query(ClauseModel.page_number).filter(ClauseModel.contract_id == c.id).order_by(ClauseModel.page_number.desc()).first()
+                    page_count = max_p[0] if max_p else 1
+
+                    cls.ARCHIVE_REGISTRY[c.id] = ArchiveContractItem(
+                        contract_id=c.id,
+                        title=c.title,
+                        contract_type=c.contract_type,
+                        category=cat,
+                        overall_score=c.overall_score,
+                        status_label=status,
+                        created_at=c.created_at.strftime("%Y-%m-%d %H:%M") if c.created_at else "",
+                        page_count=page_count,
+                        total_clauses=c.total_clauses,
+                        critical_count=c.critical_count,
+                        file_size_kb=round(float(c.total_clauses * 42.5), 1),
+                        original_filename=c.raw_filename or "contract.pdf",
+                        has_docx=True,
+                        has_annex=True
+                    )
+            except Exception as e:
+                print("Lỗi tải archive từ database:", e)
+
         items = list(cls.ARCHIVE_REGISTRY.values())
         if category and category != "Tất cả":
             items = [item for item in items if item.category == category]
@@ -94,9 +134,21 @@ class ContractStorageManager:
         filename: str,
         file_bytes: Optional[bytes] = None
     ) -> ArchiveContractItem:
-        """Lưu trữ một hợp đồng mới vào Tủ Hồ Sơ"""
+        """Lưu trữ một hợp đồng mới vào Tủ Hồ Sơ và lưu tệp vật lý vào ổ cứng"""
         now_str = datetime.now().strftime("%Y-%m-%d %H:%M")
         file_size_kb = round(len(file_bytes) / 1024, 1) if file_bytes else 250.0
+
+        # Lưu tệp vật lý trên ổ cứng tại thư mục data/uploads
+        if file_bytes:
+            try:
+                import os
+                upload_dir = os.path.join(os.path.dirname(__file__), "..", "..", "data", "uploads")
+                os.makedirs(upload_dir, exist_ok=True)
+                safe_fname = f"{report.contract_id}_{filename}"
+                with open(os.path.join(upload_dir, safe_fname), "wb") as f:
+                    f.write(file_bytes)
+            except Exception as e:
+                print("Lỗi lưu file vật lý vào uploads:", e)
 
         # Xác định danh mục
         ctype = report.contract_type.lower()

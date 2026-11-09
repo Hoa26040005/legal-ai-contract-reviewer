@@ -30,8 +30,20 @@ module.exports = {
         }
       },
       fontFamily: {
-        sans: ['Inter', 'sans-serif'],
+        sans: ['"Plus Jakarta Sans"', 'system-ui', '-apple-system', 'sans-serif'],
+        mono: ['"JetBrains Mono"', 'ui-monospace', 'monospace'],
       },
+      boxShadow: {
+        'bezel-outer': '0 0 0 1px rgba(255, 255, 255, 0.08), 0 8px 24px -4px rgba(0, 0, 0, 0.5)',
+        'bezel-inner': 'inset 0 1px 1px 0 rgba(255, 255, 255, 0.1)',
+        'glow-cyan': '0 0 24px -2px rgba(6, 182, 212, 0.35)',
+        'glow-rose': '0 0 24px -2px rgba(239, 68, 68, 0.35)',
+        'glow-amber': '0 0 24px -2px rgba(245, 158, 11, 0.35)',
+        'glow-emerald': '0 0 24px -2px rgba(16, 185, 129, 0.35)',
+      },
+      transitionTimingFunction: {
+        'spring-custom': 'cubic-bezier(0.16, 1, 0.3, 1)',
+      }
     },
   },
   plugins: [],

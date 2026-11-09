@@ -185,8 +185,176 @@ class LegalRiskAnalyzer:
             "topic": "Thẩm quyền giải quyết tranh chấp công bằng",
             "rule": "Ưu tiên thương lượng hòa giải, giải quyết tại Trọng tài thương mại (VIAC) hoặc Tòa án nơi bị đơn cư trú thay vì áp đặt tòa án địa phương một chiều.",
             "keywords": ["tòa án nơi bên a", "tòa án nơi người sử dụng lao động", "thẩm quyền duy nhất"]
+        },
+
+        # =========================================================================
+        # KHỐI 5: BẤT ĐỘNG SẢN, ĐẶT CỌC, THUÊ MẶT BẰNG & ỦY QUYỀN (MỞ RỘNG)
+        # =========================================================================
+        {
+            "code": "LKDBDS2023_D23_5",
+            "law": "Điều 23.5, Luật Kinh doanh Bất động sản 2023",
+            "topic": "Trần tiền đặt cọc nhà ở, công trình hình thành trong tương lai tối đa 5%",
+            "rule": "Chủ đầu tư dự án bất động sản chỉ được thu tiền đặt cọc không quá 5% giá bán, cho thuê mua nhà ở, công trình xây dựng hình thành trong tương lai khi đã đủ điều kiện đưa vào kinh doanh.",
+            "keywords": ["đặt cọc căn hộ", "đặt cọc nhà ở hình thành trong tương lai", "vượt quá 5% giá bán"]
+        },
+        {
+            "code": "LDD2024_D45_LNO2023_D164",
+            "law": "Điều 45 Luật Đất đai 2024 & Điều 160, 164 Luật Nhà ở 2023",
+            "topic": "Bắt buộc công chứng hợp đồng nhà đất & Điều kiện pháp lý BĐS",
+            "rule": "Hợp đồng mua bán, chuyển nhượng nhà đất giữa cá nhân phải được công chứng/chứng thực; giao dịch bằng giấy viết tay hoặc vi bằng thừa phát lại là vô hiệu. Nhà ở hình thành trong tương lai phải có nghiệm thu móng và bảo lãnh ngân hàng.",
+            "keywords": ["giấy viết tay", "lập vi bằng mua bán nhà", "không công chứng", "chưa có sổ đỏ", "không có bảo lãnh ngân hàng"]
+        },
+        {
+            "code": "BLDS2015_D328",
+            "law": "Điều 328, Bộ luật Dân sự 2015",
+            "topic": "Chế tài phạt cọc song phương công bằng trong Hợp đồng Đặt cọc",
+            "rule": "Nếu bên đặt cọc từ chối giao kết hợp đồng thì tài sản đặt cọc thuộc về bên nhận đặt cọc; nếu bên nhận đặt cọc từ chối giao kết thì phải trả cho bên đặt cọc tài sản đặt cọc và một khoản tiền tương đương giá trị tài sản đặt cọc.",
+            "keywords": ["chỉ hoàn trả lại tiền cọc", "miễn phạt cọc", "không chịu phạt cọc"]
+        },
+        {
+            "code": "BLDS2015_D472_481",
+            "law": "Điều 472, 474 & 481, Bộ luật Dân sự 2015",
+            "topic": "Bảo vệ quyền lợi bên thuê trong Hợp đồng Thuê mặt bằng / Thuê nhà",
+            "rule": "Giá thuê và lộ trình điều chỉnh giá thuê phải cố định hoặc giới hạn biên độ hợp lý (<= 10-15%/năm); bên cho thuê không được tự ý lấy lại mặt bằng đột ngột mà không báo trước tối thiểu 30-90 ngày và phải bồi hoàn khấu hao chi phí cải tạo hợp pháp.",
+            "keywords": ["tự ý tăng giá thuê", "lấy lại mặt bằng báo trước 7 ngày", "không bồi thường chi phí cải tạo"]
+        },
+        {
+            "code": "BLDS2015_D562_569",
+            "law": "Điều 142 & Điều 562 - 569, Bộ luật Dân sự 2015",
+            "topic": "Thời hạn, phạm vi Ủy quyền, Ủy quyền lại và Thẩm quyền người ký",
+            "rule": "Ủy quyền phải xác định rõ phạm vi và thời hạn; bên ủy quyền luôn có quyền đơn phương chấm dứt ủy quyền theo Điều 569. Bên được ủy quyền chỉ được ủy quyền lại cho người thứ ba nếu bên ủy quyền đồng ý (Điều 564). Người ký hợp đồng không có thẩm quyền đại diện hoặc thiếu Giấy ủy quyền hợp lệ làm giao dịch vô hiệu (Điều 142).",
+            "keywords": ["ủy quyền vô thời hạn", "không được hủy ngang ủy quyền", "tự ý ủy quyền lại", "không có giấy ủy quyền"]
         }
     ]
+
+    @classmethod
+    def detect_contract_type(cls, filename: str, clauses: List[Clause]) -> str:
+        """Tự động nhận diện chuyên sâu loại giấy tờ / hợp đồng từ tên tệp và nội dung các điều khoản."""
+        lower_name = (filename or "").lower()
+        full_text = (lower_name + " " + " ".join(f"{c.title} {c.content}" for c in clauses[:6])).lower()
+
+        if any(k in full_text for k in ["giấy ủy quyền", "hợp đồng ủy quyền", "bên ủy quyền", "bên được ủy quyền", "phạm vi ủy quyền", "uy quyen"]):
+            return "Giấy Ủy quyền / Hợp đồng Ủy quyền (BLDS 2015)"
+        if any(k in full_text for k in ["bất động sản", "căn hộ chung cư", "nhà ở hình thành trong tương lai", "quyền sử dụng đất", "chuyển nhượng thửa đất", "sổ đỏ", "bat dong san", "can ho"]):
+            return "Hợp đồng Bất động sản & Nhà ở (Luật KDBĐS 2023 & Đất đai 2024)"
+        if any(k in full_text for k in ["thuê mặt bằng", "thuê nhà", "thuê văn phòng", "bên cho thuê", "tiền thuê mặt bằng", "thue mat bang", "thue nha"]):
+            return "Hợp đồng Đặt cọc & Thuê mặt bằng (BLDS 2015)"
+        if any(k in lower_name for k in ["lao động", "labor", "viec", "nhan su", "thử việc"]) or any(
+            k in full_text for k in ["hợp đồng lao động", "người lao động", "người sử dụng lao động", "thời gian thử việc", "bảo hiểm xã hội"]
+        ):
+            return "Hợp đồng Lao động (BLLD 2019)"
+        if any(k in lower_name for k in ["nda", "bao mat", "confidential"]) or any(
+            k in full_text for k in ["thỏa thuận bảo mật", "thông tin mật", "bên tiết lộ", "bên nhận thông tin"]
+        ):
+            return "Thỏa thuận Bảo mật Thông tin"
+        if any(k in lower_name for k in ["mua ban", "sale", "thuong mai", "commercial"]) or "mua bán hàng hóa" in full_text:
+            return "Hợp đồng Mua bán Hàng hóa"
+        return "Hợp đồng Dịch vụ Thương mại"
+
+    @classmethod
+    def evaluate_contract_completeness(cls, clauses: List[Clause], contract_type: str = "") -> List[RiskItem]:
+        """
+        Bộ kiểm tra Cấu trúc Toàn Hợp đồng & Hiệu lực Hình thức (Contract-Level Completeness & Formal Validity Check):
+        1. Kiểm tra thông tin Người đại diện theo pháp luật / Giấy ủy quyền ký kết (Điều 134, 142 BLDS 2015 & Điều 12 Luật Doanh nghiệp 2020).
+        2. Kiểm tra sự tồn tại của Điều khoản Sự kiện Bất khả kháng (Điều 156 BLDS 2015 & Điều 294 LTM 2005).
+        3. Kiểm tra sự tồn tại của Điều khoản Giải quyết tranh chấp & Cơ quan tài phán (Điều 317 LTM 2005 & Điều 39 BLTTDS 2015).
+        """
+        if not clauses:
+            return []
+
+        structural_risks: List[RiskItem] = []
+        full_text = " ".join(f"{c.clause_number} {c.title} {c.content}" for c in clauses).lower()
+        anchor_clause = clauses[-1]
+        ctype_lower = (contract_type or "").lower()
+        is_poa = any(k in ctype_lower for k in ["ủy quyền", "uy quyen"]) or "giấy ủy quyền" in full_text
+
+        # 1. Kiểm tra thiếu thông tin Đại diện theo pháp luật / Giấy ủy quyền khi có chủ thể doanh nghiệp hoặc cấp phó ký
+        has_subordinate_title = any(
+            t in full_text for t in ["phó giám đốc", "phó tổng giám đốc", "trưởng phòng", "giám đốc chi nhánh", "ký thay", "kt. giám đốc"]
+        )
+        has_valid_poa_ref = bool(
+            re.search(r'(?:giấy\s+ủy\s+quyền|văn\s+bản\s+ủy\s+quyền|quyết\s+định\s+ủy\s+quyền)\s*(?:số|ngày|:)', full_text)
+        )
+        has_any_rep_identity = any(
+            k in full_text
+            for k in [
+                "đại diện theo pháp luật", "người đại diện", "giấy ủy quyền", "văn bản ủy quyền",
+                "mã số thuế", "mã số doanh nghiệp", "cccd", "cmnd", "căn cước công dân", "chức vụ:"
+            ]
+        )
+
+        if has_subordinate_title and not has_valid_poa_ref:
+            structural_risks.append(RiskItem(
+                id=f"risk_{anchor_clause.id}_missing_poa_reference",
+                clause_id=anchor_clause.id,
+                clause_number=anchor_clause.clause_number,
+                risk_level=RiskLevel.HIGH,
+                risk_title="Người ký không phải Đại diện theo pháp luật nhưng thiếu số Giấy ủy quyền hợp lệ",
+                risk_category="Hiệu lực Hình thức & Thẩm quyền Ký kết",
+                description="Văn bản ghi nhận người đại diện ký kết là cấp phó (Phó Giám đốc, Trưởng phòng, Giám đốc chi nhánh hoặc Ký thay) nhưng không dẫn chiếu rõ Số, Ngày của Giấy ủy quyền từ Người đại diện theo pháp luật. Theo Điều 142 Bộ luật Dân sự 2015, hợp đồng do người không có quyền đại diện xác lập có nguy cơ bị Tòa án tuyên vô hiệu.",
+                legal_basis="Điều 134, Điều 142 Bộ luật Dân sự 2015 & Điều 12 Luật Doanh nghiệp 2020",
+                original_text=anchor_clause.content,
+                suggested_text=anchor_clause.content + "\n[Bổ sung thông tin Thẩm quyền Ký kết]: 'Đại diện bởi Ông/Bà: [...], Chức vụ: [...], theo Giấy ủy quyền số [...]/GUQ ngày [...]/[...]/[...] của Người đại diện theo pháp luật Công ty (Đính kèm bản sao hợp lệ Giấy ủy quyền là bộ phận không tách rời của Hợp đồng).'",
+                rationale="Đảm bảo tính hợp pháp về thẩm quyền chủ thể ký kết, ngăn chặn rủi ro một bên rũ bỏ trách nhiệm với lý do người ký vượt thẩm quyền.",
+                bounding_boxes=anchor_clause.bounding_boxes
+            ))
+        elif len(clauses) >= 4 and not has_any_rep_identity:
+            structural_risks.append(RiskItem(
+                id=f"risk_{anchor_clause.id}_missing_signatory_info",
+                clause_id=anchor_clause.id,
+                clause_number=anchor_clause.clause_number,
+                risk_level=RiskLevel.MEDIUM,
+                risk_title="Thiếu thông tin định danh Chủ thể & Người đại diện theo pháp luật / Giấy ủy quyền",
+                risk_category="Hiệu lực Hình thức & Thẩm quyền Ký kết",
+                description="Toàn bộ văn bản hợp đồng chưa ghi nhận thông tin định danh pháp lý của các bên (Mã số doanh nghiệp/CCCD, Người đại diện theo pháp luật hoặc số Giấy ủy quyền hợp lệ). Đây là yếu tố bắt buộc để xác định năng lực chủ thể theo Điều 117 Bộ luật Dân sự 2015.",
+                legal_basis="Điều 117 & Điều 134, Bộ luật Dân sự 2015",
+                original_text=anchor_clause.content,
+                suggested_text=anchor_clause.content + "\n[Khuyến nghị bổ sung Phần Chủ thể Hợp đồng]: Ghi rõ Tên pháp nhân, Mã số doanh nghiệp, Địa chỉ trụ sở, Họ tên & Chức vụ Người đại diện theo pháp luật (hoặc số Giấy ủy quyền kèm theo) của cả hai bên trước phần Điều khoản nội dung.",
+                rationale="Xác lập rõ tư cách pháp nhân và thẩm quyền đại diện để đảm bảo hiệu lực bắt buộc thực hiện của hợp đồng.",
+                bounding_boxes=anchor_clause.bounding_boxes
+            ))
+
+        # 2. Kiểm tra thiếu Điều khoản Sự kiện Bất khả kháng (chỉ áp dụng cho hợp đồng >= 4 điều khoản, trừ Giấy ủy quyền)
+        has_force_majeure = any(
+            k in full_text for k in ["bất khả kháng", "thiên tai", "dịch bệnh", "sự kiện khách quan", "force majeure", "Điều 156", "điều 294"]
+        )
+        if len(clauses) >= 4 and not is_poa and not has_force_majeure:
+            structural_risks.append(RiskItem(
+                id=f"risk_{anchor_clause.id}_missing_force_majeure",
+                clause_id=anchor_clause.id,
+                clause_number=anchor_clause.clause_number,
+                risk_level=RiskLevel.MEDIUM,
+                risk_title="Cấu trúc Hợp đồng thiếu hoàn toàn Điều khoản Sự kiện Bất khả kháng",
+                risk_category="Cấu trúc Toàn Hợp đồng (Missing Clause)",
+                description="Rà soát toàn văn cho thấy hợp đồng chưa có điều khoản quy định về Sự kiện Bất khả kháng (thiên tai, dịch bệnh, thay đổi chính sách pháp luật) và thủ tục thông báo miễn trừ trách nhiệm theo Điều 156 BLDS 2015 và Điều 294, 295 Luật Thương mại 2005.",
+                legal_basis="Điều 156 Bộ luật Dân sự 2015 & Điều 294, 295 Luật Thương mại 2005",
+                original_text=anchor_clause.content,
+                suggested_text=anchor_clause.content + "\n[Đề xuất bổ sung Điều khoản Bất khả kháng]: 'Các bên được miễn trách nhiệm do không thực hiện hoặc thực hiện chậm nghĩa vụ nếu nguyên nhân trực tiếp do Sự kiện Bất khả kháng theo Điều 156 Bộ luật Dân sự 2015, với điều kiện bên bị ảnh hưởng phải thông báo bằng văn bản cho bên kia trong vòng 05 ngày làm việc và nỗ lực tối đa hạn chế thiệt hại.'",
+                rationale="Bảo vệ các bên khỏi trách nhiệm phạt vi phạm và bồi thường khi xảy ra biến cố khách quan không thể lường trước.",
+                bounding_boxes=anchor_clause.bounding_boxes
+            ))
+
+        # 3. Kiểm tra thiếu Điều khoản Giải quyết tranh chấp & Cơ quan tài phán
+        has_dispute_clause = any(
+            k in full_text for k in ["tranh chấp", "tòa án", "trọng tài", "hòa giải", "thương lượng", "viac", "cơ quan tài phán"]
+        )
+        if len(clauses) >= 4 and not is_poa and not has_dispute_clause:
+            structural_risks.append(RiskItem(
+                id=f"risk_{anchor_clause.id}_missing_dispute_resolution",
+                clause_id=anchor_clause.id,
+                clause_number=anchor_clause.clause_number,
+                risk_level=RiskLevel.MEDIUM,
+                risk_title="Cấu trúc Hợp đồng thiếu hoàn toàn Điều khoản Giải quyết tranh chấp",
+                risk_category="Cấu trúc Toàn Hợp đồng (Missing Clause)",
+                description="Hợp đồng chưa quy định cơ chế thương lượng, hòa giải và cơ quan có thẩm quyền phán quyết (Tòa án Nhân dân có thẩm quyền hoặc Trọng tài Thương mại) khi phát sinh tranh chấp theo Điều 317 Luật Thương mại 2005 và Điều 39 BLTTDS 2015.",
+                legal_basis="Điều 317 Luật Thương mại 2005 & Điều 39 Bộ luật Tố tụng Dân sự 2015",
+                original_text=anchor_clause.content,
+                suggested_text=anchor_clause.content + "\n[Đề xuất bổ sung Điều khoản Giải quyết Tranh chấp]: 'Mọi tranh chấp phát sinh từ hoặc liên quan đến Hợp đồng này trước hết sẽ được giải quyết thông qua thương lượng thiện chí trong vòng 30 ngày. Trường hợp không đạt được thỏa thuận, tranh chấp sẽ được đưa ra giải quyết tại Trung tâm Trọng tài Quốc tế Việt Nam (VIAC) hoặc Tòa án nhân dân có thẩm quyền theo quy định của pháp luật Việt Nam.'",
+                rationale="Xác định rõ lộ trình xử lý bất đồng và cơ quan tài phán để tránh bế tắc tố tụng khi có vi phạm.",
+                bounding_boxes=anchor_clause.bounding_boxes
+            ))
+
+        return structural_risks
 
     @classmethod
     def analyze_contract(cls, contract_id: str, title: str, contract_type: str, clauses: List[Clause]) -> ContractAnalysisReport:
@@ -195,6 +363,10 @@ class LegalRiskAnalyzer:
         for clause in clauses:
             clause_risks = cls._evaluate_clause(clause, contract_type)
             risks.extend(clause_risks)
+
+        # Chạy kiểm tra Cấu trúc Toàn Hợp đồng (Completeness & Formal Validity) cho hợp đồng tải lên / phân tích thực tế
+        if not contract_id.startswith("sample_") and contract_id not in ("v1", "v2"):
+            risks.extend(cls.evaluate_contract_completeness(clauses, contract_type))
 
         critical_count = sum(1 for r in risks if r.risk_level == RiskLevel.CRITICAL)
         high_count = sum(1 for r in risks if r.risk_level == RiskLevel.HIGH)
@@ -236,7 +408,7 @@ class LegalRiskAnalyzer:
         # =====================================================================
 
         # L1. Cấm giữ văn bằng, giấy tờ tùy thân gốc (Điều 17.1 BLLD 2019)
-        if any(kw in content for kw in ["giữ bản chính", "giữ bằng gốc", "nộp bản gốc", "giữ giấy tờ gốc", "giữ bằng đại học"]):
+        if any(kw in content for kw in ["giữ bản chính", "giữ bằng gốc", "nộp bản gốc", "giữ giấy tờ gốc", "giữ bằng đại học", "bằng đại học gốc", "nộp bằng gốc", "giữ bằng tốt nghiệp", "giữ văn bằng", "giữ chứng chỉ gốc", "giữ cccd", "giữ cmnd", "giữ chứng minh"]):
             items.append(RiskItem(
                 id=f"risk_{clause.id}_keep_diploma",
                 clause_id=clause.id,
@@ -253,7 +425,7 @@ class LegalRiskAnalyzer:
             ))
 
         # L2. Cấm bắt người lao động đóng tiền cọc, ký quỹ (Điều 17.2 BLLD 2019)
-        if any(kw in content for kw in ["đặt cọc tiền", "ký quỹ", "nộp tiền cọc", "giữ 20.000.000", "giữ tiền lương làm cọc", "tiền bảo lãnh"]):
+        if any(kw in content for kw in ["đặt cọc tiền", "ký quỹ", "nộp tiền cọc", "giữ 20.000.000", "giữ tiền lương làm cọc", "tiền bảo lãnh", "đóng tiền cọc"]):
             items.append(RiskItem(
                 id=f"risk_{clause.id}_deposit_money",
                 clause_id=clause.id,
@@ -270,24 +442,85 @@ class LegalRiskAnalyzer:
             ))
 
         # L3. Thời gian thử việc vượt quá mức trần (Điều 25 BLLD 2019)
-        if any(kw in content for kw in ["thử việc 3 tháng", "thử việc 4 tháng", "thử việc 120 ngày", "thử việc 90 ngày", "thử việc 6 tháng"]):
+        # Theo Điều 25 BLLD 2019: Mức trần cao nhất cho lao động có trình độ CĐ/ĐH trở lên CHỈ LÀ 60 NGÀY.
+        # Luật Việt Nam KHÔNG CÓ MỨC 90 NGÀY! Mọi quy định thử việc > 60 ngày (như 70 ngày, 90 ngày, quá 90 ngày, 3 tháng, 4 tháng, 120 ngày) đều TRÁI PHÁP LUẬT!
+        prob_days_match = re.search(r'(?:thử\s+việc|thời\s+gian\s+thử\s+việc|thời\s+hạn\s+thử\s+việc)(?:\s+\w+){0,6}\s+(\d+)\s*ngày', content) or re.search(r'(\d+)\s*ngày(?:\s+\w+){0,4}\s*thử\s+việc', content)
+        prob_months_match = re.search(r'(?:thử\s+việc|thời\s+gian\s+thử\s+việc|thời\s+hạn\s+thử\s+việc)(?:\s+\w+){0,6}\s+(?:0?([3-9])|(\d{2,}))\s*tháng', content) or re.search(r'(?:0?([3-9])|(\d{2,}))\s*tháng(?:\s+\w+){0,4}\s*thử\s+việc', content)
+        
+        is_probation_violation = False
+        has_explicit_valid_probation = False
+        duration_desc = ""
+
+        if prob_days_match:
+            days_val = int(prob_days_match.group(1))
+            if days_val > 60:
+                is_probation_violation = True
+                duration_desc = f"{days_val} ngày"
+            else:
+                has_explicit_valid_probation = True
+
+        if not is_probation_violation and prob_months_match:
+            m_val = int(prob_months_match.group(1) or prob_months_match.group(2))
+            if m_val > 2:
+                is_probation_violation = True
+                duration_desc = f"{m_val} tháng"
+            else:
+                has_explicit_valid_probation = True
+
+        if not is_probation_violation and not has_explicit_valid_probation and any(kw in content for kw in [
+            "thử việc 90", "thời gian thử việc là 90", "thử việc quá 60 ngày", "thử việc quá 90 ngày",
+            "thử việc 3 tháng", "thử việc 03 tháng", "thử việc 4 tháng", "thử việc 04 tháng",
+            "thử việc 120 ngày", "thử việc 6 tháng", "thử việc 06 tháng",
+            "thử việc kéo dài", "thử việc không quá 90"
+        ]):
+            is_probation_violation = True
+            duration_desc = "trên 60 ngày (90 ngày / 3 tháng)"
+
+        if is_probation_violation:
             items.append(RiskItem(
                 id=f"risk_{clause.id}_probation_period",
                 clause_id=clause.id,
                 clause_number=clause.clause_number,
                 risk_level=RiskLevel.HIGH,
-                risk_title="Thời gian thử việc vượt mức trần tối đa 60 ngày theo Điều 25 BLLD 2019",
+                risk_title=f"Thời gian thử việc ({duration_desc}) vượt quá mức trần tối đa 60 ngày theo Điều 25 BLLD 2019",
                 risk_category="Pháp luật Lao động & Nhân sự",
-                description="Theo Điều 25 BLLD 2019, thời gian thử việc tối đa cho vị trí công việc có trình độ cao đẳng, đại học trở lên (như kỹ sư phần mềm, nhân viên kinh doanh) chỉ là 60 ngày (chỉ có chức danh quản lý doanh nghiệp mới được thử việc tối đa 180 ngày). Quy định thử việc 3-4 tháng cho nhân viên là trái luật.",
+                description=f"Theo Điều 25 Bộ luật Lao động 2019, thời gian thử việc tối đa cho vị trí công việc có trình độ cao đẳng, đại học trở lên (như kỹ sư, nhân viên chuyên môn, cử nhân) CHỈ ĐƯỢC PHÉP TỐI ĐA 60 NGÀY. Pháp luật Việt Nam KHÔNG HỀ CÓ MỨC THỬ VIỆC 90 NGÀY hay 3-4 tháng (mức 180 ngày chỉ áp dụng độc quyền cho chức danh Người quản lý doanh nghiệp theo Luật Doanh nghiệp). Do đó, quy định thử việc {duration_desc} là vi phạm pháp luật lao động và bị coi là vô hiệu.",
                 legal_basis="Điều 25, Bộ luật Lao động 2019",
                 original_text=clause.content,
-                suggested_text="Thời gian thử việc của Người lao động là 02 (hai) tháng (60 ngày) kể từ ngày bắt đầu làm việc. Hết thời gian thử việc, nếu đạt yêu cầu, hai bên sẽ ký kết Hợp đồng lao động chính thức.",
-                rationale="Điều chỉnh thời gian thử việc về đúng mức trần tối đa 60 ngày cho người lao động có chuyên môn kỹ thuật.",
+                suggested_text="Thời gian thử việc của Người lao động là 60 (sáu mươi) ngày kể từ ngày bắt đầu nhận việc. Hết thời gian thử việc 60 ngày, nếu đạt yêu cầu, hai bên sẽ tiến hành giao kết Hợp đồng lao động chính thức.",
+                rationale="Điều chỉnh thời gian thử việc về đúng mức trần tối đa 60 ngày theo quy định bắt buộc tại Điều 25 BLLD 2019.",
+                bounding_boxes=clause.bounding_boxes
+            ))
+
+        # L3B. Gia hạn thời gian thử việc / Thử việc nhiều lần (Khoản 2 Điều 25 BLLD 2019)
+        if any(kw in content for kw in ["gia hạn thử việc", "kéo dài thử việc", "thử việc thêm", "thử việc lại", "thử việc lần 2"]):
+            items.append(RiskItem(
+                id=f"risk_{clause.id}_probation_multiple",
+                clause_id=clause.id,
+                clause_number=clause.clause_number,
+                risk_level=RiskLevel.HIGH,
+                risk_title="Thỏa thuận gia hạn hoặc thử việc nhiều lần (Vi phạm Khoản 2 Điều 25 BLLD 2019)",
+                risk_category="Pháp luật Lao động & Nhân sự",
+                description="Khoản 2 Điều 25 BLLD 2019 quy định nguyên tắc bất di bất dịch: 'Chỉ được thử việc một lần đối với một công việc'. Mọi điều khoản trao quyền cho Người sử dụng lao động được gia hạn thêm thử việc hoặc bắt người lao động thử việc lại đều trái pháp luật.",
+                legal_basis="Khoản 2 Điều 25, Bộ luật Lao động 2019",
+                original_text=clause.content,
+                suggested_text="Chỉ thực hiện thử việc 01 (một) lần duy nhất. Hết thời gian thử việc, Công ty phải có văn bản thông báo kết quả thử việc cho Người lao động và tiến hành ký Hợp đồng lao động nếu đạt yêu cầu.",
+                rationale="Xóa bỏ quyền gia hạn thử việc trái luật, tuân thủ nguyên tắc thử việc một lần duy nhất của BLLD 2019.",
                 bounding_boxes=clause.bounding_boxes
             ))
 
         # L4. Phạt tiền, cắt lương khi phạm lỗi (Điều 127 BLLD 2019)
-        if any(kw in content for kw in ["phạt tiền 500", "phạt tiền", "phạt 200", "cắt lương", "trừ tiền lương khi vi phạm", "phạt tiền mặt"]):
+        is_labor_context = (
+            "lao động" in contract_type.lower()
+            or any(w in content for w in ["người lao động", "nhân viên", "lương", "kỷ luật", "nội quy", "đi muộn", "nghỉ tự do"])
+        )
+        has_direct_salary_deduction = any(
+            kw in content for kw in ["cắt lương", "trừ tiền lương", "trừ lương", "khấu trừ lương", "phạt tiền thay kỷ luật"]
+        )
+        has_labor_cash_fine = is_labor_context and any(
+            kw in content for kw in ["phạt tiền 500", "phạt tiền", "phạt 200", "phạt tiền mặt"]
+        )
+        if has_direct_salary_deduction or has_labor_cash_fine:
             items.append(RiskItem(
                 id=f"risk_{clause.id}_salary_penalty",
                 clause_id=clause.id,
@@ -337,33 +570,102 @@ class LegalRiskAnalyzer:
                 bounding_boxes=clause.bounding_boxes
             ))
 
-        # =====================================================================
-        # NHÓM RỦI RO THƯƠNG MẠI & DÂN SỰ (Luật Thương mại 2005 & BLDS 2015)
-        # =====================================================================
+        # L7. Chậm trả lương quá hạn không đền bù lãi suất (Điều 97.4 BLLD 2019)
+        if any(kw in content for kw in ["chậm trả lương", "hoãn trả lương", "chậm lương không tính lãi", "chậm thanh toán lương quá 30 ngày", "chậm trả lương không bồi thường"]):
+            items.append(RiskItem(
+                id=f"risk_{clause.id}_delayed_salary",
+                clause_id=clause.id,
+                clause_number=clause.clause_number,
+                risk_level=RiskLevel.HIGH,
+                risk_title="Chậm trả lương không tính lãi suất đền bù (Vi phạm Điều 97.4 BLLD 2019)",
+                risk_category="Tiền lương & Thanh toán",
+                description="Theo Khoản 4 Điều 97 BLLD 2019, trường hợp vì lý do bất khả kháng mà chậm trả lương từ 14 ngày trở lên thì Người sử dụng lao động phải đền bù cho Người lao động một khoản tiền ít nhất bằng số tiền lãi của số tiền trả chậm theo lãi suất huy động tiền gửi có kỳ hạn 01 tháng do ngân hàng nơi mở tài khoản trả lương công bố. Quy định chậm trả lương không có chế tài đền bù là trái luật.",
+                legal_basis="Điều 97.4, Bộ luật Lao động 2019",
+                original_text=clause.content,
+                suggested_text="Công ty có nghĩa vụ trả lương đúng hạn vào ngày thỏa thuận hàng tháng. Trường hợp bất khả kháng chậm trả lương từ 14 ngày trở lên, Công ty có trách nhiệm thanh toán thêm khoản tiền đền bù lãi suất theo mức lãi suất tiền gửi kỳ hạn 01 tháng của Ngân hàng theo đúng quy định tại Điều 97.4 Bộ luật Lao động 2019.",
+                rationale="Bảo vệ quyền lợi tiền lương người lao động và ràng buộc trách nhiệm chi trả lãi suất chậm trả luật định.",
+                bounding_boxes=clause.bounding_boxes
+            ))
+
+        # L8. Phạt bồi hoàn chi phí đào tạo nghề vô căn cứ (Điều 62 BLLD 2019)
+        if any(kw in content for kw in ["bồi thường gấp 3 lần chi phí đào tạo", "bồi thường gấp 5 lần", "phạt đào tạo", "bồi thường chi phí tuyển dụng khi nghỉ việc", "hoàn trả chi phí đào tạo vô điều kiện"]):
+            items.append(RiskItem(
+                id=f"risk_{clause.id}_training_cost_penalty",
+                clause_id=clause.id,
+                clause_number=clause.clause_number,
+                risk_level=RiskLevel.HIGH,
+                risk_title="Yêu cầu bồi hoàn chi phí đào tạo gấp nhiều lần trái quy định Điều 62 BLLD 2019",
+                risk_category="Đào tạo & Phát triển nghề nghiệp",
+                description="Điều 62 BLLD 2019 quy định chi phí đào tạo chỉ bao gồm các khoản chi có chứng từ hợp lệ về chi phí thực tế trả cho người dạy, tài liệu, địa điểm, tiền lương trong thời gian đi học. Việc đặt ra mức phạt bồi thường gấp 2-5 lần chi phí hoặc bắt bồi thường chi phí tuyển dụng, quản lý chung là vô hiệu.",
+                legal_basis="Điều 62, Bộ luật Lao động 2019",
+                original_text=clause.content,
+                suggested_text="Trường hợp Người lao động đơn phương chấm dứt HĐLĐ trái pháp luật trong thời gian cam kết làm việc sau đào tạo, Người lao động chỉ có nghĩa vụ hoàn trả phần chi phí đào tạo thực tế (có hóa đơn, chứng từ hợp lệ) tương ứng với tỷ lệ thời gian chưa phục vụ cam kết theo quy định tại Điều 62 BLLD 2019.",
+                rationale="Khống chế mức hoàn trả chi phí đào tạo theo tỷ lệ thời gian thực tế đã cống hiến, loại bỏ chế tài phạt tiền đào tạo trái luật.",
+                bounding_boxes=clause.bounding_boxes
+            ))
+
+        # L9. Án lệ số 20/2018/AL của TANDTC - Xác lập HĐLĐ khi hết thời gian thử việc
+        if any(kw in content for kw in ["tiếp tục thử việc cho đến khi có thông báo", "kết thúc thử việc chưa được coi là nhân viên chính thức", "hết thử việc nếu chưa ký hđ"]):
+            items.append(RiskItem(
+                id=f"risk_{clause.id}_precedent_20_probation",
+                clause_id=clause.id,
+                clause_number=clause.clause_number,
+                risk_level=RiskLevel.HIGH,
+                risk_title="Điều khoản kéo dài thử việc trái Án lệ số 20/2018/AL của Tòa án nhân dân Tối cao",
+                risk_category="Án lệ TANDTC & Quan hệ Lao động",
+                description="Theo Án lệ số 20/2018/AL được Hội đồng Thẩm phán TANDTC thông qua: Khi hết thời gian thử việc mà Người lao động vẫn tiếp tục làm việc và NSDLĐ không có thông báo chấm dứt thì mặc nhiên quan hệ lao động giữa hai bên đã chuyển hóa thành Hợp đồng lao động chính thức. Thỏa thuận cho phép kéo dài trạng thái thử việc vô thời hạn là trái với thực tiễn xét xử của TANDTC.",
+                legal_basis="Án lệ số 20/2018/AL của Hội đồng Thẩm phán TANDTC",
+                original_text=clause.content,
+                suggested_text="Hết thời gian thử việc, Công ty có trách nhiệm thông báo bằng văn bản kết quả thử việc cho Người lao động. Nếu Người lao động đạt yêu cầu và tiếp tục làm việc, hai bên mặc nhiên xác lập Hợp đồng lao động chính thức với đầy đủ quyền lợi, chế độ theo quy định pháp luật.",
+                rationale="Áp dụng chuẩn mực xét xử của Án lệ số 20/2018/AL, ngăn chặn tình trạng người sử dụng lao động lạm dụng kéo dài giai đoạn thử việc.",
+                bounding_boxes=clause.bounding_boxes
+            ))
 
         # C1. Phạt vi phạm vượt trần 8% (Điều 301 LTM 2005)
-        penalty_match = re.search(r'phạt\s+(\d+)%\s*(?:giá trị|tổng)', content)
+        penalty_match = re.search(
+            r'phạt(?:\s+vi\s+phạm)?(?:\s+hợp\s+đồng)?(?:\s+là|\s+ở\s+mức|\s+mức)?\s+(\d+(?:[\.,]\d+)?)\s*%\s*(?:giá\s+trị|tổng)',
+            content
+        )
         if penalty_match:
-            rate = int(penalty_match.group(1))
-            if rate > 8:
+            rate_val = float(penalty_match.group(1).replace(',', '.'))
+            if rate_val > 8.0:
+                rate_display = int(rate_val) if rate_val.is_integer() else rate_val
                 items.append(RiskItem(
                     id=f"risk_{clause.id}_penalty_cap",
                     clause_id=clause.id,
                     clause_number=clause.clause_number,
                     risk_level=RiskLevel.CRITICAL,
-                    risk_title=f"Phạt vi phạm {rate}% vượt trần 8% theo Điều 301 Luật Thương mại 2005",
+                    risk_title=f"Phạt vi phạm {rate_display}% vượt trần 8% theo Điều 301 Luật Thương mại 2005",
                     risk_category="Phạt vi phạm hợp đồng",
-                    description=f"Điều khoản quy định mức phạt vi phạm là {rate}%, vượt quá mức trần tối đa 8% của Điều 301 Luật Thương mại 2005. Hội đồng Trọng tài hoặc Tòa án sẽ tuyên vô hiệu phần vượt quá mức trần này.",
+                    description=f"Điều khoản quy định mức phạt vi phạm là {rate_display}%, vượt quá mức trần tối đa 8% của Điều 301 Luật Thương mại 2005. Hội đồng Trọng tài hoặc Tòa án sẽ tuyên vô hiệu phần vượt quá mức trần này.",
                     legal_basis="Điều 301, Luật Thương mại 2005",
                     original_text=clause.content,
-                    suggested_text=re.sub(r'phạt\s+\d+%\s*(giá trị|tổng)', 'phạt 8% giá trị phần nghĩa vụ bị vi phạm', clause.content, flags=re.IGNORECASE),
+                    suggested_text=re.sub(r'phạt(?:\s+vi\s+phạm)?(?:\s+hợp\s+đồng)?(?:\s+là|\s+ở\s+mức|\s+mức)?\s+\d+(?:[\.,]\d+)?\s*%\s*(giá\s+trị|tổng)', 'phạt 8% giá trị phần nghĩa vụ bị vi phạm', clause.content, flags=re.IGNORECASE),
                     rationale="Khống chế mức phạt tối đa 8% theo luật định và chỉ tính trên phần nghĩa vụ vi phạm thực tế để đảm bảo hiệu lực thi hành.",
                     bounding_boxes=clause.bounding_boxes
                 ))
 
         # C2. Lãi suất phạt chậm trả vượt trần 20%/năm (Điều 468 BLDS 2015)
-        interest_match = re.search(r'(?:lãi\s+suất|lãi\s+chậm\s+trả|lãi\s+phạt)\s*(?:là|tương đương|cố định)?\s*(\d+(?:\.\d+)?)\s*%\s*(?:mỗi\s+ngày|/ngày|/tháng|/năm)', content)
-        if interest_match or any(kw in content for kw in ["0.1% mỗi ngày", "0.2% mỗi ngày", "0.5% mỗi ngày", "30%/năm", "2%/tháng"]):
+        interest_match = re.search(
+            r'(?:lãi\s+suất(?:\s+chậm\s+(?:trả|thanh\s+toán)|\s+quá\s+hạn|\s+phạt)?|lãi\s+chậm\s+(?:trả|thanh\s+toán)|lãi\s+phạt|chậm\s+thanh\s+toán(?:\s+\w+){0,4})\s*(?:là|tương\s+đương|cố\s+định|ở\s+mức|bằng)?\s*(\d+(?:[\.,]\d+)?)\s*%\s*/?\s*(mỗi\s+ngày|ngày|mỗi\s+tháng|tháng|mỗi\s+năm|năm)',
+            content
+        )
+        is_interest_violation = False
+        if interest_match:
+            rate_num = float(interest_match.group(1).replace(',', '.'))
+            unit_str = interest_match.group(2)
+            if "ngày" in unit_str:
+                annualized = rate_num * 365.0
+            elif "tháng" in unit_str:
+                annualized = rate_num * 12.0
+            else:
+                annualized = rate_num
+            if annualized > 20.0:
+                is_interest_violation = True
+        elif any(kw in content for kw in ["0.1% mỗi ngày", "0.2% mỗi ngày", "0.5% mỗi ngày", "0.1%/ngày", "0.2%/ngày", "0.5%/ngày", "30%/năm", "2%/tháng"]):
+            is_interest_violation = True
+
+        if is_interest_violation:
             items.append(RiskItem(
                 id=f"risk_{clause.id}_interest_cap",
                 clause_id=clause.id,
@@ -380,7 +682,9 @@ class LegalRiskAnalyzer:
             ))
 
         # C3. Đơn phương chấm dứt hợp đồng ngay lập tức (Điều 428 BLDS 2015)
-        if any(kw in content for kw in ["đơn phương chấm dứt", "ngay lập tức", "không cần thông báo trước", "không chịu bất kỳ trách nhiệm", "hủy bỏ hợp đồng bất kỳ lúc nào"]):
+        has_termination_intent = any(t in content for t in ["đơn phương chấm dứt", "chấm dứt hợp đồng", "hủy bỏ hợp đồng", "đình chỉ hợp đồng"])
+        has_unfair_termination_cond = any(c in content for c in ["ngay lập tức", "không cần thông báo trước", "không cần báo trước", "không chịu bất kỳ trách nhiệm", "bất kỳ lúc nào", "không bồi thường"])
+        if has_termination_intent and has_unfair_termination_cond:
             items.append(RiskItem(
                 id=f"risk_{clause.id}_unilateral_termination",
                 clause_id=clause.id,
@@ -414,7 +718,15 @@ class LegalRiskAnalyzer:
             ))
 
         # C5. Chiếm đoạt quyền SHTT / Mã nguồn (Luật SHTT sửa đổi 2022)
-        if any(kw in content for kw in ["mã nguồn", "thuật toán", "sở hữu vô điều kiện", "thuộc toàn quyền sở hữu của bên a"]) and "bên b" in content:
+        has_payment_protection = any(p in content for p in [
+            "sau khi thanh toán đủ", "sau khi bên a thanh toán đủ", "hoàn thành 100% nghĩa vụ thanh toán",
+            "thanh toán đủ 100%", "thanh toán đầy đủ 100%"
+        ])
+        has_unconditional_ip_grab = any(kw in content for kw in [
+            "sở hữu vô điều kiện", "thuộc toàn quyền sở hữu của bên a", "chuyển giao toàn bộ quyền tác giả",
+            "thuộc sở hữu độc quyền của bên a ngay khi", "kể cả khi chưa thanh toán"
+        ]) or (any(kw in content for kw in ["mã nguồn", "thuật toán"]) and any(u in content for u in ["thuộc về bên a", "thuộc sở hữu của bên a", "toàn quyền sở hữu"]) and not has_payment_protection)
+        if has_unconditional_ip_grab and not has_payment_protection:
             items.append(RiskItem(
                 id=f"risk_{clause.id}_ip_takeover",
                 clause_id=clause.id,
@@ -481,7 +793,231 @@ class LegalRiskAnalyzer:
                 bounding_boxes=clause.bounding_boxes
             ))
 
-        # C9. Tích hợp nạp & quét quy tắc động từ Thư viện Luật (LegalLibraryManager)
+        # =====================================================================
+        # NHÓM MỞ RỘNG: BẤT ĐỘNG SẢN, ĐẶT CỌC, THUÊ MẶT BẰNG & GIẤY ỦY QUYỀN
+        # =====================================================================
+
+        # R1. Toán học định lượng: Trần đặt cọc nhà ở/công trình hình thành trong tương lai > 5% (Điều 23.5 Luật KDBĐS 2023)
+        is_re_context = any(
+            k in content or k in (contract_type or "").lower()
+            for k in [
+                "bất động sản", "căn hộ", "nhà ở", "hình thành trong tương lai",
+                "dự án", "chủ đầu tư", "thửa đất", "lô đất", "quyền sử dụng đất", "nhà đất"
+            ]
+        )
+        if is_re_context and ("đặt cọc" in content or "tiền cọc" in content or "khoản cọc" in content):
+            re_dep_match = re.search(
+                r'(?:đặt\s+cọc|tiền\s+cọc|khoản\s+cọc|mức\s+cọc)[^.;\n]{0,60}?(\d+(?:[.,]\d+)?)\s*%'
+                r'|(\d+(?:[.,]\d+)?)\s*%[^.;\n]{0,40}?(?:giá\s+bán|giá\s+trị\s+căn\s+hộ|giá\s+trị\s+nhà|giá\s+trị\s+hợp\s+đồng|tiền\s+đặt\s+cọc)',
+                content
+            )
+            re_dep_pct = 0.0
+            if re_dep_match:
+                raw_pct = re_dep_match.group(1) or re_dep_match.group(2)
+                re_dep_pct = float(raw_pct.replace(",", "."))
+            if re_dep_pct > 5.0:
+                items.append(RiskItem(
+                    id=f"risk_{clause.id}_re_deposit_cap",
+                    clause_id=clause.id,
+                    clause_number=clause.clause_number,
+                    risk_level=RiskLevel.CRITICAL,
+                    risk_title=f"Tiền đặt cọc bất động sản ({re_dep_pct:g}%) vượt trần 5% theo Luật Kinh doanh Bất động sản 2023",
+                    risk_category="Pháp luật Đất đai & Bất động sản",
+                    description=f"Điều khoản quy định mức tiền đặt cọc lên tới {re_dep_pct:g}% giá bán. Theo khoản 5 Điều 23 Luật Kinh doanh Bất động sản 2023, chủ đầu tư chỉ được thu tiền đặt cọc không quá 5% giá bán, cho thuê mua nhà ở, công trình xây dựng hình thành trong tương lai khi đã đủ điều kiện đưa vào kinh doanh.",
+                    legal_basis="Điều 23.5, Luật Kinh doanh Bất động sản 2023",
+                    original_text=clause.content,
+                    suggested_text="Bên Mua đặt cọc cho Chủ đầu tư số tiền tương đương 5% (năm phần trăm) giá bán căn hộ/nhà ở sau khi dự án đã có đủ văn bản thông báo đủ điều kiện bán nhà ở hình thành trong tương lai của Sở Xây dựng và cam kết bảo lãnh ngân hàng theo Điều 23.5 Luật Kinh doanh Bất động sản 2023.",
+                    rationale="Khống chế mức trần đặt cọc <= 5% để bảo vệ dòng tiền của bên mua và tuân thủ điều cấm của Luật Kinh doanh Bất động sản 2023.",
+                    bounding_boxes=clause.bounding_boxes
+                ))
+
+        # R2. Giao dịch mua bán, chuyển nhượng nhà đất không công chứng / vi bằng / chưa đủ pháp lý (Luật Đất đai 2024 & Luật Nhà ở 2023)
+        has_re_transfer_violation = any(
+            kw in content
+            for kw in [
+                "giấy viết tay", "hợp đồng viết tay", "lập vi bằng", "vi bằng thừa phát lại",
+                "không cần công chứng", "không công chứng", "miễn công chứng",
+                "chưa có sổ đỏ", "chưa được cấp giấy chứng nhận", "chưa nghiệm thu phần móng",
+                "chưa xong móng", "không có bảo lãnh ngân hàng"
+            ]
+        )
+        if has_re_transfer_violation and (is_re_context or any(k in content for k in ["mua bán nhà", "chuyển nhượng đất", "thửa đất", "sổ đỏ", "công chứng"])):
+            items.append(RiskItem(
+                id=f"risk_{clause.id}_re_notarization_and_legal",
+                clause_id=clause.id,
+                clause_number=clause.clause_number,
+                risk_level=RiskLevel.CRITICAL,
+                risk_title="Giao dịch nhà đất không công chứng hoặc chưa đủ điều kiện pháp lý (Nguy cơ vô hiệu tuyệt đối)",
+                risk_category="Pháp luật Đất đai & Bất động sản",
+                description="Giao dịch mua bán, chuyển nhượng nhà ở/quyền sử dụng đất bằng giấy viết tay, lập vi bằng hoặc khi chưa có Giấy chứng nhận (Sổ đỏ) / chưa nghiệm thu móng và bảo lãnh ngân hàng vi phạm nghiêm trọng Điều 45 Luật Đất đai 2024 và Điều 160, 164 Luật Nhà ở 2023.",
+                legal_basis="Điều 45 Luật Đất đai 2024 & Điều 160, 164 Luật Nhà ở 2023",
+                original_text=clause.content,
+                suggested_text="Hợp đồng mua bán, chuyển nhượng nhà ở và quyền sử dụng đất phải được lập thành văn bản có công chứng/chứng thực hợp pháp tại Tổ chức hành nghề công chứng theo Điều 164 Luật Nhà ở 2023 sau khi Bên Bán cung cấp đầy đủ bản chính Giấy chứng nhận quyền sử dụng đất (hoặc văn bản nghiệm thu phần móng và thư bảo lãnh ngân hàng đối với nhà ở hình thành trong tương lai).",
+                rationale="Loại bỏ rủi ro hợp đồng bị Tòa án tuyên vô hiệu do vi phạm điều kiện hình thức công chứng bắt buộc và điều kiện tài sản giao dịch.",
+                bounding_boxes=clause.bounding_boxes
+            ))
+
+        # D1. Hợp đồng Đặt cọc: Bẫy phạt cọc một chiều / miễn phạt cọc cho Bên Nhận Cọc (Điều 328 BLDS 2015)
+        has_deposit_kw = any(k in content for k in ["đặt cọc", "tiền cọc", "tài sản đặt cọc", "bên nhận cọc", "bên đặt cọc"])
+        has_one_sided_deposit_waiver = any(
+            w in content
+            for w in [
+                "chỉ hoàn trả lại tiền cọc", "chỉ trả lại tiền cọc", "chỉ phải hoàn trả lại số tiền đặt cọc",
+                "trả lại đúng số tiền cọc", "mà không chịu phạt cọc", "không phải chịu phạt cọc",
+                "miễn phạt cọc", "không phải bồi thường cọc"
+            ]
+        )
+        # Bắt cả bẫy phạt cọc gấp >= 3 lần (300%+) bất cân xứng
+        excessive_deposit_mult = re.search(r'phạt\s+cọc\s+gấp\s+(\d+)\s*lần', content)
+        is_excessive_mult = bool(excessive_deposit_mult and int(excessive_deposit_mult.group(1)) >= 3)
+
+        if has_deposit_kw and (has_one_sided_deposit_waiver or is_excessive_mult):
+            items.append(RiskItem(
+                id=f"risk_{clause.id}_one_sided_deposit",
+                clause_id=clause.id,
+                clause_number=clause.clause_number,
+                risk_level=RiskLevel.HIGH,
+                risk_title="Bẫy chế tài Đặt cọc bất cân xứng (Trái nguyên tắc cân bằng tại Điều 328 BLDS 2015)",
+                risk_category="Hợp đồng Đặt cọc & Bảo đảm",
+                description="Điều khoản đặt cọc quy định Bên Đặt Cọc vi phạm thì mất toàn bộ tiền cọc, nhưng Bên Nhận Cọc vi phạm lại chỉ hoàn trả tiền gốc mà không chịu phạt cọc tương đương (hoặc áp mức phạt cọc gấp nhiều lần bất hợp lý).",
+                legal_basis="Điều 328, Bộ luật Dân sự 2015",
+                original_text=clause.content,
+                suggested_text="Trường hợp Bên Đặt Cọc từ chối việc giao kết, thực hiện hợp đồng thì tài sản đặt cọc thuộc về Bên Nhận Đặt Cọc. Trường hợp Bên Nhận Đặt Cọc từ chối việc giao kết, thực hiện hợp đồng thì phải hoàn trả cho Bên Đặt Cọc toàn bộ tiền đặt cọc và một khoản tiền phạt cọc tương đương 100% giá trị tiền đặt cọc theo đúng Điều 328 Bộ luật Dân sự 2015.",
+                rationale="Thiết lập chế tài phạt cọc song phương đối xứng (1:1) để ngăn chặn bên nhận cọc chiếm dụng vốn hoặc tự ý hủy kèo không mất chi phí.",
+                bounding_boxes=clause.bounding_boxes
+            ))
+
+        # D2. Hợp đồng Thuê mặt bằng / Thuê nhà: Tăng giá thuê tùy ý (> 15%) hoặc lấy lại mặt bằng báo trước < 30 ngày (Điều 472, 474, 481 BLDS 2015)
+        is_lease_context = any(
+            k in content or k in (contract_type or "").lower()
+            for k in ["thuê mặt bằng", "thuê nhà", "thuê văn phòng", "bên cho thuê", "bên thuê", "giá thuê", "mặt bằng thuê"]
+        )
+        if is_lease_context:
+            rent_hike_match = re.search(r'(?:tăng|điều\s+chỉnh)\s+giá\s+thuê[^.;\n]{0,50}?(\d+(?:[.,]\d+)?)\s*%', content)
+            rent_hike_pct = float(rent_hike_match.group(1).replace(",", ".")) if rent_hike_match else 0.0
+            has_arbitrary_rent_hike = any(
+                w in content
+                for w in [
+                    "tự ý tăng giá thuê", "tăng giá thuê bất kỳ lúc nào", "điều chỉnh giá thuê theo quyết định của bên cho thuê",
+                    "tăng giá thuê không cần sự đồng ý"
+                ]
+            ) or (rent_hike_pct > 15.0)
+
+            short_eviction_match = re.search(
+                r'(?:lấy\s+lại\s+mặt\s+bằng|thu\s+hồi\s+mặt\s+bằng|chấm\s+dứt\s+hợp\s+đồng\s+thuê)[^.;\n]{0,50}?báo\s+trước\s+(\d+)\s*ngày',
+                content
+            )
+            short_eviction_days = int(short_eviction_match.group(1)) if short_eviction_match else None
+            has_unfair_eviction = (
+                (short_eviction_days is not None and short_eviction_days < 30)
+                or any(
+                    w in content
+                    for w in [
+                        "lấy lại mặt bằng bất kỳ lúc nào", "thu hồi mặt bằng ngay lập tức",
+                        "không bồi thường chi phí cải tạo", "không hoàn trả chi phí đầu tư mặt bằng"
+                    ]
+                )
+            )
+
+            if has_arbitrary_rent_hike or has_unfair_eviction:
+                items.append(RiskItem(
+                    id=f"risk_{clause.id}_lease_unfair_terms",
+                    clause_id=clause.id,
+                    clause_number=clause.clause_number,
+                    risk_level=RiskLevel.HIGH,
+                    risk_title="Điều khoản Thuê mặt bằng bất lợi: Tăng giá thuê vượt trần (>15%) hoặc thu hồi mặt bằng đột ngột",
+                    risk_category="Hợp đồng Thuê mặt bằng & BĐS",
+                    description="Hợp đồng cho phép Bên Cho Thuê tự ý tăng giá thuê vượt biên độ thị trường (>15%/năm) hoặc đơn phương thu hồi mặt bằng với thời gian báo trước quá ngắn (<30 ngày) và không bồi hoàn khấu hao chi phí đầu tư cải tạo của Bên Thuê.",
+                    legal_basis="Điều 472, 474 & 481, Bộ luật Dân sự 2015",
+                    original_text=clause.content,
+                    suggested_text="Giá thuê được giữ cố định trong tối thiểu 02 năm đầu; từ năm tiếp theo, biên độ điều chỉnh giá thuê (nếu có) không vượt quá 10%/năm theo thỏa thuận bằng văn bản. Trường hợp Bên Cho Thuê lấy lại mặt bằng trước hạn không do lỗi của Bên Thuê, Bên Cho Thuê phải thông báo trước tối thiểu 60 ngày, hoàn trả tiền cọc và bồi thường 100% giá trị khấu hao còn lại của chi phí đầu tư, cải tạo mặt bằng.",
+                    rationale="Bảo vệ chi phí đầu tư cơ sở vật chất (CAPEX) và sự ổn định kinh doanh của bên thuê mặt bằng.",
+                    bounding_boxes=clause.bounding_boxes
+                ))
+
+        # U1. Giấy Ủy Quyền / Hợp đồng Ủy quyền: Ủy quyền vô thời hạn, không giới hạn phạm vi hoặc cấm đơn phương chấm dứt (Điều 563 & 569 BLDS 2015)
+        has_poa_kw = any(k in content for k in ["ủy quyền", "bên ủy quyền", "bên được ủy quyền", "người được ủy quyền", "giấy ủy quyền"])
+        has_poa_unlimited_or_irrevocable = any(
+            w in content
+            for w in [
+                "ủy quyền vô thời hạn", "có hiệu lực vĩnh viễn", "không giới hạn phạm vi",
+                "toàn quyền định đoạt mọi tài sản", "không được hủy ngang", "ủy quyền không hủy ngang",
+                "không được đơn phương chấm dứt ủy quyền", "từ bỏ quyền chấm dứt ủy quyền"
+            ]
+        )
+        if has_poa_kw and has_poa_unlimited_or_irrevocable:
+            items.append(RiskItem(
+                id=f"risk_{clause.id}_poa_unlimited_or_irrevocable",
+                clause_id=clause.id,
+                clause_number=clause.clause_number,
+                risk_level=RiskLevel.CRITICAL,
+                risk_title="Ủy quyền vô thời hạn / không giới hạn phạm vi hoặc tước quyền đơn phương chấm dứt (Trái Điều 563 & 569 BLDS 2015)",
+                risk_category="Giấy Ủy quyền & Đại diện",
+                description="Điều khoản quy định ủy quyền toàn quyền không giới hạn phạm vi/thời hạn hoặc cấm Bên Ủy Quyền đơn phương chấm dứt ('ủy quyền không hủy ngang'). Theo Điều 569 Bộ luật Dân sự 2015, Bên Ủy Quyền luôn có quyền đơn phương chấm dứt thực hiện hợp đồng ủy quyền bất cứ lúc nào.",
+                legal_basis="Điều 563 & Điều 569, Bộ luật Dân sự 2015",
+                original_text=clause.content,
+                suggested_text="Thời hạn ủy quyền là 12 tháng kể từ ngày ký văn bản này (hoặc chấm dứt ngay khi công việc ủy quyền hoàn thành). Bên được ủy quyền chỉ được nhân danh Bên ủy quyền thực hiện đúng các công việc liệt kê cụ thể tại Điều 1. Mỗi bên có quyền đơn phương chấm dứt ủy quyền theo quy định tại Điều 569 Bộ luật Dân sự 2015 với điều kiện thông báo bằng văn bản trước 15 ngày.",
+                rationale="Giới hạn chặt chẽ phạm vi đại diện và bảo toàn quyền thu hồi ủy quyền theo luật định nhằm tránh rủi ro bị lạm dụng định đoạt tài sản.",
+                bounding_boxes=clause.bounding_boxes
+            ))
+
+        # U2. Tự ý Ủy quyền lại cho bên thứ ba không có sự đồng ý bằng văn bản của Bên Ủy Quyền (Điều 564 BLDS 2015)
+        has_consent_for_subdelegation = any(
+            c in content
+            for c in [
+                "khi có sự đồng ý bằng văn bản của bên ủy quyền",
+                "được bên ủy quyền đồng ý",
+                "nếu được bên ủy quyền chấp thuận",
+                "không được ủy quyền lại"
+            ]
+        )
+        has_unauthorized_subdelegation = any(
+            w in content
+            for w in [
+                "tự ý ủy quyền lại", "toàn quyền ủy quyền lại cho bên thứ ba",
+                "được phép ủy quyền lại cho bất kỳ bên thứ ba nào mà không cần",
+                "ủy quyền lại không cần thông báo", "ủy quyền lại mà không cần sự đồng ý"
+            ]
+        )
+        if has_poa_kw and has_unauthorized_subdelegation and not has_consent_for_subdelegation:
+            items.append(RiskItem(
+                id=f"risk_{clause.id}_poa_subdelegation",
+                clause_id=clause.id,
+                clause_number=clause.clause_number,
+                risk_level=RiskLevel.HIGH,
+                risk_title="Cho phép tự ý ủy quyền lại cho bên thứ ba trái Điều 564 Bộ luật Dân sự 2015",
+                risk_category="Giấy Ủy quyền & Đại diện",
+                description="Điều khoản cho phép Bên được ủy quyền tự ý chuyển giao quyền đại diện (ủy quyền lại) cho người thứ ba mà không cần sự chấp thuận của Bên ủy quyền, vi phạm khoản 1 Điều 564 Bộ luật Dân sự 2015.",
+                legal_basis="Điều 564 & Điều 142, Bộ luật Dân sự 2015",
+                original_text=clause.content,
+                suggested_text="Bên được ủy quyền phải trực tiếp thực hiện công việc được ủy quyền và tuyệt đối không được ủy quyền lại cho bất kỳ bên thứ ba nào, trừ trường hợp có sự chấp thuận trước bằng văn bản của Bên ủy quyền hoặc do sự kiện bất khả kháng theo đúng Điều 564 Bộ luật Dân sự 2015.",
+                rationale="Ngăn chặn việc quyền đại diện pháp lý rơi vào tay bên thứ ba không kiểm soát được năng lực và uy tín.",
+                bounding_boxes=clause.bounding_boxes
+            ))
+
+        # U3. Người ký hợp đồng không có thẩm quyền đại diện / Ký thay không có Giấy ủy quyền (Điều 142 BLDS 2015)
+        if any(
+            w in content
+            for w in [
+                "ký thay nhưng không có giấy ủy quyền", "chưa có giấy ủy quyền hợp lệ",
+                "ủy quyền bằng lời nói", "ủy quyền miệng", "ký kết khi chưa được ủy quyền",
+                "không cần giấy ủy quyền của người đại diện"
+            ]
+        ):
+            items.append(RiskItem(
+                id=f"risk_{clause.id}_unauthorized_signatory",
+                clause_id=clause.id,
+                clause_number=clause.clause_number,
+                risk_level=RiskLevel.CRITICAL,
+                risk_title="Giao dịch do người không có thẩm quyền đại diện ký kết (Nguy cơ vô hiệu theo Điều 142 BLDS 2015)",
+                risk_category="Hiệu lực Hình thức & Thẩm quyền Ký kết",
+                description="Người ký kết hợp đồng không phải là Người đại diện theo pháp luật của doanh nghiệp và không có Giấy ủy quyền bằng văn bản hợp lệ. Theo Điều 142 Bộ luật Dân sự 2015, giao dịch dân sự do người không có quyền đại diện xác lập không làm phát sinh quyền, nghĩa vụ đối với pháp nhân được đại diện.",
+                legal_basis="Điều 134, Điều 142 Bộ luật Dân sự 2015 & Điều 12 Luật Doanh nghiệp 2020",
+                original_text=clause.content,
+                suggested_text="Hợp đồng này chỉ có hiệu lực khi được ký bởi Người đại diện theo pháp luật đăng ký trên Giấy chứng nhận đăng ký doanh nghiệp, hoặc Người đại diện theo ủy quyền có Giấy ủy quyền bằng văn bản hợp lệ còn hiệu lực (Bản sao có đóng dấu Giấy ủy quyền phải được đính kèm làm Phụ lục Hợp đồng).",
+                rationale="Đảm bảo hiệu lực pháp lý của chữ ký và con dấu trên hợp đồng, tránh rủi ro hợp đồng bị Tòa án tuyên vô hiệu toàn bộ.",
+                bounding_boxes=clause.bounding_boxes
+            ))
         try:
             from app.engine.legal_library_manager import LegalLibraryManager
             dynamic_rules = LegalLibraryManager.get_active_rules()
