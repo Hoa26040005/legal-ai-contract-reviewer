@@ -11,6 +11,8 @@ from app.models.schemas import (
 ARCHIVE_DIR = os.path.join(os.path.dirname(__file__), "..", "..", "data", "legal_library")
 LAWS_FILE = os.path.join(ARCHIVE_DIR, "laws.json")
 DOCS_DIR = os.path.join(ARCHIVE_DIR, "documents")
+os.makedirs(ARCHIVE_DIR, exist_ok=True)
+os.makedirs(DOCS_DIR, exist_ok=True)
 
 # Danh mục điều luật hạt nhân chuẩn Việt Nam
 DEFAULT_SEEDED_RULES = [
@@ -386,7 +388,7 @@ class LegalLibraryManager:
 
         cat_list = [{"category": k, "count": v} for k, v in categories_count.items()]
 
-        statute_files = [f for f in os.listdir(DOCS_DIR) if os.path.isfile(os.path.join(DOCS_DIR, f))]
+        statute_files = [f for f in os.listdir(DOCS_DIR) if os.path.isfile(os.path.join(DOCS_DIR, f))] if os.path.exists(DOCS_DIR) else []
 
         return LegalLibraryStats(
             total_rules=len(laws),
