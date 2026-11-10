@@ -50,3 +50,9 @@ def init_db():
     from app.models import db_models  # noqa: F401
     Base.metadata.create_all(bind=engine)
     print("Database tables initialized successfully.")
+
+# Tự động tạo bảng ngay khi khởi tạo module nếu chưa tồn tại
+try:
+    init_db()
+except Exception as e:
+    print("Auto init_db note:", e)

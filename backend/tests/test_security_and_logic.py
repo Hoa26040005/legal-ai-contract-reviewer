@@ -1,9 +1,11 @@
 import fitz
 from fastapi.testclient import TestClient
 from app.main import app
+from app.core.database import init_db
 from app.models.schemas import Clause
 from app.engine.risk_analyzer import LegalRiskAnalyzer
 
+init_db()
 client = TestClient(app, raise_server_exceptions=False)
 
 
