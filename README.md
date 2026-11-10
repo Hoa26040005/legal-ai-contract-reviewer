@@ -4,7 +4,7 @@
 [![Python 3.11+](https://img.shields.io/badge/Backend-FastAPI_%7C_Python_3.11-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
 [![Next.js 14](https://img.shields.io/badge/Frontend-Next.js_14_%7C_TypeScript-000000?logo=next.js&logoColor=white)](https://nextjs.org/)
 [![Graph DB](https://img.shields.io/badge/Knowledge_Graph-Neo4j_Bolt_%26_Cypher-008CC1?logo=neo4j&logoColor=white)](https://neo4j.com/)
-[![Test Suite](https://img.shields.io/badge/Test_Suite-10_Modules_%7C_37%2F37_Audit_Passed-10b981?logo=pytest&logoColor=white)](#kiểm-thử-tự-động--đảm-bảo-chất-lượng-automated-qa)
+[![Test Suite](https://img.shields.io/badge/Test_Suite-10_Modules_%7C_37%2F37_Audit_Passed-10b981?logo=pytest&logoColor=white)](#10-kiem-thu-tu-dong)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
 > **Tóm tắt dành cho Nhà Tuyển Dụng & Engineering Manager (Executive Summary):**
@@ -16,19 +16,20 @@
 
 ## Mục Lục (Table of Contents)
 
-1. [Bài Toán Thực Tế & Điểm Khác Biệt Kỹ Thuật](#-1-bài-toán-thực-tế--điểm-khác-biệt-kỹ-thuật)
-2. [Kiến Trúc Hệ Thống Đầu-Cuối (System Architecture)](#-2-kiến-trúc-hệ-thống-đầu-cuối-system-architecture)
-3. [Các Quyết Định Thiết Kế Cốt Lõi (Engineering Trade-offs / ADRs)](#-3-các-quyết-định-thiết-kế-cốt-lõi-engineering-trade-offs--adrs)
-4. [Mô Hình Toán Học Chấm Điểm & Dự Báo Tranh Tụng](#-4-mô-hình-toán-học-chấm-điểm--dự-báo-tranh-tụng)
-5. [Ma Trận Quy Phạm Pháp Luật & Án Lệ TANDTC](#-5-ma-trận-quy-phạm-pháp-luật--án-lệ-tandtc)
-6. [Thiết Kế Giao Diện Precision LegalTech UI/UX](#-6-thiết-kế-giao-diện-precision-legaltech-uiux)
-7. [Cấu Trúc Thư Mục Dự Án (Repository Structure)](#-7-cấu-trúc-thư-mục-dự-án-repository-structure)
-8. [Danh Mục REST API (API Reference)](#-8-danh-mục-rest-api-api-reference)
-9. [Hướng Dẫn Cài Đặt & Khởi Chạy Nhanh](#-9-hướng-dẫn-cài-đặt--khởi-chạy-nhanh)
-10. [Kiểm Thử Tự Động & Đảm Bảo Chất Lượng (Automated QA)](#-10-kiểm-thử-tự-động--đảm-bảo-chất-lượng-automated-qa)
+1. [Bài Toán Thực Tế & Điểm Khác Biệt Kỹ Thuật](#1-bai-toan-thuc-te)
+2. [Kiến Trúc Hệ Thống Đầu-Cuối (System Architecture)](#2-kien-truc-he-thong)
+3. [Các Quyết Định Thiết Kế Cốt Lõi (Engineering Trade-offs / ADRs)](#3-quyet-dinh-thiet-ke-adr)
+4. [Mô Hình Toán Học Chấm Điểm & Dự Báo Tranh Tụng](#4-mo-hinh-toan-hoc)
+5. [Ma Trận Quy Phạm Pháp Luật & Án Lệ TANDTC](#5-ma-tran-quy-pham)
+6. [Thiết Kế Giao Diện Precision LegalTech UI/UX](#6-thiet-ke-giao-dien)
+7. [Cấu Trúc Thư Mục Dự Án (Repository Structure)](#7-cau-truc-thu-muc)
+8. [Danh Mục REST API (API Reference)](#8-danh-muc-rest-api)
+9. [Hướng Dẫn Cài Đặt & Khởi Chạy Nhanh](#9-huong-dan-cai-dat)
+10. [Kiểm Thử Tự Động & Đảm Bảo Chất Lượng (Automated QA)](#10-kiem-thu-tu-dong)
 
 ---
 
+<a id="1-bai-toan-thuc-te"></a>
 ## 1. Bài Toán Thực Tế & Điểm Khác Biệt Kỹ Thuật
 
 Khi áp dụng các mô hình ngôn ngữ lớn (LLM) thông thường vào rà soát hợp đồng tại Việt Nam, các hệ thống RAG truyền thống thường thất bại ở 4 điểm nghẽn kỹ thuật:
@@ -42,6 +43,7 @@ Khi áp dụng các mô hình ngôn ngữ lớn (LLM) thông thường vào rà 
 
 ---
 
+<a id="2-kien-truc-he-thong"></a>
 ## 2. Kiến Trúc Hệ Thống Đầu-Cuối (System Architecture)
 
 ```mermaid
@@ -86,6 +88,7 @@ flowchart TB
 
 ---
 
+<a id="3-quyet-dinh-thiet-ke-adr"></a>
 ## 3. Các Quyết Định Thiết Kế Cốt Lõi (Engineering Trade-offs / ADRs)
 
 Chi tiết kiến trúc được trình bày đầy đủ trong tệp [ARCHITECTURE.md](file:///c:/Users/Thai%20Hoa/.gemini/antigravity-ide/scratch/legal-ai-contract-reviewer/ARCHITECTURE.md) hoặc có thể xem trực tiếp trên giao diện Web qua nút **"Kiến Trúc (Recruiter Spec)"**:
@@ -102,6 +105,7 @@ Chi tiết kiến trúc được trình bày đầy đủ trong tệp [ARCHITECT
 
 ---
 
+<a id="4-mo-hinh-toan-hoc"></a>
 ## 4. Mô Hình Toán Học Chấm Điểm & Dự Báo Tranh Tụng
 
 Điểm an toàn pháp lý tổng thể $S_{\text{legal}} \in [5, 100]$ của mỗi hợp đồng được tính toán định lượng dựa trên ma trận trọng số mức độ nghiêm trọng của từng rủi ro phát hiện được:
@@ -116,6 +120,7 @@ Trong đó:
 
 ---
 
+<a id="5-ma-tran-quy-pham"></a>
 ## 5. Ma Trận Quy Phạm Pháp Luật & Án Lệ TANDTC
 
 Hệ thống nạp sẵn **28+ quy tắc điều luật cốt lõi** và **06 Án lệ của Hội đồng Thẩm phán TANDTC** (kèm công cụ **Auto-Ingest** cho phép nạp thêm văn bản luật mới theo thời gian thực):
@@ -130,6 +135,7 @@ Hệ thống nạp sẵn **28+ quy tắc điều luật cốt lõi** và **06 Á
 
 ---
 
+<a id="6-thiet-ke-giao-dien"></a>
 ## 6. Thiết Kế Giao Diện Precision LegalTech UI/UX
 
 Giao diện Frontend được thiết kế theo chuẩn **Obsidian Machined Hardware & Double-Bezel (Doppelrand)**:
@@ -140,6 +146,7 @@ Giao diện Frontend được thiết kế theo chuẩn **Obsidian Machined Hard
 
 ---
 
+<a id="7-cau-truc-thu-muc"></a>
 ## 7. Cấu Trúc Thư Mục Dự Án (Repository Structure)
 
 ```text
@@ -185,6 +192,7 @@ legal-ai-contract-reviewer/
 
 ---
 
+<a id="8-danh-muc-rest-api"></a>
 ## 8. Danh Mục REST API (API Reference)
 
 Khi khởi chạy Backend, tài liệu tương tác OpenAPI (Swagger UI) có sẵn tại `http://localhost:8000/docs`:
@@ -204,6 +212,7 @@ Khi khởi chạy Backend, tài liệu tương tác OpenAPI (Swagger UI) có s�
 
 ---
 
+<a id="9-huong-dan-cai-dat"></a>
 ## 9. Hướng Dẫn Cài Đặt & Khởi Chạy Nhanh
 
 ### Cách 1: Chạy trực tiếp trên môi trường Local (Khuyên dùng khi Demo nhanh)
@@ -239,6 +248,7 @@ docker compose up -d --build
 
 ---
 
+<a id="10-kiem-thu-tu-dong"></a>
 ## 10. Kiểm Thử Tự Động & Đảm Bảo Chất Lượng (Automated QA)
 
 Dự án bao gồm **10 module kiểm thử tự động (`tests/test_*.py`) với 27 hàm kiểm thử chuyên sâu (bao phủ 37/37 kịch bản An toàn Bảo mật & Tính Hợp lý Pháp lý)** xuyên suốt từ AST Chunker, Risk Analyzer, Precedent Engine, Version Comparator, Word `.docx` Generator cho đến chống Cypher Injection & Magic Bytes Spoofing:
