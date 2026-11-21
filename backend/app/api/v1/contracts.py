@@ -19,6 +19,8 @@ from app.engine.precedent_engine import PrecedentLitigationEngine
 from app.engine.storage_manager import ContractStorageManager
 
 import re
+import unicodedata
+from urllib.parse import quote
 from sqlalchemy.orm import Session
 from fastapi import APIRouter, UploadFile, File, HTTPException, Depends
 from fastapi.responses import StreamingResponse
@@ -36,6 +38,20 @@ def sanitize_filename(name: str) -> str:
     clean = re.sub(r'[\x00-\x1f\\/:*?"<>|]', '_', name)
     clean = clean.replace('..', '_')
     return clean.strip() or "contract_upload.pdf"
+
+def build_docx_content_disposition(prefix: str, raw_title: str) -> str:
+    """Tạo header Content-Disposition chuẩn RFC 5987 (thuần latin-1 + hỗ trợ tên tiếng Việt UTF-8)"""
+    safe_utf8_title = "".join(
+        c for c in raw_title if c.isalnum() or c in (" ", "_", "-")
+    ).strip()[:40] or "Contract"
+    utf8_filename = f"{prefix}_{safe_utf8_title.replace(' ', '_')}.docx"
+
+    ascii_source = safe_utf8_title.replace("đ", "d").replace("Đ", "D")
+    ascii_normalized = unicodedata.normalize("NFKD", ascii_source).encode("ascii", "ignore").decode("ascii")
+    ascii_clean = re.sub(r"[^A-Za-z0-9_-]+", "_", ascii_normalized).strip("_")[:40] or "Contract"
+    ascii_filename = f"{prefix}_{ascii_clean}.docx"
+
+    return f'attachment; filename="{ascii_filename}"; filename*=UTF-8\'\'{quote(utf8_filename, safe="")}'
 
 @router.get("/graph/cypher-presets")
 async def get_cypher_presets():
@@ -99,28 +115,25 @@ async def get_contract_knowledge_graph(contract_id: str, db: Session = Depends(g
     raise HTTPException(status_code=404, detail="Hợp đồng chưa có dữ liệu đồ thị tri thức.")
 
 @router.get("/{contract_id}/export/docx")
-async def export_contract_redline_docx(contract_id: str):
+async def export_contract_redline_docx(contract_id: str, db: Session = Depends(get_db)):
     """
     Xuất file Word (.docx) chứa Track Changes Redline (vạch gạch đỏ xóa bỏ, chữ xanh sửa đổi và căn cứ luật).
     """
-    report = await get_contract_report(contract_id)
+    report = await get_contract_report(contract_id, db=db)
     docx_stream = ContractDocxGenerator.generate_redline_docx(report)
-    
-    clean_title = "".join(c for c in report.contract_title if c.isalnum() or c in (" ", "_", "-")).rstrip()[:30]
-    filename = f"LegalAI_Redline_{clean_title}.docx"
 
     return StreamingResponse(
         docx_stream,
         media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-        headers={"Content-Disposition": f'attachment; filename="{filename}"'}
+        headers={"Content-Disposition": build_docx_content_disposition("LegalAI_Redline", report.contract_title)}
     )
 
 @router.get("/{contract_id}/annex/preview")
-async def preview_contract_annex(contract_id: str):
+async def preview_contract_annex(contract_id: str, db: Session = Depends(get_db)):
     """
     Xem trước dữ liệu cấu trúc Phụ lục sửa đổi bổ sung hợp đồng (Điều 403 BLDS 2015).
     """
-    report = await get_contract_report(contract_id)
+    report = await get_contract_report(contract_id, db=db)
     return ContractAnnexGenerator.generate_annex_data(report)
 
 @router.get("/{contract_id}/export/annex")
@@ -129,13 +142,14 @@ async def export_contract_annex_docx(
     party_a: str = "BÊN GIAO VIỆC / BÊN A",
     party_b: str = "BÊN THỰC HIỆN / BÊN B",
     annex_no: str = "01",
-    contract_no: str = "HĐ-2026/01"
+    contract_no: str = "HĐ-2026/01",
+    db: Session = Depends(get_db)
 ):
     """
     Xuất file Word (.docx) PHỤ LỤC HỢP ĐỒNG SỬA ĐỔI, BỔ SUNG chuẩn văn bản hành chính Việt Nam (NĐ 30/2020/NĐ-CP).
     Có sẵn khung ký tên đóng dấu 2 bên để in ra ký ngay.
     """
-    report = await get_contract_report(contract_id)
+    report = await get_contract_report(contract_id, db=db)
     docx_stream = ContractAnnexGenerator.generate_annex_docx(
         report=report,
         party_a_name=party_a,
@@ -144,13 +158,10 @@ async def export_contract_annex_docx(
         contract_number=contract_no
     )
 
-    clean_title = "".join(c for c in report.contract_title if c.isalnum() or c in (" ", "_", "-")).rstrip()[:30]
-    filename = f"LegalAI_PhuLucSuaDoi_{clean_title}.docx"
-
     return StreamingResponse(
         docx_stream,
         media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-        headers={"Content-Disposition": f'attachment; filename="{filename}"'}
+        headers={"Content-Disposition": build_docx_content_disposition("LegalAI_PhuLucSuaDoi", report.contract_title)}
     )
 
 @router.post("/upload", response_model=ContractAnalysisReport)
@@ -284,11 +295,11 @@ async def list_court_precedents():
     return PrecedentLitigationEngine.get_precedents_library()
 
 @router.get("/{contract_id}/litigation-prediction", response_model=LitigationPredictionReport)
-async def predict_contract_litigation_risk(contract_id: str):
+async def predict_contract_litigation_risk(contract_id: str, db: Session = Depends(get_db)):
     """
     Dự đoán tỷ lệ thua kiện / tuyên vô hiệu điều khoản và đối chiếu Án lệ TANDTC cho hợp đồng.
     """
-    report = await get_contract_report(contract_id)
+    report = await get_contract_report(contract_id, db=db)
     return PrecedentLitigationEngine.predict_contract_litigation_risk(report)
 
 @router.get("/archive/list", response_model=List[ArchiveContractItem])

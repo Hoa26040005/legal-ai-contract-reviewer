@@ -246,3 +246,27 @@ def test_contract_level_completeness_check():
     assert not any(rid.endswith("_missing_force_majeure") for rid in ok_ids)
     assert not any(rid.endswith("_missing_dispute_resolution") for rid in ok_ids)
 
+
+def test_e2e_export_docx_and_annex_vietnamese_headers():
+    """Kiểm thử E2E HTTP cho các endpoint xuất Word Redline, Phụ lục (có tiêu đề tiếng Việt UTF-8) & Dự báo tranh tụng."""
+    ooxml_mime = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+
+    r_docx = client.get("/api/v1/contracts/sample_labor_contract/export/docx")
+    assert r_docx.status_code == 200
+    assert ooxml_mime in r_docx.headers.get("content-type", "")
+    assert "filename*=UTF-8''" in r_docx.headers.get("content-disposition", "")
+    assert len(r_docx.content) > 1000
+
+    r_annex = client.get("/api/v1/contracts/sample_labor_contract/export/annex")
+    assert r_annex.status_code == 200
+    assert ooxml_mime in r_annex.headers.get("content-type", "")
+    assert "filename*=UTF-8''" in r_annex.headers.get("content-disposition", "")
+    assert len(r_annex.content) > 1000
+
+    r_preview = client.get("/api/v1/contracts/sample_labor_contract/annex/preview")
+    assert r_preview.status_code == 200
+
+    r_litigation = client.get("/api/v1/contracts/sample_labor_contract/litigation-prediction")
+    assert r_litigation.status_code == 200
+
+
