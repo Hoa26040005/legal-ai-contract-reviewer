@@ -73,6 +73,8 @@ class PrecedentLitigationEngine:
         # Ánh xạ rủi ro sang án lệ và dự đoán phán quyết Tòa án
         for risk in report.risks:
             clause_text_lower = (risk.original_text + " " + risk.risk_title).lower()
+            legal_basis_lower = (risk.legal_basis or "").lower()
+            risk_cat_lower = (risk.risk_category or "").lower()
 
             loss_prob = 50
             inv_risk = "Một phần"
@@ -82,8 +84,52 @@ class PrecedentLitigationEngine:
             court_fee = "Án phí sơ thẩm không có giá ngạch: 300.000 VNĐ."
             recommendation = "Cần đàm phán sửa đổi điều khoản để tránh nguy cơ bị xử thua kiện khi phát sinh tranh chấp."
 
-            # 1. Tranh chấp Lãi suất / Phạt chậm trả -> Án lệ 09/2017/AL
-            if any(k in clause_text_lower for k in ["lãi suất", "lãi phạt", "chậm trả", "36.5%", "0.1%/ngày", "chậm thanh toán"]):
+            is_poa_or_authority = any(
+                k in clause_text_lower or k in legal_basis_lower or k in risk_cat_lower
+                for k in ["điều 142", "điều 563", "điều 564", "điều 569", "ủy quyền", "thẩm quyền ký kết", "thẩm quyền đại diện"]
+            )
+            is_real_estate_or_lease = any(
+                k in clause_text_lower or k in legal_basis_lower or k in risk_cat_lower
+                for k in [
+                    "kinh doanh bất động sản", "luật đất đai", "luật nhà ở", "điều 23.5",
+                    "điều 328", "điều 472", "vi bằng", "giấy viết tay", "thuê mặt bằng", "giá thuê", "phạt cọc"
+                ]
+            )
+            is_labor_prohibition = (
+                any(k in clause_text_lower for k in ["giữ bằng", "văn bằng gốc", "ký quỹ", "giữ bản chính"])
+                or ("đặt cọc" in clause_text_lower and not is_real_estate_or_lease and ("lao động" in legal_basis_lower or "17.2" in legal_basis_lower or "lao động" in risk_cat_lower or "nhận việc" in clause_text_lower))
+            )
+
+            # 1. Thẩm quyền ký kết & Giấy ủy quyền -> Án lệ 13/2017/AL
+            if is_poa_or_authority:
+                precedent = cls.PRECEDENTS_DATABASE[3]  # Án lệ số 13/2017/AL
+                loss_prob = 90
+                inv_risk = "Toàn bộ"
+                dispute_scenario = "Một bên khởi kiện yêu cầu Tòa án tuyên hợp đồng/giao dịch vô hiệu do người ký vượt thẩm quyền, thiếu Giấy ủy quyền hợp lệ hoặc ủy quyền lại trái phép."
+                court_forecast = (
+                    "Căn cứ Điều 142, 563-569 BLDS 2015 & Án lệ số 13/2017/AL: Tòa án đánh giá nghiêm ngặt văn bản ủy quyền tại thời điểm xác lập giao dịch. "
+                    "Nếu pháp nhân không phê chuẩn hoặc thiếu chứng cứ chấp thuận, giao dịch có nguy cơ bị tuyên VÔ HIỆU và không làm phát sinh nghĩa vụ."
+                )
+                court_fee = "Án phí dân sự sơ thẩm: 300.000 VNĐ (hoặc có giá ngạch nếu kèm yêu cầu giải quyết hậu quả vô hiệu)."
+                recommendation = "Bổ sung số/ngày Giấy ủy quyền hợp lệ của Người đại diện theo pháp luật và giới hạn chặt thời hạn, phạm vi đại diện."
+                total_loss_sum += 20000000
+
+            # 2. Bất động sản (>5% cọc, vi bằng/không công chứng) & Thuê mặt bằng / Phạt cọc 1 chiều
+            elif is_real_estate_or_lease:
+                precedent = cls.PRECEDENTS_DATABASE[4]  # Án lệ số 36/2020/AL
+                loss_prob = 94
+                inv_risk = "Toàn bộ" if any(k in clause_text_lower or k in legal_basis_lower for k in ["vi bằng", "viết tay", "công chứng", "23.5", "bất động sản"]) else "Một phần"
+                dispute_scenario = "Bên mua/Bên thuê khởi kiện yêu cầu tuyên vô hiệu giao dịch nhà đất chưa công chứng, đòi lại tiền đặt cọc vượt trần 5% hoặc yêu cầu phạt cọc đối xứng theo Điều 328 BLDS."
+                court_forecast = (
+                    "Căn cứ Điều 23.5 Luật KDBĐS 2023, Điều 45 Luật Đất đai 2024, Điều 164 Luật Nhà ở 2023 và Điều 328, 472 BLDS 2015: "
+                    "Tòa án tuyên VÔ HIỆU thỏa thuận mua bán viết tay/vi bằng hoặc thu cọc quá 5%, buộc hoàn trả tiền đã nhận và áp dụng chế tài phạt cọc đối xứng."
+                )
+                court_fee = "Án phí sơ thẩm có giá ngạch theo Nghị quyết 326/2016/UBTVQH14 (ước tính 20.000.000 - 80.000.000 VNĐ tùy giá trị tài sản)."
+                recommendation = "Khống chế tiền đặt cọc nhà ở hình thành trong tương lai <= 5%, thực hiện công chứng bắt buộc và cân bằng nghĩa vụ phạt cọc/báo trước 60 ngày."
+                total_loss_sum += 50000000
+
+            # 3. Tranh chấp Lãi suất / Phạt chậm trả -> Án lệ 09/2017/AL
+            elif any(k in clause_text_lower for k in ["lãi suất", "lãi phạt", "chậm trả", "36.5%", "0.1%/ngày", "chậm thanh toán"]):
                 precedent = cls.PRECEDENTS_DATABASE[0] # Án lệ 09/2017/AL
                 loss_prob = 92
                 inv_risk = "Một phần"
@@ -96,7 +142,7 @@ class PrecedentLitigationEngine:
                 recommendation = "Hạ ngay lãi phạt chậm trả về mức trần 20%/năm hoặc mức lãi suất nợ quá hạn bình quân ngân hàng thương mại."
                 total_loss_sum += 15000000
 
-            # 2. Tranh chấp Đơn phương chấm dứt / Sa thải KPI -> Án lệ 42/2021/AL
+            # 4. Tranh chấp Đơn phương chấm dứt / Sa thải KPI -> Án lệ 42/2021/AL
             elif any(k in clause_text_lower for k in ["kpi", "sa thải", "chấm dứt hđlđ", "không đạt", "đi trễ", "phạt tiền"]):
                 precedent = cls.PRECEDENTS_DATABASE[1] # Án lệ 42/2021/AL
                 loss_prob = 95
@@ -110,7 +156,7 @@ class PrecedentLitigationEngine:
                 recommendation = "Bãi bỏ chế tài phạt tiền, xây dựng Quy chế đánh giá hoàn thành công việc cụ thể lấy ý kiến Công đoàn trước khi ban hành."
                 total_loss_sum += 45000000
 
-            # 3. Tranh chấp Phạt vi phạm vượt 8% / Đòi bồi thường khống -> Án lệ 25/2018/AL
+            # 5. Tranh chấp Phạt vi phạm vượt 8% / Đòi bồi thường khống -> Án lệ 25/2018/AL
             elif any(k in clause_text_lower for k in ["phạt vi phạm", "8%", "15%", "bồi thường 100%", "thiệt hại"]):
                 precedent = cls.PRECEDENTS_DATABASE[2] # Án lệ 25/2018/AL
                 loss_prob = 88
@@ -124,11 +170,11 @@ class PrecedentLitigationEngine:
                 recommendation = "Điều chỉnh mức phạt về đúng 8% và bổ sung điều khoản thỏa thuận phương pháp tính thiệt hại thực tế."
                 total_loss_sum += 30000000
 
-            # 4. Giữ văn bằng gốc / Ký quỹ cọc tiền -> Vô hiệu tuyệt đối theo Điều 122, 123 BLDS 2015
-            elif any(k in clause_text_lower for k in ["giữ bằng", "văn bằng gốc", "đặt cọc", "ký quỹ", "giữ bản chính"]):
+            # 6. Giữ văn bằng gốc / Ký quỹ cọc tiền Lao động -> Vô hiệu tuyệt đối theo Điều 122, 123 BLDS 2015
+            elif is_labor_prohibition:
                 loss_prob = 99
                 inv_risk = "Toàn bộ"
-                dispute_scenario = "Người lao động hoặc cơ quan Thanh tra Lao động khởi kiện / xử phạt hành vi giữ bằng đại học gốc hoặc giữ 20 triệu tiền cọc."
+                dispute_scenario = "Người lao động hoặc cơ quan Thanh tra Lao động khởi kiện / xử phạt hành vi giữ bằng đại học gốc hoặc giữ tiền đặt cọc lao động."
                 court_forecast = (
                     "Căn cứ Điều 17 Bộ luật Lao động 2019 & Điều 123 BLDS 2015: Giao dịch vô hiệu do vi phạm điều cấm của luật. "
                     "Tòa án tuyên điều khoản VÔ HIỆU TUYỆT ĐỐI, buộc trả lại ngay văn bằng và tiền cọc kèm tiền lãi, đồng thời chuyển hồ sơ sang Thanh tra xử phạt vi phạm hành chính 25.000.000 VNĐ."
@@ -137,7 +183,7 @@ class PrecedentLitigationEngine:
                 recommendation = "Bãi bỏ ngay lập tức điều khoản này; không có cơ hội thắng kiện trong bất kỳ trường hợp nào."
                 total_loss_sum += 25300000
 
-            # 5. Rủi ro mâu thuẫn điều khoản -> Án lệ 36/2020/AL
+            # 7. Rủi ro mâu thuẫn điều khoản -> Án lệ 36/2020/AL
             else:
                 precedent = cls.PRECEDENTS_DATABASE[4] # Án lệ 36/2020/AL
                 loss_prob = 65

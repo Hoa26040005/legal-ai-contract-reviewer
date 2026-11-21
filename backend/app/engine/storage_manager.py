@@ -78,6 +78,22 @@ class ContractStorageManager:
         )
     }
 
+    @staticmethod
+    def _resolve_category(contract_type: str) -> str:
+        """Phân loại thư mục hồ sơ dựa trên loại hợp đồng / giấy tờ."""
+        ctype = (contract_type or "").lower()
+        if "ủy quyền" in ctype or "uy quyen" in ctype:
+            return "Ủy quyền & Pháp chế"
+        if any(k in ctype for k in ["bất động sản", "nhà ở", "đất đai", "thuê mặt bằng", "đặt cọc"]):
+            return "Bất động sản & Thuê mặt bằng"
+        if "lao động" in ctype or "labor" in ctype:
+            return "Lao động & Nhân sự"
+        if "mua bán" in ctype or "thương mại" in ctype or "sale" in ctype:
+            return "Mua bán & Thương mại"
+        if "nda" in ctype or "bảo mật" in ctype:
+            return "Bảo mật NDA"
+        return "Dịch vụ CNTT"
+
     @classmethod
     def get_archive_list(cls, category: Optional[str] = None, db: Optional[Any] = None) -> List[ArchiveContractItem]:
         """Lấy danh sách tất cả tài liệu trong Tủ Hồ Sơ (kết hợp Database bền vững + Samples)"""
@@ -88,15 +104,7 @@ class ContractStorageManager:
                 for c in db_contracts:
                     if c.id in cls.ARCHIVE_REGISTRY:
                         continue
-                    ctype = c.contract_type.lower()
-                    if "lao động" in ctype or "labor" in ctype:
-                        cat = "Lao động & Nhân sự"
-                    elif "mua bán" in ctype or "thương mại" in ctype or "sale" in ctype:
-                        cat = "Mua bán & Thương mại"
-                    elif "nda" in ctype or "bảo mật" in ctype:
-                        cat = "Bảo mật NDA"
-                    else:
-                        cat = "Dịch vụ CNTT"
+                    cat = cls._resolve_category(c.contract_type)
 
                     status = "AN TOÀN" if c.overall_score >= 75 else ("ĐANG ĐÀM PHÁN" if c.overall_score >= 40 else "CẦN SỬA ĐỔI")
                     max_p = db.query(ClauseModel.page_number).filter(ClauseModel.contract_id == c.id).order_by(ClauseModel.page_number.desc()).first()
@@ -151,15 +159,7 @@ class ContractStorageManager:
                 print("Lỗi lưu file vật lý vào uploads:", e)
 
         # Xác định danh mục
-        ctype = report.contract_type.lower()
-        if "lao động" in ctype or "labor" in ctype:
-            cat = "Lao động & Nhân sự"
-        elif "mua bán" in ctype or "thương mại" in ctype or "sale" in ctype:
-            cat = "Mua bán & Thương mại"
-        elif "nda" in ctype or "bảo mật" in ctype:
-            cat = "Bảo mật NDA"
-        else:
-            cat = "Dịch vụ CNTT"
+        cat = cls._resolve_category(report.contract_type)
 
         # Xác định nhãn trạng thái
         if report.overall_score >= 75:

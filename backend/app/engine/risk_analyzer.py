@@ -408,7 +408,21 @@ class LegalRiskAnalyzer:
         # =====================================================================
 
         # L1. Cấm giữ văn bằng, giấy tờ tùy thân gốc (Điều 17.1 BLLD 2019)
-        if any(kw in content for kw in ["giữ bản chính", "giữ bằng gốc", "nộp bản gốc", "giữ giấy tờ gốc", "giữ bằng đại học", "bằng đại học gốc", "nộp bằng gốc", "giữ bằng tốt nghiệp", "giữ văn bằng", "giữ chứng chỉ gốc", "giữ cccd", "giữ cmnd", "giữ chứng minh"]):
+        diploma_kws = [
+            "giữ bản chính", "giữ bằng gốc", "nộp bản gốc", "giữ giấy tờ gốc",
+            "giữ bằng đại học", "bằng đại học gốc", "nộp bằng gốc", "giữ bằng tốt nghiệp",
+            "giữ văn bằng", "giữ chứng chỉ gốc", "giữ cccd", "giữ cmnd", "giữ chứng minh",
+        ]
+        has_negated_diploma_retention = bool(
+            re.search(
+                r"\bkhông\s+(?:được\s+(?:phép\s+)?|lưu\s+|bao\s+giờ\s+)?(?:giữ|nộp)\s+(?:bất\s+kỳ\s+|mọi\s+|các\s+)?(?:bản\s+chính|bản\s+gốc|văn\s+bằng|bằng\s+(?:gốc|đại\s+học|tốt\s+nghiệp)|giấy\s+tờ|chứng\s+chỉ|cccd|cmnd|chứng\s+minh)",
+                content,
+            )
+        )
+        if any(kw in content for kw in diploma_kws) and (
+            not has_negated_diploma_retention
+            or any(p in content for p in ["phải nộp bản gốc", "nộp bằng gốc", "nộp bản chính"])
+        ):
             items.append(RiskItem(
                 id=f"risk_{clause.id}_keep_diploma",
                 clause_id=clause.id,
@@ -554,7 +568,15 @@ class LegalRiskAnalyzer:
             ))
 
         # L6. Trốn đóng hoặc không tham gia BHXH (Điều 168 BLLD 2019)
-        if any(kw in content for kw in ["không tham gia bhxh", "tự đóng bhxh", "tự chịu bảo hiểm", "chi trả tiền mặt thay vì đóng bhxh"]):
+        if any(
+            kw in content
+            for kw in [
+                "không tham gia bhxh", "không đóng bhxh", "không đóng bảo hiểm xã hội",
+                "tự đóng bhxh", "tự đóng bảo hiểm", "tự chịu bảo hiểm",
+                "chi trả tiền mặt thay vì đóng bhxh", "chi trả tiền mặt thay bhxh",
+                "gộp vào lương để tự đóng", "tự lo các loại bảo hiểm",
+            ]
+        ) or ("tiền mặt" in content and "tự đóng" in content and ("bhxh" in content or "bảo hiểm" in content)):
             items.append(RiskItem(
                 id=f"risk_{clause.id}_social_insurance",
                 clause_id=clause.id,
@@ -743,7 +765,20 @@ class LegalRiskAnalyzer:
             ))
 
         # C6. Thời hạn khiếu nại quá ngắn (Điều 318 LTM 2005)
-        if any(kw in content for kw in ["khiếu nại trong vòng 24 giờ", "khiếu nại trong vòng 48 giờ", "khiếu nại trong vòng 3 ngày", "sau 48h coi như đồng ý"]):
+        claim_hour_match = re.search(
+            r"khiếu\s+nại[^.;\n]{0,60}?(?:trong\s+vòng|hạn|chỉ|gửi)[^.;\n]{0,25}?(\d+)\s*(?:giờ|h\b)",
+            content,
+        )
+        claim_day_match = re.search(
+            r"khiếu\s+nại[^.;\n]{0,60}?(?:trong\s+vòng|hạn|chỉ|gửi)[^.;\n]{0,25}?(\d+)\s*ngày\b",
+            content,
+        )
+        is_short_claim = (
+            any(kw in content for kw in ["khiếu nại trong vòng 24 giờ", "khiếu nại trong vòng 48 giờ", "khiếu nại trong vòng 3 ngày", "sau 48h coi như đồng ý"])
+            or (claim_hour_match is not None and int(claim_hour_match.group(1)) <= 72)
+            or (claim_day_match is not None and int(claim_day_match.group(1)) <= 7)
+        )
+        if is_short_claim:
             items.append(RiskItem(
                 id=f"risk_{clause.id}_claim_timeline",
                 clause_id=clause.id,
@@ -778,7 +813,28 @@ class LegalRiskAnalyzer:
                 ))
 
         # C8. Thẩm quyền Tòa án áp đặt một chiều (Điều 39 BLTTDS 2015)
-        if any(kw in content for kw in ["tòa án nơi bên a", "tòa án nơi bên b", "trụ sở của bên a", "trụ sở của bên b"]) and "trọng tài" not in content:
+        is_one_sided_court = (
+            "trọng tài" not in content
+            and "bị đơn" not in content
+            and (
+                any(
+                    kw in content
+                    for kw in [
+                        "tòa án nơi bên a", "tòa án nơi bên b",
+                        "trụ sở của bên a", "trụ sở của bên b",
+                        "nơi công ty đặt trụ sở", "nơi bên a đặt trụ sở",
+                        "nơi bên tiết lộ đặt trụ sở",
+                    ]
+                )
+                or bool(
+                    re.search(
+                        r"tòa\s+án[^.;\n]{0,35}(?:nơi\s+(?:bên\s+[ab]|công\s+ty|bên\s+tiết\s+lộ|bên\s+bán|chủ\s+đầu\s+tư|người\s+sử\s+dụng\s+lao\s+động)|đặt\s+trụ\s+sở)",
+                        content,
+                    )
+                )
+            )
+        )
+        if is_one_sided_court:
             items.append(RiskItem(
                 id=f"risk_{clause.id}_jurisdiction_one_sided",
                 clause_id=clause.id,
@@ -787,6 +843,7 @@ class LegalRiskAnalyzer:
                 risk_title="Thẩm quyền Tòa án áp đặt một chiều, bất lợi về mặt địa lý",
                 risk_category="Tranh chấp & Tài phán",
                 description="Quy định giải quyết tranh chấp tại Tòa án theo địa điểm của bên soạn thảo hợp đồng gây tốn kém chi phí đi lại, luật sư và nguồn lực tố tụng nếu có tranh chấp.",
+                legal_basis="Điều 39 BLTTDS 2015 & Luật Trọng tài thương mại 2010",
                 original_text=clause.content,
                 suggested_text="Mọi tranh chấp phát sinh từ Hợp đồng này trước hết sẽ được giải quyết bằng thương lượng, hòa giải trong thời hạn 30 ngày. Nếu không hòa giải được, tranh chấp sẽ được giải quyết tại Trung tâm Trọng tài Quốc tế Việt Nam (VIAC) theo Quy tắc tố tụng trọng tài của Trung tâm này.",
                 rationale="Trọng tài thương mại VIAC đảm bảo tính trung lập, bảo mật bí mật kinh doanh và phán quyết có hiệu lực chung thẩm nhanh chóng.",

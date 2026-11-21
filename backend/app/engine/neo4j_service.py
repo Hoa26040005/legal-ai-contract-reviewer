@@ -17,9 +17,36 @@ class Neo4jGraphService:
         "nodes": {},
         "edges": []
     }
+    _fallback_edge_keys = set()
+
+    @classmethod
+    def _add_fallback_edge(cls, source: str, target: str, relation: str):
+        edge_key = (source, target, relation)
+        if edge_key not in cls._fallback_edge_keys:
+            cls._fallback_edge_keys.add(edge_key)
+            cls._fallback_graph["edges"].append({
+                "source": source,
+                "target": target,
+                "relation": relation,
+            })
+
+    @classmethod
+    def ensure_seeded(cls):
+        """Tự động nạp 4 hợp đồng mẫu vào Fallback Graph nếu đồ thị đang rỗng."""
+        if cls._fallback_graph["nodes"]:
+            return
+        try:
+            from app.engine.sample_contracts import get_sample_contracts_summary, get_sample_contract_analysis
+            for s in get_sample_contracts_summary():
+                rep = get_sample_contract_analysis(s.id)
+                cls.sync_contract_report(rep)
+        except Exception as e:
+            print("Fallback graph seed warning:", e)
 
     @classmethod
     def get_driver(cls):
+        if cls._is_connected is False:
+            return None
         if cls._driver is None:
             try:
                 from neo4j import GraphDatabase
@@ -70,33 +97,36 @@ class Neo4jGraphService:
         }
 
         for cl in report.clauses:
-            cls._fallback_graph["nodes"][cl.id] = {
-                "id": cl.id, "label": f"{cl.clause_number}: {cl.title}", "type": "Clause",
+            cl_node_id = f"{c_id}::{cl.id}"
+            cls._fallback_graph["nodes"][cl_node_id] = {
+                "id": cl_node_id, "label": f"{cl.clause_number}: {cl.title}", "type": "Clause",
                 "clause_number": cl.clause_number, "content": cl.content
             }
-            cls._fallback_graph["edges"].append({
-                "source": c_id, "target": cl.id, "relation": "HAS_CLAUSE"
-            })
+            cls._add_fallback_edge(c_id, cl_node_id, "HAS_CLAUSE")
 
         for r in report.risks:
-            cls._fallback_graph["nodes"][r.id] = {
-                "id": r.id, "label": r.risk_title, "type": "Risk",
+            r_node_id = f"{c_id}::{r.id}"
+            cl_node_id = f"{c_id}::{r.clause_id}"
+            cls._fallback_graph["nodes"][r_node_id] = {
+                "id": r_node_id,
+                "label": r.risk_title,
+                "type": "Risk",
+                "contract_title": report.contract_title,
+                "clause_number": r.clause_number,
                 "level": r.risk_level.value if hasattr(r.risk_level, 'value') else str(r.risk_level),
-                "category": r.risk_category, "legal_basis": r.legal_basis or "",
-                "original_text": r.original_text, "suggested_text": r.suggested_text
+                "category": r.risk_category,
+                "legal_basis": r.legal_basis or "",
+                "original_text": r.original_text,
+                "suggested_text": r.suggested_text
             }
-            cls._fallback_graph["edges"].append({
-                "source": r.clause_id, "target": r.id, "relation": "DETECTED_RISK"
-            })
+            cls._add_fallback_edge(cl_node_id, r_node_id, "DETECTED_RISK")
 
             if r.legal_basis:
                 statute_id = f"law_{abs(hash(r.legal_basis)) % 100000}"
                 cls._fallback_graph["nodes"][statute_id] = {
                     "id": statute_id, "label": r.legal_basis, "type": "Statute", "name": r.legal_basis
                 }
-                cls._fallback_graph["edges"].append({
-                    "source": r.id, "target": statute_id, "relation": "VIOLATES_LAW"
-                })
+                cls._add_fallback_edge(r_node_id, statute_id, "VIOLATES_LAW")
 
         # Đồng bộ vào Neo4j nếu server online
         driver = cls.get_driver()
@@ -189,7 +219,8 @@ class Neo4jGraphService:
                 }
 
         # Fallback Multi-Hop Graph-RAG Engine thông minh
-        # Tự động phân tích câu lệnh Cypher và lọc trên Fallback Graph
+        # Tự động nạp các hợp đồng mẫu nếu đồ thị Fallback chưa có dữ liệu
+        cls.ensure_seeded()
         query_upper = cypher_query.upper()
         results = []
 
@@ -201,8 +232,8 @@ class Neo4jGraphService:
                     title = node.get("label", "")
                     if "301" in basis or "25/2018" in basis or "phạt" in title.lower() or "bồi thường" in title.lower():
                         results.append({
-                            "contract_title": "Hợp Đồng Đang Rà Soát",
-                            "clause": node.get("id", "").replace("risk_", "").split("_")[0],
+                            "contract_title": node.get("contract_title") or "Hợp Đồng Đang Rà Soát",
+                            "clause": node.get("clause_number") or "Điều khoản",
                             "violation": title,
                             "risk_level": node.get("level", "CRITICAL"),
                             "legal_source": basis or "Điều 301 Luật Thương mại 2005 & Án lệ số 25/2018/AL",
@@ -217,8 +248,8 @@ class Neo4jGraphService:
                     cat = node.get("category", "")
                     if "17" in basis or "25" in basis or "lao động" in cat.lower() or "thử việc" in node.get("label", "").lower():
                         results.append({
-                            "contract_title": "Hợp Đồng Lao Động",
-                            "clause": node.get("id", "").replace("risk_", "").split("_")[0],
+                            "contract_title": node.get("contract_title") or "Hợp Đồng Lao Động",
+                            "clause": node.get("clause_number") or "Điều khoản",
                             "risk_title": node.get("label", ""),
                             "risk_level": node.get("level", "HIGH"),
                             "legal_basis": basis,
@@ -230,12 +261,29 @@ class Neo4jGraphService:
             for r_id, node in cls._fallback_graph["nodes"].items():
                 if node.get("type") == "Risk" and node.get("level") == "CRITICAL":
                     results.append({
-                        "contract_title": "Hợp Đồng Pháp Lý",
-                        "clause": node.get("id", "").replace("risk_", "").split("_")[0],
+                        "contract_title": node.get("contract_title") or "Hợp Đồng Pháp Lý",
+                        "clause": node.get("clause_number") or "Điều khoản",
                         "critical_risk": node.get("label", ""),
                         "legal_basis": node.get("legal_basis", ""),
                         "suggested_redline": node.get("suggested_text", "")
                     })
+
+        # Preset 4: Thẩm quyền Tài phán & Giải quyết Tranh chấp (Điều 39 BLTTDS 2015)
+        elif "TRANH CHẤP" in query_upper or "TÀI PHÁN" in query_upper or "39" in cypher_query:
+            for r_id, node in cls._fallback_graph["nodes"].items():
+                if node.get("type") == "Risk":
+                    basis = node.get("legal_basis", "")
+                    cat = node.get("category", "")
+                    title = node.get("label", "")
+                    if "tranh chấp" in cat.lower() or "tài phán" in cat.lower() or "tòa án" in title.lower() or "39" in basis:
+                        results.append({
+                            "contract_title": node.get("contract_title") or "Hợp Đồng Thương Mại",
+                            "clause": node.get("clause_number") or "Điều khoản",
+                            "issue": title,
+                            "risk_level": node.get("level", "MEDIUM"),
+                            "legal_basis": basis or "Điều 39 BLTTDS 2015",
+                            "suggestion": node.get("suggested_text", "")
+                        })
 
         # Mặc định: Trả về danh sách rủi ro đã phát hiện
         else:
@@ -243,6 +291,8 @@ class Neo4jGraphService:
                 if node.get("type") == "Risk":
                     results.append({
                         "node_id": node.get("id"),
+                        "contract_title": node.get("contract_title") or "Hợp Đồng",
+                        "clause": node.get("clause_number") or "Điều khoản",
                         "title": node.get("label"),
                         "level": node.get("level"),
                         "basis": node.get("legal_basis")

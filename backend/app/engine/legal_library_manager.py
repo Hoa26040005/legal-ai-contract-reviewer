@@ -254,6 +254,14 @@ class LegalLibraryManager:
     Cho phép thêm, sửa, xóa, tìm kiếm điều luật và bóc tách văn bản quy phạm pháp luật toàn văn.
     """
 
+    _cached_raw_data: Optional[List[Dict[str, Any]]] = None
+    _cached_mtime: float = -1.0
+
+    @classmethod
+    def _invalidate_cache(cls) -> None:
+        cls._cached_raw_data = None
+        cls._cached_mtime = -1.0
+
     @classmethod
     def _ensure_storage(cls):
         os.makedirs(ARCHIVE_DIR, exist_ok=True)
@@ -262,15 +270,26 @@ class LegalLibraryManager:
         if not os.path.exists(LAWS_FILE):
             with open(LAWS_FILE, "w", encoding="utf-8") as f:
                 json.dump(DEFAULT_SEEDED_RULES, f, ensure_ascii=False, indent=2)
+            cls._invalidate_cache()
+
+    @classmethod
+    def _load_raw_data(cls) -> List[Dict[str, Any]]:
+        cls._ensure_storage()
+        try:
+            mtime = os.path.getmtime(LAWS_FILE)
+            if cls._cached_raw_data is not None and mtime == cls._cached_mtime:
+                return cls._cached_raw_data
+            with open(LAWS_FILE, "r", encoding="utf-8") as f:
+                data = json.load(f)
+            cls._cached_raw_data = data
+            cls._cached_mtime = mtime
+            return data
+        except Exception:
+            return DEFAULT_SEEDED_RULES
 
     @classmethod
     def get_all_laws(cls, category: Optional[str] = None, query: Optional[str] = None) -> List[LegalRuleItem]:
-        cls._ensure_storage()
-        try:
-            with open(LAWS_FILE, "r", encoding="utf-8") as f:
-                data = json.load(f)
-        except Exception:
-            data = DEFAULT_SEEDED_RULES
+        data = cls._load_raw_data()
 
         results = []
         q = (query or "").lower().strip()
@@ -327,6 +346,7 @@ class LegalLibraryManager:
 
         with open(LAWS_FILE, "w", encoding="utf-8") as f:
             json.dump(all_dicts, f, ensure_ascii=False, indent=2)
+        cls._invalidate_cache()
 
         return new_item
 
@@ -358,6 +378,7 @@ class LegalLibraryManager:
 
         with open(LAWS_FILE, "w", encoding="utf-8") as f:
             json.dump(all_dicts, f, ensure_ascii=False, indent=2)
+        cls._invalidate_cache()
 
         return updated_item
 
@@ -373,6 +394,7 @@ class LegalLibraryManager:
 
         with open(LAWS_FILE, "w", encoding="utf-8") as f:
             json.dump(remaining, f, ensure_ascii=False, indent=2)
+        cls._invalidate_cache()
 
         return True
 
@@ -460,6 +482,7 @@ class LegalLibraryManager:
         # Lưu lại file
         with open(LAWS_FILE, "w", encoding="utf-8") as f:
             json.dump([item.model_dump() for item in current_laws.values()], f, ensure_ascii=False, indent=2)
+        cls._invalidate_cache()
 
         return StatuteUploadResponse(
             statute_title=statute_title,
@@ -473,7 +496,6 @@ class LegalLibraryManager:
     def get_active_rules(cls) -> List[Dict[str, Any]]:
         """
         Hàm cung cấp danh mục quy tắc pháp lý cho LegalRiskAnalyzer.
-        Tự động lấy toàn bộ quy tắc động hiện tại.
+        Đọc từ cache theo mtime của LAWS_FILE để tránh Disk I/O lặp lại trên từng điều khoản.
         """
-        laws = cls.get_all_laws()
-        return [l.model_dump() for l in laws]
+        return [dict(item) for item in cls._load_raw_data()]

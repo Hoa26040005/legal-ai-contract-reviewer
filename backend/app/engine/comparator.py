@@ -36,9 +36,18 @@ class ContractComparator:
         diff_items: List[ClauseDiffItem] = []
         resolved_count = 0
 
-        # Lấy danh mục rủi ro của từng bản
-        risks_v1_by_clause = {r.clause_id: r for r in report_v1.risks}
-        risks_v2_by_clause = {r.clause_id: r for r in report_v2.risks}
+        # Lấy danh mục rủi ro của từng bản (hỗ trợ 1 điều khoản chứa nhiều rủi ro)
+        risks_v1_by_clause: Dict[str, List] = {}
+        for r in report_v1.risks:
+            risks_v1_by_clause.setdefault(r.clause_id, []).append(r)
+
+        risks_v2_by_clause: Dict[str, List] = {}
+        for r in report_v2.risks:
+            risks_v2_by_clause.setdefault(r.clause_id, []).append(r)
+
+        def _risk_rule_key(r) -> str:
+            prefix = f"risk_{r.clause_id}_"
+            return r.id[len(prefix):] if r.id.startswith(prefix) else r.risk_title
 
         for key in all_keys:
             c1 = map_v1.get(key)
@@ -47,10 +56,10 @@ class ContractComparator:
             if c1 and not c2:
                 # Điều khoản bị xóa bỏ trong V2
                 resolved_risk_text = None
-                r1 = risks_v1_by_clause.get(c1.id)
-                if r1:
-                    resolved_count += 1
-                    resolved_risk_text = f"Đã loại bỏ hoàn toàn rủi ro: {r1.risk_title}"
+                r1_list = risks_v1_by_clause.get(c1.id, [])
+                if r1_list:
+                    resolved_count += len(r1_list)
+                    resolved_risk_text = "Đã loại bỏ hoàn toàn rủi ro: " + "; ".join(r.risk_title for r in r1_list)
 
                 diff_items.append(ClauseDiffItem(
                     clause_number=c1.clause_number,
@@ -91,16 +100,24 @@ class ContractComparator:
                     ))
                 else:
                     # Đã sửa đổi (MODIFIED)
-                    r1 = risks_v1_by_clause.get(c1.id)
-                    r2 = risks_v2_by_clause.get(c2.id)
+                    r1_list = risks_v1_by_clause.get(c1.id, [])
+                    r2_list = risks_v2_by_clause.get(c2.id, [])
                     resolved_risk_text = None
                     legal_impact_text = "Đã chỉnh sửa câu chữ điều khoản."
 
-                    if r1 and not r2:
-                        resolved_count += 1
-                        resolved_risk_text = f"Đàm phán thành công: Đã sửa đổi hợp pháp và gỡ bỏ rủi ro '{r1.risk_title}'"
-                        legal_impact_text = f"Tuân thủ căn cứ pháp luật: {r1.legal_basis}"
-                    elif r1 and r2:
+                    if r1_list and not r2_list:
+                        resolved_count += len(r1_list)
+                        titles_str = "; ".join(r.risk_title for r in r1_list)
+                        bases_str = "; ".join(dict.fromkeys(r.legal_basis for r in r1_list if r.legal_basis))
+                        resolved_risk_text = f"Đàm phán thành công: Đã sửa đổi hợp pháp và gỡ bỏ rủi ro '{titles_str}'"
+                        legal_impact_text = f"Tuân thủ căn cứ pháp luật: {bases_str or 'Pháp luật Việt Nam'}"
+                    elif r1_list and r2_list:
+                        r2_keys = {_risk_rule_key(r) for r in r2_list}
+                        resolved_partial = [r for r in r1_list if _risk_rule_key(r) not in r2_keys]
+                        if resolved_partial:
+                            resolved_count += len(resolved_partial)
+                            titles_str = "; ".join(r.risk_title for r in resolved_partial)
+                            resolved_risk_text = f"Đã khắc phục một phần rủi ro: '{titles_str}'"
                         legal_impact_text = "Đã có sửa đổi nhưng vẫn còn điểm cần tiếp tục đàm phán."
 
                     diff_items.append(ClauseDiffItem(

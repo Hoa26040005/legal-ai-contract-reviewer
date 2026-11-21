@@ -129,9 +129,15 @@ def test_legal_logic_boundary_and_false_positive_immunity():
         "_probation_period",
     )
 
-    # 2. Giữ văn bằng gốc vs lưu giữ bằng chứng (Điều 17.1 BLLĐ 2019)
+    # 2. Giữ văn bằng gốc vs lưu giữ bằng chứng vs câu phủ định tuân thủ (Điều 17.1 BLLĐ 2019)
     assert _has_risk("Công ty giữ bằng gốc của người lao động.", "_keep_diploma")
     assert not _has_risk("Các bên có trách nhiệm lưu giữ bằng chứng giao dịch.", "_keep_diploma")
+    assert not _has_risk("Người lao động nộp bản sao có chứng thực, công ty tuyệt đối không giữ văn bằng gốc.", "_keep_diploma")
+
+    # 2B. Trốn đóng BHXH (Điều 168 BLLĐ 2019) & Thời hạn khiếu nại ngắn (Điều 318 LTM 2005)
+    assert _has_risk("Công ty không đóng BHXH mà chi trả tiền mặt để nhân viên tự đóng bảo hiểm.", "_social_insurance")
+    assert _has_risk("Mọi khiếu nại chất lượng phải gửi trong vòng 48 giờ, quá hạn hết quyền.", "_claim_timeline", commercial_type)
+    assert not _has_risk("Thời hạn khiếu nại chất lượng kỹ thuật là 03 tháng kể từ ngày nghiệm thu.", "_claim_timeline", commercial_type)
 
     # 3. Trần phạt vi phạm thương mại 8% (Điều 301 LTM 2005)
     assert not _has_risk("Bên vi phạm chịu phạt 8% giá trị phần nghĩa vụ.", "_penalty_cap", commercial_type)
@@ -268,5 +274,75 @@ def test_e2e_export_docx_and_annex_vietnamese_headers():
 
     r_litigation = client.get("/api/v1/contracts/sample_labor_contract/litigation-prediction")
     assert r_litigation.status_code == 200
+
+
+def test_multi_risk_clause_docx_and_graph_and_precedent_mapping():
+    """Khóa chặt 5 lỗi logic nghiệp vụ vừa vá: multi-risk docx/comparator, graph auto-seed, BĐS/Án lệ 13 mapping, annex & storage category."""
+    from docx import Document
+    from app.engine.sample_contracts import get_sample_contract_analysis
+    from app.engine.docx_generator import ContractDocxGenerator
+    from app.engine.neo4j_service import Neo4jGraphService
+    from app.engine.precedent_engine import PrecedentLitigationEngine
+    from app.engine.annex_generator import ContractAnnexGenerator
+    from app.engine.storage_manager import ContractStorageManager
+    from app.engine.comparator import ContractComparator
+
+    # 1. Multi-risk docx rendering: Điều 2 của sample_labor_contract có CẢ thử việc 120 ngày VÀ cọc 20 triệu -> cả 2 phải có trong Word
+    labor_report = get_sample_contract_analysis("sample_labor_contract")
+    c2_risks = [r for r in labor_report.risks if r.clause_id == "clause_2"]
+    assert len(c2_risks) >= 2
+    docx_buf = ContractDocxGenerator.generate_redline_docx(labor_report)
+    doc = Document(docx_buf)
+    all_doc_text = "\n".join(p.text for p in doc.paragraphs) + "\n" + "\n".join(
+        cell.text for tbl in doc.tables for row in tbl.rows for cell in row.cells
+    )
+    assert "(1/2)" in all_doc_text and "(2/2)" in all_doc_text
+    assert "Điều 25" in all_doc_text and "Điều 17.2" in all_doc_text
+
+    # 2. Comparator đếm đủ tất cả rủi ro được giải quyết trong 1 điều khoản (không bị ghi đè 1-1)
+    comp = ContractComparator.get_sample_comparison()
+    assert comp.resolved_risks_count >= 6
+
+    # 3. Neo4j Fallback Graph tự động seed hợp đồng mẫu & trả về đúng số Điều khoản (không trả 'clause') + Preset 4 hoạt động
+    Neo4jGraphService._fallback_graph["nodes"].clear()
+    Neo4jGraphService._fallback_graph["edges"].clear()
+    Neo4jGraphService._fallback_edge_keys.clear()
+    q_crit = Neo4jGraphService.execute_multi_hop_query(
+        "MATCH path = (c:Contract)-[:HAS_CLAUSE]->(cl:Clause)-[:DETECTED_RISK]->(r:Risk {level: 'CRITICAL'}) RETURN c, cl, r"
+    )
+    assert q_crit["count"] > 0
+    assert all(row["clause"].startswith("Điều") for row in q_crit["data"])
+    q_preset4 = Neo4jGraphService.execute_multi_hop_query(
+        "MATCH (c:Contract)-[:HAS_CLAUSE]->(cl:Clause)-[:DETECTED_RISK]->(r:Risk) WHERE r.category = 'Tranh chấp & Tài phán' RETURN c, r"
+    )
+    assert q_preset4["count"] > 0
+
+    # 4. PrecedentEngine phân tách Đặt cọc BĐS khỏi Lao động & map Án lệ 13/2017/AL cho Thẩm quyền ký kết
+    #    Và AnnexGenerator sửa đổi cọc BĐS chứ không bãi bỏ nhầm
+    re_clauses = [
+        Clause(id="c1", clause_number="Điều 1", title="Ký thay", content="Phó Giám đốc ký thay nhưng không có giấy ủy quyền bằng văn bản.", page_number=1, bounding_boxes=[]),
+        Clause(id="c2", clause_number="Điều 2", title="Đặt cọc căn hộ", content="Bên Mua đặt cọc 15% giá bán căn hộ hình thành trong tương lai.", page_number=1, bounding_boxes=[]),
+    ]
+    re_report = LegalRiskAnalyzer.analyze_contract(
+        "contract_re_poa_check",
+        "Hợp đồng Đặt cọc Căn hộ Mẫu",
+        "Hợp đồng Bất động sản & Nhà ở (Luật KDBĐS 2023 & Đất đai 2024)",
+        re_clauses,
+    )
+    lit = PrecedentLitigationEngine.predict_contract_litigation_risk(re_report)
+    forecasts = " ".join(cr.court_ruling_forecast for cr in lit.clauses_risks)
+    precedent_codes = [cr.relevant_precedent.case_code for cr in lit.clauses_risks if cr.relevant_precedent]
+    assert "Án lệ số 13/2017/AL" in precedent_codes
+    assert "Thanh tra Lao động" not in forecasts
+    assert "Luật KDBĐS 2023" in forecasts
+
+    annex_data = ContractAnnexGenerator.generate_annex_data(re_report)
+    assert len(annex_data["modified_items"]) >= 2
+    assert len(annex_data["revoked_items"]) == 0
+
+    # 5. StorageManager phân loại đúng danh mục BĐS & Ủy quyền
+    assert ContractStorageManager._resolve_category("Hợp đồng Bất động sản & Nhà ở (Luật KDBĐS 2023)") == "Bất động sản & Thuê mặt bằng"
+    assert ContractStorageManager._resolve_category("Giấy Ủy quyền / Hợp đồng Ủy quyền (BLDS 2015)") == "Ủy quyền & Pháp chế"
+
 
 

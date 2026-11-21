@@ -93,6 +93,7 @@ async def get_contract_report(contract_id: str, db: Session = Depends(get_db)):
     # 2. Kiểm tra Sample Contracts có sẵn
     if contract_id.startswith("sample_"):
         report = get_sample_contract_analysis(contract_id)
+        Neo4jGraphService.sync_contract_report(report)
         CacheService.set(f"report:{contract_id}", report.model_dump(), ttl=86400)
         return report
 

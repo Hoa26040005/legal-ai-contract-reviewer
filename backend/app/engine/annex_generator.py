@@ -29,8 +29,11 @@ class ContractAnnexGenerator:
         added_items = []
 
         for risk in report.risks:
-            # Nếu vi phạm điều cấm nghiêm trọng (giữ bằng, cọc tiền) -> bãi bỏ
-            if any(k in risk.risk_title.lower() for k in ["giữ văn bằng", "giữ bằng", "đặt cọc", "phạt tiền thay"]):
+            title_lower = risk.risk_title.lower()
+            basis_lower = (risk.legal_basis or "").lower()
+            # Chỉ bãi bỏ hoàn toàn nếu vi phạm điều cấm tuyệt đối trong Lao động (giữ bằng gốc, cọc lao động/ký quỹ, phạt tiền trừ lương)
+            is_labor_deposit = "đặt cọc" in title_lower and ("lao động" in basis_lower or "17.2" in basis_lower or "ký quỹ" in title_lower)
+            if any(k in title_lower for k in ["giữ văn bằng", "giữ bằng", "ký quỹ", "phạt tiền thay", "trừ lương"]) or is_labor_deposit:
                 revoked_items.append({
                     "clause_number": risk.clause_number,
                     "title": risk.risk_title,
@@ -38,7 +41,7 @@ class ContractAnnexGenerator:
                     "original_text": risk.original_text
                 })
             else:
-                # Sửa đổi nội dung
+                # Sửa đổi nội dung (bao gồm hạ mức đặt cọc BĐS <= 5%, cân bằng phạt cọc 1:1...)
                 modified_items.append({
                     "clause_number": risk.clause_number,
                     "title": risk.risk_title,

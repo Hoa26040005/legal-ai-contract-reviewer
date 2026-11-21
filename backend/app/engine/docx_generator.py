@@ -1,4 +1,5 @@
 import io
+from typing import Dict, List
 from docx import Document
 from docx.shared import Inches, Pt, RGBColor
 from docx.enum.text import WD_ALIGN_PARAGRAPH
@@ -107,11 +108,13 @@ class ContractDocxGenerator:
         p_divider = doc.add_paragraph()
         p_divider.add_run("=" * 65).font.color.rgb = RGBColor(203, 213, 225)
 
-        # 5. Clauses & Track Changes Revisions
-        risk_map = {r.clause_id: r for r in report.risks}
+        # 5. Clauses & Track Changes Revisions (Hỗ trợ nhiều rủi ro trên cùng 1 điều khoản)
+        risks_by_clause: Dict[str, List] = {}
+        for r in report.risks:
+            risks_by_clause.setdefault(r.clause_id, []).append(r)
 
         for clause in report.clauses:
-            risk = risk_map.get(clause.id)
+            clause_risks = risks_by_clause.get(clause.id, [])
 
             p_clause_num = doc.add_paragraph()
             p_clause_num.paragraph_format.space_before = Pt(12)
@@ -121,17 +124,18 @@ class ContractDocxGenerator:
             run_cnum.bold = True
             run_cnum.font.size = Pt(11)
 
-            if risk:
-                # Add severity tag
-                run_tag = p_clause_num.add_run(f" [{risk.risk_level.value} - {risk.risk_category}]")
+            if clause_risks:
+                primary_risk = clause_risks[0]
+                severity_summary = ", ".join(dict.fromkeys(r.risk_level.value for r in clause_risks))
+                run_tag = p_clause_num.add_run(f" [{severity_summary} - {len(clause_risks)} rủi ro: {primary_risk.risk_category}]")
                 run_tag.bold = True
                 run_tag.font.size = Pt(9.5)
-                if risk.risk_level.value == "CRITICAL":
+                if any(r.risk_level.value == "CRITICAL" for r in clause_risks):
                     run_tag.font.color.rgb = RGBColor(220, 38, 38)
                 else:
                     run_tag.font.color.rgb = RGBColor(245, 158, 11)
 
-                # Paragraph with Strikethrough Old Text
+                # Paragraph with Strikethrough Old Text (hiển thị 1 lần cho cả điều khoản)
                 p_old = doc.add_paragraph()
                 p_old.paragraph_format.left_indent = Inches(0.2)
                 p_old.paragraph_format.space_after = Pt(3)
@@ -145,51 +149,53 @@ class ContractDocxGenerator:
                 run_old_content.font.size = Pt(10)
                 run_old_content.font.color.rgb = RGBColor(220, 38, 38)
 
-                # Paragraph with Green Underline Suggested Text
-                p_new = doc.add_paragraph()
-                p_new.paragraph_format.left_indent = Inches(0.2)
-                p_new.paragraph_format.space_after = Pt(5)
-                run_new_label = p_new.add_run("[+] Đề xuất AI sửa đổi (Hợp pháp): ")
-                run_new_label.bold = True
-                run_new_label.font.size = Pt(9.5)
-                run_new_label.font.color.rgb = RGBColor(16, 185, 129)
+                for risk_idx, risk in enumerate(clause_risks, start=1):
+                    prefix_idx = f" ({risk_idx}/{len(clause_risks)})" if len(clause_risks) > 1 else ""
+                    # Paragraph with Green Underline Suggested Text
+                    p_new = doc.add_paragraph()
+                    p_new.paragraph_format.left_indent = Inches(0.2)
+                    p_new.paragraph_format.space_after = Pt(5)
+                    run_new_label = p_new.add_run(f"[+] Đề xuất AI sửa đổi{prefix_idx} [{risk.risk_level.value}]: ")
+                    run_new_label.bold = True
+                    run_new_label.font.size = Pt(9.5)
+                    run_new_label.font.color.rgb = RGBColor(16, 185, 129)
 
-                run_new_content = p_new.add_run(risk.suggested_text)
-                run_new_content.font.underline = True
-                run_new_content.font.bold = True
-                run_new_content.font.size = Pt(10)
-                run_new_content.font.color.rgb = RGBColor(5, 150, 105)
+                    run_new_content = p_new.add_run(risk.suggested_text)
+                    run_new_content.font.underline = True
+                    run_new_content.font.bold = True
+                    run_new_content.font.size = Pt(10)
+                    run_new_content.font.color.rgb = RGBColor(5, 150, 105)
 
-                # Legal Basis Box (Table with purple border)
-                legal_table = doc.add_table(rows=1, cols=1)
-                legal_table.alignment = WD_TABLE_ALIGNMENT.CENTER
-                cell = legal_table.rows[0].cells[0]
-                
-                shading = parse_xml(f'<w:shd {nsdecls("w")} w:fill="F5F3FF"/>')
-                cell._tc.get_or_add_tcPr().append(shading)
+                    # Legal Basis Box (Table with purple border)
+                    legal_table = doc.add_table(rows=1, cols=1)
+                    legal_table.alignment = WD_TABLE_ALIGNMENT.CENTER
+                    cell = legal_table.rows[0].cells[0]
+                    
+                    shading = parse_xml(f'<w:shd {nsdecls("w")} w:fill="F5F3FF"/>')
+                    cell._tc.get_or_add_tcPr().append(shading)
 
-                p_box = cell.paragraphs[0]
-                p_box.paragraph_format.space_before = Pt(3)
-                p_box.paragraph_format.space_after = Pt(3)
-                
-                run_box_lbl = p_box.add_run("⚖ CĂN CỨ PHÁP LUẬT VIỆT NAM: ")
-                run_box_lbl.bold = True
-                run_box_lbl.font.size = Pt(9.5)
-                run_box_lbl.font.color.rgb = RGBColor(109, 40, 217)
+                    p_box = cell.paragraphs[0]
+                    p_box.paragraph_format.space_before = Pt(3)
+                    p_box.paragraph_format.space_after = Pt(3)
+                    
+                    run_box_lbl = p_box.add_run("⚖ CĂN CỨ PHÁP LUẬT VIỆT NAM: ")
+                    run_box_lbl.bold = True
+                    run_box_lbl.font.size = Pt(9.5)
+                    run_box_lbl.font.color.rgb = RGBColor(109, 40, 217)
 
-                run_box_text = p_box.add_run(f"{risk.legal_basis}\n")
-                run_box_text.bold = True
-                run_box_text.font.size = Pt(9.5)
-                run_box_text.font.color.rgb = RGBColor(79, 70, 229)
+                    run_box_text = p_box.add_run(f"{risk.legal_basis}\n")
+                    run_box_text.bold = True
+                    run_box_text.font.size = Pt(9.5)
+                    run_box_text.font.color.rgb = RGBColor(79, 70, 229)
 
-                run_reason_lbl = p_box.add_run("💡 Chiến lược đàm phán: ")
-                run_reason_lbl.bold = True
-                run_reason_lbl.font.size = Pt(9)
-                run_reason_lbl.font.color.rgb = RGBColor(71, 85, 105)
+                    run_reason_lbl = p_box.add_run("💡 Chiến lược đàm phán: ")
+                    run_reason_lbl.bold = True
+                    run_reason_lbl.font.size = Pt(9)
+                    run_reason_lbl.font.color.rgb = RGBColor(71, 85, 105)
 
-                run_reason_text = p_box.add_run(risk.rationale)
-                run_reason_text.font.size = Pt(9)
-                run_reason_text.font.color.rgb = RGBColor(51, 65, 85)
+                    run_reason_text = p_box.add_run(risk.rationale)
+                    run_reason_text.font.size = Pt(9)
+                    run_reason_text.font.color.rgb = RGBColor(51, 65, 85)
 
             else:
                 # Safe clause
